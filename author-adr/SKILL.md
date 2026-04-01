@@ -26,10 +26,41 @@ tooling, or understand best practices for architectural decision making.
 
 ## Agent Workflow
 
-When this skill is activated, follow this decision tree:
+When this skill is activated, **always start with Format Detection** before
+proceeding to the relevant task.
+
+### Format Detection
+
+Before any ADR operation, determine which ADR format the project uses:
+
+1. **Check for `docs/adr/`** — if the directory exists, read the first ADR
+   (e.g., `0001-record-architecture-decisions.md`) to determine the chosen
+   format (Nygard or MADR).
+2. **If `docs/adr/` does not exist** — prompt the user with a discrete choice:
+
+   > Which ADR format would you like to use?
+   > 1. **Nygard** — lightweight, widely adopted (Status / Context / Decision / Consequences)
+   > 2. **MADR** — structured tradeoff analysis (adds Options, Pros/Cons, Decision Outcome)
+
+3. **Bootstrap the decision log** — initialize `docs/adr` and create the first
+   ADR recording the format choice. Use the Makefile target:
+
+   ```bash
+   make -f <skill-root>/Makefile init DIR=docs/adr
+   ```
+
+   This first ADR always uses Nygard format (the bootstrap default). If the user
+   chose MADR, set `ADR_AGENT_SKILL_FORMAT=madr` for all subsequent ADRs.
+
+4. **Cache the format** — for the rest of the session, pass
+   `ADR_AGENT_SKILL_FORMAT=nygard` or `ADR_AGENT_SKILL_FORMAT=madr` to all
+   Makefile targets based on what was recorded in the first ADR.
 
 ```
 User request
+├─ docs/adr/ exists? ────────────► Read first ADR → set format
+├─ docs/adr/ missing? ──────────► Prompt user → bootstrap → set format
+│
 ├─ "Create an ADR" ──────────────► Go to: Creating an ADR
 ├─ "Review an ADR" ──────────────► Go to: Reviewing an ADR
 ├─ "Set up ADR tooling" ─────────► Go to: Tooling
@@ -47,14 +78,22 @@ User request
 2. **Check readiness** — verify the START criteria from the
    [Definition of Ready](assets/PRACTICES_NOTES.md#definition-of-ready-start):
    Stakeholders, Time/MRM, Alternatives, Requirements, Template.
-3. **Pick a template** — default to Nygard (adr-tools default). Use MADR if the
-   user needs structured tradeoff analysis. See [Choosing a Template](#choosing-a-template).
+3. **Pick a template** — default to Nygard. Use MADR if the user needs
+   structured tradeoff analysis. See [Choosing a Template](#choosing-a-template).
 4. **Draft the ADR** — populate from the template in
    [assets/templates/](assets/templates/). Refer to
    [ADR Creation](assets/PRACTICES_NOTES.md#adr-creation) for good practices
    and anti-patterns to avoid.
-5. **Use adr-tools** — run `adr new TITLE` to create the file. Use `-s` to
-   supercede and `-l` to link. See [references/tooling.md](references/tooling.md).
+5. **Create via Makefile** — always use the Makefile target:
+
+   ```bash
+   make -f <skill-root>/Makefile new TITLE="Use PostgreSQL"
+   make -f <skill-root>/Makefile new TITLE="Use MySQL" SUPERSEDE=2
+   ```
+
+   Only fall back to calling scripts directly if the Makefile is unavailable.
+   See [Escape Hatch](#escape-hatch-direct-script-usage) for direct usage.
+
 6. **Validate completion** — check the ecADR criteria from the
    [Definition of Done](assets/PRACTICES_NOTES.md#definition-of-done-ecadr):
    Evidence, Criteria, Agreement, Documentation, Realization/Review.
@@ -138,42 +177,43 @@ usage can be extended to design and other decisions ("any decision record").
 
 ## Tooling
 
-This skill supports two runtimes via `ADR_AGENT_SKILL_RUNTIME`:
+This skill supports two ADR formats via `ADR_AGENT_SKILL_FORMAT`:
 
-| Runtime | Template | When to Use |
-|---------|----------|-------------|
+| Format | Template | When to Use |
+|--------|----------|-------------|
 | `nygard` (default) | Nygard ADR | Simple decisions, existing adr-tools workflows |
 | `madr` | MADR 4.0 | Structured tradeoff analysis with options/pros/cons |
 
-### Makefile Targets (Preferred)
+### Makefile Targets (Required)
+
+**Always use Makefile targets.** Only fall back to direct script usage if the
+Makefile is genuinely unavailable (e.g., not on `PATH`, broken environment).
 
 ```bash
-# Set runtime (default: nygard)
-export ADR_AGENT_SKILL_RUNTIME=nygard   # or: madr
+# Set format (default: nygard)
+export ADR_AGENT_SKILL_FORMAT=nygard   # or: madr
 
-make init                               # bootstrap ADR directory
-make new TITLE="Use PostgreSQL"         # create a new ADR
-make new TITLE="Use MySQL" SUPERSEDE=2  # supersede an existing ADR
-make list                               # list all ADRs
-make generate                           # generate table of contents
-make install-agents                     # install custom agents (e.g., adr-reviewer)
-make test                               # run tests for both runtimes
+make -f <skill-root>/Makefile init DIR=docs/adr     # bootstrap ADR directory
+make -f <skill-root>/Makefile new TITLE="Use PostgreSQL"
+make -f <skill-root>/Makefile new TITLE="Use MySQL" SUPERSEDE=2
+make -f <skill-root>/Makefile list                   # list all ADRs
+make -f <skill-root>/Makefile generate               # generate table of contents
+make -f <skill-root>/Makefile install-agents         # install custom agents
 ```
 
 ### Escape Hatch: Direct Script Usage
 
-When the Makefile is unavailable or the agent needs to adapt, use scripts
-directly. See [references/tooling.md](references/tooling.md) for full command
-docs for both runtimes:
+Only use direct scripts when the Makefile is unavailable. See
+[references/tooling.md](references/tooling.md) for full command docs:
 
 ```bash
-# Nygard runtime
+# Nygard format
 export PATH="$PWD/scripts/adr-tools-3.0.0/src:$PATH"
-adr init && adr new Use PostgreSQL
+adr init docs/adr && adr new Use PostgreSQL
 
-# MADR runtime
+# MADR format
 export PATH="$PWD/scripts/madr-tools/src:$PATH"
-madr init && madr new -t full Use PostgreSQL
+madr init docs/adr && madr new -t full Use PostgreSQL
 ```
 
 ### Visualization
@@ -191,7 +231,7 @@ for syntax patterns.
 For detailed practice guidance, see:
 - [references/practices.md](references/practices.md) — full practices guide with inline summaries
 - [references/templates.md](references/templates.md) — template details and selection guide
-- [references/tooling.md](references/tooling.md) — dual-runtime command reference and visualization
+- [references/tooling.md](references/tooling.md) — dual-format command reference and visualization
 - [assets/index.md](assets/index.md) — curated asset index with summaries
 
 ## Key References

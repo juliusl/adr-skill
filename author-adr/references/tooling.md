@@ -1,21 +1,21 @@
 # Decision Capturing Tools
 
-> This skill supports two runtimes controlled by `ADR_AGENT_SKILL_RUNTIME`:
+> This skill supports two ADR formats controlled by `ADR_AGENT_SKILL_FORMAT`:
 >
 > | Runtime | Template | Scripts | Default Dir |
 > |---------|----------|---------|-------------|
 > | `nygard` (default) | Nygard ADR | `scripts/adr-tools-3.0.0/` | `doc/adr/` |
 > | `madr` | MADR 4.0 | `scripts/madr-tools/` | `docs/decisions/` |
 >
-> A top-level `Makefile` abstracts both runtimes behind unified targets.
+> A top-level `Makefile` abstracts both formats behind unified targets.
 
 ## Makefile Interface (Recommended)
 
-The Makefile auto-selects the correct scripts based on `ADR_AGENT_SKILL_RUNTIME`.
+The Makefile auto-selects the correct scripts based on `ADR_AGENT_SKILL_FORMAT`.
 
 ```bash
-# Set runtime (default: nygard)
-export ADR_AGENT_SKILL_RUNTIME=nygard   # or: madr
+# Set format (default: nygard)
+export ADR_AGENT_SKILL_FORMAT=nygard   # or: madr
 
 # Core targets
 make init                               # bootstrap ADR directory
@@ -29,7 +29,7 @@ make status NUM=2 STATUS=Accepted       # update status (madr only)
 make generate                           # generate table of contents
 make generate PREFIX="docs/adr/"        # with path prefix
 make link SOURCE=12 LINK="Amends" TARGET=10 REVERSE="Amended by"  # (nygard only)
-make test                               # run tests for both runtimes
+make test                               # run tests for both formats
 ```
 
 ## Runtime: Nygard (adr-tools)
@@ -171,7 +171,7 @@ source scripts/adr-tools-3.0.0/autocomplete/adr
 
 ## Runtime: MADR (madr-tools)
 
-Direct script usage for the MADR runtime.
+Direct script usage for the MADR format.
 
 ### Quick Start
 

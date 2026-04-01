@@ -9,7 +9,7 @@ An [agentskills.io](https://agentskills.io)-compliant skill that enables AI codi
 | **Create** ADRs | Draft decisions using Nygard, MADR, or Y-Statement templates |
 | **Review** ADRs | Evaluate existing records for quality and completeness |
 | **Manage** ADRs | Supersede, deprecate, link, and generate tables of contents |
-| **Tooling** | Bundled `adr-tools` (Nygard) and `madr-tools` (MADR) runtimes |
+| **Tooling** | Bundled `adr-tools` (Nygard) and `madr-tools` (MADR) format scripts |
 
 ## Quick Start
 
@@ -31,7 +31,7 @@ The agent will select the appropriate template, scaffold the record, and guide y
     ├── Makefile                      # Downstream agent interface
     ├── references/                   # On-demand docs (practices, templates, tooling)
     ├── assets/                       # Templates, practice notes, static resources
-    └── scripts/                      # Bundled CLI runtimes (adr-tools, madr-tools)
+    └── scripts/                      # Bundled CLI scripts (adr-tools, madr-tools)
 ```
 
 ## Development
@@ -40,7 +40,7 @@ The agent will select the appropriate template, scaffold the record, and guide y
 # Run all tests (22 adr-tools + 9 madr-tools)
 make test
 
-# Run tests for a single runtime
+# Run tests for a single format
 make test-nygard
 make test-madr
 

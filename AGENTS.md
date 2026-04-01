@@ -2,6 +2,11 @@
 
 Instructions for agents and developers making changes to this skill.
 
+## Git Policy
+
+Agents **must not** commit or push changes. Stage your work and let the
+developer review, commit, and push manually.
+
 ## Directory Structure
 
 ```
@@ -16,7 +21,7 @@ adr-skill/
     ├── references/              # On-demand documentation loaded by the agent
     │   ├── practices.md         # AD practice guide with inline summaries
     │   ├── templates.md         # Template selection guide (Nygard primary, MADR, Y-Statement)
-    │   └── tooling.md           # Dual-runtime command reference + visualization guidance
+    │   └── tooling.md           # Dual-format command reference + visualization guidance
     ├── assets/                  # Static resources, templates, and distilled notes
     │   ├── index.md             # Curated asset index with summaries
     │   ├── PRACTICES_NOTES.md   # Tagged practice fragments (create, review, assess, etc.)
@@ -26,8 +31,8 @@ adr-skill/
     │   ├── templates/           # Ready-to-use ADR templates (Nygard, MADR, Y-Statement)
     │   └── archive/             # Full originals of distilled notes (deep context only)
     └── scripts/
-        ├── adr-tools-3.0.0/     # Nygard runtime (bundled, 22 tests)
-        └── madr-tools/          # MADR runtime (custom, 9 tests)
+        ├── adr-tools-3.0.0/     # Nygard format (bundled, 22 tests)
+        └── madr-tools/          # MADR format (custom, 9 tests)
 ```
 
 ## Before Making Changes
@@ -38,17 +43,13 @@ adr-skill/
    make test
    ```
 
-   This runs both runtimes: 22 adr-tools tests + 9 madr-tools tests.
+   This runs both formats: 22 adr-tools tests + 9 madr-tools tests.
 
 2. **Validate the skill** against the agentskills.io spec:
 
    ```bash
-   # Install skills-ref (one-time)
-   cd /tmp && git clone https://github.com/agentskills/agentskills.git
-   cd agentskills/skills-ref && uv sync && source .venv/bin/activate
-
-   # Validate
-   skills-ref validate /path/to/author-adr
+   make validate-setup   # one-time: installs skills-ref
+   make validate
    ```
 
 ## After Making Changes
@@ -62,7 +63,7 @@ adr-skill/
 2. **Re-validate the skill** if you changed SKILL.md frontmatter:
 
    ```bash
-   skills-ref validate author-adr
+   make validate
    ```
 
 3. **Check for broken references** — all `.md` file links in SKILL.md and
@@ -113,7 +114,7 @@ Templates live in `assets/templates/`. When adding a new template:
 
 ## Modifying Scripts
 
-### adr-tools (Nygard runtime)
+### adr-tools (Nygard format)
 
 Bundled third-party scripts at `author-adr/scripts/adr-tools-3.0.0/`. Tests use
 diff-based validation: `tests/*.sh` (commands) vs `tests/*.expected` (output).
@@ -122,7 +123,7 @@ diff-based validation: `tests/*.sh` (commands) vs `tests/*.expected` (output).
 make test-nygard
 ```
 
-### madr-tools (MADR runtime)
+### madr-tools (MADR format)
 
 Custom scripts at `author-adr/scripts/madr-tools/`. Same test pattern.
 
