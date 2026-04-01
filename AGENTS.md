@@ -9,10 +9,10 @@ adr-skill/
 ├── AGENTS.md                    # This file — development guide
 ├── README.md                    # Project overview
 ├── Makefile                     # Dev targets (test, install-agents)
+├── eval_queries.json            # Trigger evaluation queries for description optimization
 └── architectural-decision-records/  # Skill root (copy this to install)
     ├── SKILL.md                 # Skill entry point (spec-compliant frontmatter + instructions)
     ├── Makefile                 # Downstream agent interface (init, new, list, etc.)
-    ├── eval_queries.json        # Trigger evaluation queries for description optimization
     ├── references/              # On-demand documentation loaded by the agent
     │   ├── practices.md         # AD practice guide with inline summaries
     │   ├── templates.md         # Template selection guide (Nygard primary, MADR, Y-Statement)
