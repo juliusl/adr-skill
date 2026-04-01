@@ -7,6 +7,18 @@ Instructions for agents and developers making changes to this skill.
 Agents **must not** commit or push changes. Stage your work and let the
 developer review, commit, and push manually.
 
+When asked to draft a commit message, use
+[Conventional Commits](https://www.conventionalcommits.org/) format:
+
+```
+<type>(<scope>): <short summary>
+
+<optional body>
+```
+
+Common types: `feat`, `fix`, `docs`, `refactor`, `test`, `chore`, `build`.
+Scope is optional but encouraged (e.g., `skill`, `makefile`, `tooling`).
+
 ## Directory Structure
 
 ```
