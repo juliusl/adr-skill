@@ -24,12 +24,14 @@ The agent will select the appropriate template, scaffold the record, and guide y
 ## Project Structure
 
 ```
-├── SKILL.md              # Skill entry point (frontmatter + instructions)
-├── AGENTS.md             # Contributor guide
-├── Makefile              # Build, test, and agent-install targets
-├── references/           # On-demand docs (practices, templates, tooling)
-├── assets/               # Templates, practice notes, and static resources
-└── scripts/              # Bundled CLI runtimes (adr-tools, madr-tools)
+├── AGENTS.md                         # Contributor guide
+├── Makefile                          # Dev targets (test, install-agents)
+└── architectural-decision-records/   # Skill root (copy to install)
+    ├── SKILL.md                      # Skill entry point (frontmatter + instructions)
+    ├── Makefile                      # Downstream agent interface
+    ├── references/                   # On-demand docs (practices, templates, tooling)
+    ├── assets/                       # Templates, practice notes, static resources
+    └── scripts/                      # Bundled CLI runtimes (adr-tools, madr-tools)
 ```
 
 ## Development

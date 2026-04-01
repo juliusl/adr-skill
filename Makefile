@@ -1,116 +1,24 @@
-# ADR Skill Makefile
-# Abstracts adr-tools and madr-tools behind a unified interface.
-#
-# Set ADR_AGENT_SKILL_RUNTIME to choose the runtime:
-#   make init ADR_AGENT_SKILL_RUNTIME=nygard   (default)
-#   make init ADR_AGENT_SKILL_RUNTIME=madr
-#
-# Or export it:
-#   export ADR_AGENT_SKILL_RUNTIME=madr
-#   make new TITLE="Use PostgreSQL"
+# ADR Skill — Development Makefile
+# Targets for maintaining and testing the skill itself.
 
-SKILL_ROOT := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
-ADR_AGENT_SKILL_RUNTIME ?= nygard
+SKILL_DIR := $(CURDIR)/architectural-decision-records
 
-# Runtime paths
-NYGARD_BIN := $(SKILL_ROOT)scripts/adr-tools-3.0.0/src
-MADR_BIN   := $(SKILL_ROOT)scripts/madr-tools/src
-
-ifeq ($(ADR_AGENT_SKILL_RUNTIME),madr)
-  ADR_CMD := $(MADR_BIN)/madr
-else
-  ADR_CMD := $(NYGARD_BIN)/adr
-endif
-
-# --- Targets ---
-
-.PHONY: help init new list status generate link check-runtime install-agents
+.PHONY: help test test-nygard test-madr install-agents
 
 help: ## Show available targets
-	@echo "ADR Skill Makefile (runtime: $(ADR_AGENT_SKILL_RUNTIME))"
+	@echo "ADR Skill Development Makefile"
 	@echo ""
 	@echo "Targets:"
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
 		awk 'BEGIN {FS = ":.*?## "}; {printf "  %-15s %s\n", $$1, $$2}'
-	@echo ""
-	@echo "Set ADR_AGENT_SKILL_RUNTIME=nygard|madr to switch runtimes."
-
-init: check-runtime ## Initialize ADR directory (DIR=path)
-ifeq ($(ADR_AGENT_SKILL_RUNTIME),madr)
-	$(ADR_CMD) init $(DIR)
-else
-	$(ADR_CMD) init $(DIR)
-endif
-
-new: check-runtime ## Create a new ADR (TITLE="..." [SUPERSEDE=N] [TEMPLATE=minimal|full])
-ifeq ($(ADR_AGENT_SKILL_RUNTIME),madr)
-	$(ADR_CMD) new $(if $(SUPERSEDE),-s $(SUPERSEDE)) $(if $(TEMPLATE),-t $(TEMPLATE)) $(TITLE)
-else
-	$(ADR_CMD) new $(if $(SUPERSEDE),-s $(SUPERSEDE)) $(TITLE)
-endif
-
-list: check-runtime ## List all ADRs
-	$(ADR_CMD) list
-
-status: check-runtime ## Show or update ADR status (NUM=N [STATUS=Accepted])
-ifeq ($(ADR_AGENT_SKILL_RUNTIME),madr)
-	$(ADR_CMD) status $(NUM) $(STATUS)
-else
-	@echo "Status management is manual in nygard runtime. Edit the ADR file directly."
-endif
-
-generate: check-runtime ## Generate table of contents
-ifeq ($(ADR_AGENT_SKILL_RUNTIME),madr)
-	$(ADR_CMD) generate toc $(if $(PREFIX),-p $(PREFIX))
-else
-	$(ADR_CMD) generate toc $(if $(PREFIX),-p $(PREFIX))
-endif
-
-link: check-runtime ## Link two ADRs (SOURCE=N LINK="text" TARGET=N REVERSE="text") [nygard only]
-ifeq ($(ADR_AGENT_SKILL_RUNTIME),madr)
-	@echo "Use 'make new SUPERSEDE=N' for MADR supersedes relationships."
-	@echo "Manual linking: edit the ADR files directly."
-else
-	$(ADR_CMD) link $(SOURCE) "$(LINK)" $(TARGET) "$(REVERSE)"
-endif
-
-check-runtime:
-	@if [ "$(ADR_AGENT_SKILL_RUNTIME)" != "nygard" ] && [ "$(ADR_AGENT_SKILL_RUNTIME)" != "madr" ]; then \
-		echo "ERROR: ADR_AGENT_SKILL_RUNTIME must be 'nygard' or 'madr' (got '$(ADR_AGENT_SKILL_RUNTIME)')"; \
-		exit 1; \
-	fi
-
-install-agents: ## Install custom agents to the agents/ directory (ADR_AGENTS_DIR overrides target)
-	@agents_src="$(SKILL_ROOT)assets"; \
-	if [ -n "$(ADR_AGENTS_DIR)" ]; then \
-		target_dir="$(ADR_AGENTS_DIR)"; \
-	else \
-		target_dir="$(abspath $(SKILL_ROOT)../../agents)"; \
-	fi; \
-	mkdir -p "$$target_dir"; \
-	found=0; \
-	for agent_file in "$$agents_src"/*.agent.md; do \
-		if [ -f "$$agent_file" ]; then \
-			agent_basename=$$(basename "$$agent_file"); \
-			echo "Installing: $$agent_basename -> $$target_dir/$$agent_basename"; \
-			cp "$$agent_file" "$$target_dir/$$agent_basename"; \
-			found=1; \
-		fi; \
-	done; \
-	if [ "$$found" = "0" ]; then \
-		echo "No .agent.md files found in assets/."; \
-		exit 1; \
-	fi; \
-	echo "Done. Agents installed to $$target_dir/"
-
-# --- Testing ---
-
-.PHONY: test test-nygard test-madr
 
 test: test-nygard test-madr ## Run tests for both runtimes
 
 test-nygard: ## Run adr-tools tests
-	$(MAKE) -C $(SKILL_ROOT)scripts/adr-tools-3.0.0 clean check
+	$(MAKE) -C $(SKILL_DIR)/scripts/adr-tools-3.0.0 clean check
 
 test-madr: ## Run madr-tools tests
-	$(MAKE) -C $(SKILL_ROOT)scripts/madr-tools clean check
+	$(MAKE) -C $(SKILL_DIR)/scripts/madr-tools clean check
+
+install-agents: ## Install custom agents (ADR_AGENTS_DIR overrides target)
+	$(MAKE) -C $(SKILL_DIR) install-agents $(if $(ADR_AGENTS_DIR),ADR_AGENTS_DIR=$(ADR_AGENTS_DIR))
