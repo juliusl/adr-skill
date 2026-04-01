@@ -1,0 +1,13 @@
+madr init
+docs/decisions/0001-record-architecture-decisions-with-madr.md
+madr new First Record
+docs/decisions/0002-first-record.md
+madr new Second Record
+docs/decisions/0003-second-record.md
+madr new Third Record
+docs/decisions/0004-third-record.md
+madr list
+docs/decisions/0001-record-architecture-decisions-with-madr.md
+docs/decisions/0002-first-record.md
+docs/decisions/0003-second-record.md
+docs/decisions/0004-third-record.md

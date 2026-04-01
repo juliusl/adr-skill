@@ -1,0 +1,29 @@
+madr init
+docs/decisions/0001-record-architecture-decisions-with-madr.md
+madr new The First Decision
+docs/decisions/0002-the-first-decision.md
+cat docs/decisions/0002-the-first-decision.md
+# 0002. The First Decision
+
+## Status
+
+Proposed
+
+## Context and Problem Statement
+
+[Describe the context and problem in 2-3 sentences]
+
+## Considered Options
+
+- [Option 1]
+- [Option 2]
+- [Option 3]
+
+## Decision Outcome
+
+Chosen option: "[Option N]", because [justification].
+
+### Consequences
+
+- Good, because [positive consequence]
+- Bad, because [negative consequence]

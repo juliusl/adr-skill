@@ -1,0 +1,2 @@
+madr init
+madr list

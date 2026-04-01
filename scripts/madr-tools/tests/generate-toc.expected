@@ -1,0 +1,12 @@
+madr init
+docs/decisions/0001-record-architecture-decisions-with-madr.md
+madr new First
+docs/decisions/0002-first.md
+madr new Second
+docs/decisions/0003-second.md
+madr generate toc
+# Architecture Decision Log
+
+- [1. Record Architecture Decisions with MADR](0001-record-architecture-decisions-with-madr.md) — *Accepted*
+- [0002. First](0002-first.md) — *Proposed*
+- [0003. Second](0003-second.md) — *Proposed*

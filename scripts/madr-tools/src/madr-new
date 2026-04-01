@@ -1,0 +1,98 @@
+#!/bin/bash
+set -e
+eval "$($(dirname $0)/madr-config)"
+
+## usage: madr new [-s SUPERSEDED] [-t minimal|full] TITLE_TEXT...
+##
+## Creates a new, numbered MADR. The TITLE_TEXT arguments are concatenated to
+## form the title of the new ADR. The ADR is opened for editing in the editor
+## specified by VISUAL or EDITOR.
+##
+## Options:
+##
+## -s SUPERSEDED   A reference (number or partial filename) of a previous
+##                 decision that the new decision supersedes. The status of
+##                 the superseded ADR is updated.
+##
+## -t TYPE         Template type: "minimal" (default) or "full".
+##
+## E.g. to create a new MADR:
+##
+##     madr new Use PostgreSQL for persistence
+##     madr new -t full Use PostgreSQL for persistence
+##     madr new -s 2 Use MySQL instead of PostgreSQL
+
+template_type="minimal"
+superseded=""
+
+while getopts "s:t:" opt; do
+    case $opt in
+        s) superseded="$OPTARG";;
+        t) template_type="$OPTARG";;
+        \?) echo "Invalid option: -$OPTARG" >&2; exit 1;;
+    esac
+done
+shift $((OPTIND - 1))
+
+if [ -z "$*" ]; then
+    echo "ERROR: title is required" >&2
+    echo "usage: madr new [-s SUPERSEDED] [-t minimal|full] TITLE_TEXT..." >&2
+    exit 1
+fi
+
+title="$*"
+
+# Find the MADR directory
+if [ -f .madr-dir ]; then
+    madr_dir=$(cat .madr-dir)
+else
+    madr_dir="docs/decisions"
+fi
+
+mkdir -p "$madr_dir"
+
+# Determine next number
+last=$(find "$madr_dir" -maxdepth 1 -name "[0-9]*.md" 2>/dev/null | \
+       sed -E 's|.*/([0-9]+).*|\1|' | sort -n | tail -1)
+next=$(printf "%04d" $(( ${last:-0} + 1 )))
+
+# Build slug from title
+slug=$(echo "$title" | tr '[:upper:]' '[:lower:]' | tr ' ' '-' | tr -cd 'a-z0-9-')
+filename="${next}-${slug}.md"
+filepath="$madr_dir/$filename"
+
+# Select template
+case "$template_type" in
+    full) tmpl="$madr_template_dir/madr-full-template.md";;
+    minimal|*) tmpl="$madr_template_dir/madr-minimal-template.md";;
+esac
+
+# Generate the ADR from template
+sed -e "s/\[Short title.*\]/$next. $title/" \
+    -e "s/\[Proposed.*\]/Proposed/" \
+    -e "s/\[YYYY-MM-DD.*\]/${MADR_DATE:-$(date +%Y-%m-%d)}/" \
+    "$tmpl" > "$filepath"
+
+# Handle supersedes
+if [ -n "$superseded" ]; then
+    sup_file=$(find "$madr_dir" -maxdepth 1 -name "${superseded}*" -o -name "$(printf '%04d' "$superseded")*" 2>/dev/null | head -1)
+    if [ -n "$sup_file" ] && [ -f "$sup_file" ]; then
+        sup_name=$(basename "$sup_file")
+        # Add supersedes link to new ADR status
+        sed -i "s/^Proposed$/Proposed. Supersedes [$sup_name]($sup_name)/" "$filepath"
+        # Update old ADR status
+        sed -i "s/^Accepted$/Superseded by [$filename]($filename)/" "$sup_file"
+        sed -i "s/^Proposed$/Superseded by [$filename]($filename)/" "$sup_file"
+    else
+        echo "WARNING: could not find ADR matching '$superseded'" >&2
+    fi
+fi
+
+# Open editor
+if [ -n "${VISUAL}" ]; then
+    $VISUAL "$filepath"
+elif [ -n "${EDITOR}" ]; then
+    $EDITOR "$filepath"
+fi
+
+echo "$filepath"

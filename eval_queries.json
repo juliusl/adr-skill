@@ -1,0 +1,22 @@
+[
+  { "query": "I need to document why we chose Kafka over RabbitMQ for our event system", "should_trigger": true },
+  { "query": "Can you create an ADR for our decision to use PostgreSQL?", "should_trigger": true },
+  { "query": "We picked React but nobody remembers why — can you help us write that down?", "should_trigger": true },
+  { "query": "Review this architecture decision record and tell me if it's complete", "should_trigger": true },
+  { "query": "What template should I use to record our design decisions?", "should_trigger": true },
+  { "query": "Set up ADR tooling in this repo so we can start tracking decisions", "should_trigger": true },
+  { "query": "Our tech lead wants us to justify the microservices decision with tradeoffs", "should_trigger": true },
+  { "query": "Is this technology choice reversible? Should we document it formally?", "should_trigger": true },
+  { "query": "Help me compare the options we have for our database and write up the rationale", "should_trigger": true },
+  { "query": "We need a decision log for this project, where do we start?", "should_trigger": true },
+  { "query": "Can you check if our ADR has any logical fallacies in the justification?", "should_trigger": true },
+  { "query": "Write a fibonacci function in Python", "should_trigger": false },
+  { "query": "Fix the CSS on our landing page, the button colors are wrong", "should_trigger": false },
+  { "query": "Review this pull request for code quality issues", "should_trigger": false },
+  { "query": "Create a project plan with milestones for Q3", "should_trigger": false },
+  { "query": "Write API documentation for our REST endpoints", "should_trigger": false },
+  { "query": "Set up our CI/CD pipeline with GitHub Actions", "should_trigger": false },
+  { "query": "Can you refactor this service to use dependency injection?", "should_trigger": false },
+  { "query": "Write meeting notes from today's architecture discussion", "should_trigger": false },
+  { "query": "Generate a UML class diagram for our domain model", "should_trigger": false }
+]

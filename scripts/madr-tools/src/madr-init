@@ -1,0 +1,54 @@
+#!/bin/bash
+set -e
+eval "$($(dirname $0)/madr-config)"
+
+## usage: madr init [DIRECTORY]
+##
+## Initialises the directory for MADR decision records:
+##
+##  * creates a subdirectory of the current working directory
+##  * copies the MADR template into the directory
+##  * creates the first ADR recording the decision to use MADRs
+##
+## If DIRECTORY is not given, decisions are stored in `docs/decisions`.
+
+dir="${1:-docs/decisions}"
+mkdir -p "$dir"
+echo "$dir" > .madr-dir
+
+# Copy templates
+cp "$madr_template_dir/madr-full-template.md" "$dir/adr-template.md"
+cp "$madr_template_dir/madr-minimal-template.md" "$dir/adr-template-minimal.md"
+
+# Create initial ADR
+cat > "$dir/0001-record-architecture-decisions-with-madr.md" << 'EOF'
+# 1. Record Architecture Decisions with MADR
+
+## Status
+
+Accepted
+
+## Context and Problem Statement
+
+We need to record the architectural decisions made on this project in a
+structured way that captures tradeoffs and alternatives considered.
+
+## Considered Options
+
+- MADR (Markdown Architectural Decision Records)
+- Nygard ADR format
+- No formal structure
+
+## Decision Outcome
+
+Chosen option: "MADR", because it provides structured tradeoff analysis with
+considered options and pros/cons while remaining lightweight and Markdown-based.
+
+### Consequences
+
+- Good, because decisions include explicit tradeoff analysis
+- Good, because the template guides authors through a complete decision record
+- Bad, because slightly more ceremony than a plain Nygard ADR
+EOF
+
+echo "$dir/0001-record-architecture-decisions-with-madr.md"

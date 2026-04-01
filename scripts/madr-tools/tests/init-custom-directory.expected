@@ -1,0 +1,6 @@
+madr init custom-dir
+custom-dir/0001-record-architecture-decisions-with-madr.md
+ls custom-dir
+0001-record-architecture-decisions-with-madr.md
+adr-template-minimal.md
+adr-template.md

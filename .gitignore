@@ -1,0 +1,19 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+
+# Test artifacts
+scripts/adr-tools-3.0.0/tests/tmp/
+scripts/madr-tools/tests/tmp/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
