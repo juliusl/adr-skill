@@ -17,3 +17,6 @@ scripts/madr-tools/tests/tmp/
 __pycache__/
 *.pyc
 .venv/
+
+# Dogfood installs
+.copilot/skills/
