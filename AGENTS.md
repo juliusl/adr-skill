@@ -10,7 +10,7 @@ adr-skill/
 ├── README.md                    # Project overview
 ├── Makefile                     # Dev targets (test, install-agents)
 ├── eval_queries.json            # Trigger evaluation queries for description optimization
-└── architectural-decision-records/  # Skill root (copy this to install)
+└── author-adr/  # Skill root (copy this to install)
     ├── SKILL.md                 # Skill entry point (spec-compliant frontmatter + instructions)
     ├── Makefile                 # Downstream agent interface (init, new, list, etc.)
     ├── references/              # On-demand documentation loaded by the agent
@@ -48,7 +48,7 @@ adr-skill/
    cd agentskills/skills-ref && uv sync && source .venv/bin/activate
 
    # Validate
-   skills-ref validate /path/to/architectural-decision-records
+   skills-ref validate /path/to/author-adr
    ```
 
 ## After Making Changes
@@ -62,14 +62,14 @@ adr-skill/
 2. **Re-validate the skill** if you changed SKILL.md frontmatter:
 
    ```bash
-   skills-ref validate architectural-decision-records
+   skills-ref validate author-adr
    ```
 
 3. **Check for broken references** — all `.md` file links in SKILL.md and
    references/ must resolve to existing files:
 
    ```bash
-   cd architectural-decision-records
+   cd author-adr
    grep -oP '(?:assets|references)/[^\s)#]+\.md' SKILL.md | while read ref; do
      [ ! -f "$ref" ] && echo "BROKEN: $ref"
    done
@@ -79,7 +79,7 @@ adr-skill/
    progressive disclosure):
 
    ```bash
-   wc -l architectural-decision-records/SKILL.md
+   wc -l author-adr/SKILL.md
    ```
 
 ## Spec Constraints
@@ -115,7 +115,7 @@ Templates live in `assets/templates/`. When adding a new template:
 
 ### adr-tools (Nygard runtime)
 
-Bundled third-party scripts at `architectural-decision-records/scripts/adr-tools-3.0.0/`. Tests use
+Bundled third-party scripts at `author-adr/scripts/adr-tools-3.0.0/`. Tests use
 diff-based validation: `tests/*.sh` (commands) vs `tests/*.expected` (output).
 
 ```bash
@@ -124,13 +124,13 @@ make test-nygard
 
 ### madr-tools (MADR runtime)
 
-Custom scripts at `architectural-decision-records/scripts/madr-tools/`. Same test pattern.
+Custom scripts at `author-adr/scripts/madr-tools/`. Same test pattern.
 
 To add a new test:
 1. Create `tests/<name>.sh` with the commands to run
 2. Generate expected output by running the test manually
 3. Save output as `tests/<name>.expected`
-4. Verify: `make -C architectural-decision-records/scripts/madr-tools clean check`
+4. Verify: `make -C author-adr/scripts/madr-tools clean check`
 
 ```bash
 make test-madr

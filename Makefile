@@ -1,7 +1,7 @@
 # ADR Skill — Development Makefile
 # Targets for maintaining and testing the skill itself.
 
-SKILL_DIR := $(CURDIR)/architectural-decision-records
+SKILL_DIR := $(CURDIR)/author-adr
 
 .PHONY: help test test-nygard test-madr install-agents dogfood-copilot
 
@@ -25,6 +25,6 @@ install-agents: ## Install custom agents (ADR_AGENTS_DIR overrides target)
 
 dogfood-copilot: ## Install skill to ~/.copilot/skills for local testing
 	@mkdir -p $(HOME)/.copilot/skills
-	@rm -rf $(HOME)/.copilot/skills/architectural-decision-records
-	cp -r $(SKILL_DIR) $(HOME)/.copilot/skills/architectural-decision-records
-	@echo "Installed to ~/.copilot/skills/architectural-decision-records"
+	@rm -rf $(HOME)/.copilot/skills/author-adr
+	cp -r $(SKILL_DIR) $(HOME)/.copilot/skills/author-adr
+	@echo "Installed to ~/.copilot/skills/author-adr"

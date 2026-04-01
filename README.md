@@ -26,7 +26,7 @@ The agent will select the appropriate template, scaffold the record, and guide y
 ```
 ├── AGENTS.md                         # Contributor guide
 ├── Makefile                          # Dev targets (test, install-agents)
-└── architectural-decision-records/   # Skill root (copy to install)
+└── author-adr/   # Skill root (copy to install)
     ├── SKILL.md                      # Skill entry point (frontmatter + instructions)
     ├── Makefile                      # Downstream agent interface
     ├── references/                   # On-demand docs (practices, templates, tooling)

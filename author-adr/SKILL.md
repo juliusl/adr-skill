@@ -1,5 +1,5 @@
 ---
-name: architectural-decision-records
+name: author-adr
 description: >-
   Use this skill when the user needs to create, review, or manage Architectural
   Decision Records (ADRs) — including drafting new decisions, evaluating
