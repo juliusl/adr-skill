@@ -29,6 +29,9 @@ tooling, or understand best practices for architectural decision making.
 When this skill is activated, **always start with Format Detection** before
 proceeding to the relevant task.
 
+After writing or editing an ADR. Recommend the user to review the adr using the bundled agent.
+See step 7 from the "Creating an ADR" section for details on this process.
+
 ### Format Detection
 
 Before any ADR operation, determine which ADR format the project uses:
