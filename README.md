@@ -59,17 +59,18 @@ make install-user-copilot
 ├── Makefile                          # Dev targets (test, validate)
 ├── docs/adr/                         # Project-level ADRs
 ├── docs/plans/                       # Implementation plans generated from ADRs
-├── author-adr/                       # Skill: create, review, manage ADRs
-│   ├── SKILL.md                      # Skill entry point
-│   ├── Makefile                      # Downstream agent interface
-│   ├── references/                   # On-demand docs (practices, templates, tooling)
-│   ├── assets/                       # Templates, practice notes, static resources
-│   └── scripts/                      # Bundled CLI scripts (adr-tools, madr-tools)
-└── implement-adr/                    # Skill: ADR → implementation plans
-    ├── SKILL.md                      # Skill entry point
-    ├── Makefile                      # Downstream agent interface
-    ├── references/                   # On-demand docs (planning, testing, cost)
-    └── assets/                       # Plan template, static resources
+├── src/skills/
+│   ├── author-adr/                   # Skill: create, review, manage ADRs
+│   │   ├── SKILL.md                  # Skill entry point
+│   │   ├── Makefile                  # Downstream agent interface
+│   │   ├── references/               # On-demand docs (practices, templates, tooling)
+│   │   ├── assets/                   # Templates, practice notes, static resources
+│   │   └── scripts/                  # Bundled CLI scripts (adr-tools, madr-tools)
+│   └── implement-adr/                # Skill: ADR → implementation plans
+│       ├── SKILL.md                  # Skill entry point
+│       ├── Makefile                  # Downstream agent interface
+│       ├── references/               # On-demand docs (planning, testing, cost)
+│       └── assets/                   # Plan template, static resources
 ```
 
 ## Development

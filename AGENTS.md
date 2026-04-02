@@ -28,36 +28,37 @@ adr-skills/
 ├── Makefile                     # Dev targets (test, install-agents)
 ├── eval_queries.json            # Trigger evaluation queries for description optimization
 ├── docs/adr/                    # Project-level ADRs (decisions about these skills)
-├── author-adr/                  # Skill: create, review, manage ADRs
-│   ├── SKILL.md                 # Skill entry point (spec-compliant frontmatter + instructions)
-│   ├── Makefile                 # Downstream agent interface (init, new, list, etc.)
-│   ├── references/              # On-demand documentation loaded by the agent
-│   │   ├── practices.md         # AD practice guide with inline summaries
-│   │   ├── templates.md         # Template selection guide (Nygard primary, MADR, Y-Statement)
-│   │   └── tooling.md           # Dual-format command reference + visualization guidance
-│   ├── assets/                  # Static resources, templates, and distilled notes
-│   │   ├── index.md             # Curated asset index with summaries
-│   │   ├── PRACTICES_NOTES.md   # Tagged practice fragments (create, review, assess, etc.)
-│   │   ├── SUPPLEMENTAL.md      # Medium-value context (adoption model, alt tooling)
-│   │   ├── mermaid-chart-examples.md
-│   │   ├── adr-reviewer.agent.md  # Custom agent (installed via make install-agents)
-│   │   ├── templates/           # Ready-to-use ADR templates (Nygard, MADR, Y-Statement)
-│   │   └── archive/             # Full originals of distilled notes (deep context only)
-│   └── scripts/
-│       ├── adr-tools-3.0.0/     # Nygard format (bundled, 22 tests)
-│       └── madr-tools/          # MADR format (custom, 9 tests)
-└── implement-adr/               # Skill: turn ADRs into implementation plans
-    ├── SKILL.md                 # Skill entry point (spec-compliant frontmatter + instructions)
-    ├── Makefile                 # Downstream agent interface (list-adrs, show-template)
-    ├── references/              # On-demand documentation loaded by the agent
-    │   ├── planning-practices.md  # Stage decomposition, task scoping, gap detection
-    │   ├── testing-guidelines.md  # Testing taxonomy by code context
-    │   └── cost-estimation.md     # T-shirt sizing guide and calibration
-    ├── assets/                  # Static resources and templates
-    │   ├── index.md             # Curated asset index
-    │   ├── templates/           # plan.md template
-    │   └── archive/             # Full originals (reserved for future use)
-    └── scripts/                 # Reserved for future tooling
+├── src/skills/
+│   ├── author-adr/              # Skill: create, review, manage ADRs
+│   │   ├── SKILL.md             # Skill entry point (spec-compliant frontmatter + instructions)
+│   │   ├── Makefile             # Downstream agent interface (init, new, list, etc.)
+│   │   ├── references/          # On-demand documentation loaded by the agent
+│   │   │   ├── practices.md     # AD practice guide with inline summaries
+│   │   │   ├── templates.md     # Template selection guide (Nygard primary, MADR, Y-Statement)
+│   │   │   └── tooling.md       # Dual-format command reference + visualization guidance
+│   │   ├── assets/              # Static resources, templates, and distilled notes
+│   │   │   ├── index.md         # Curated asset index with summaries
+│   │   │   ├── PRACTICES_NOTES.md   # Tagged practice fragments (create, review, assess, etc.)
+│   │   │   ├── SUPPLEMENTAL.md      # Medium-value context (adoption model, alt tooling)
+│   │   │   ├── mermaid-chart-examples.md
+│   │   │   ├── adr-reviewer.agent.md  # Custom agent (installed via make install-agents)
+│   │   │   ├── templates/       # Ready-to-use ADR templates (Nygard, MADR, Y-Statement)
+│   │   │   └── archive/         # Full originals of distilled notes (deep context only)
+│   │   └── scripts/
+│   │       ├── adr-tools-3.0.0/ # Nygard format (bundled, 22 tests)
+│   │       └── madr-tools/      # MADR format (custom, 9 tests)
+│   └── implement-adr/           # Skill: turn ADRs into implementation plans
+│       ├── SKILL.md             # Skill entry point (spec-compliant frontmatter + instructions)
+│       ├── Makefile             # Downstream agent interface (list-adrs, show-template)
+│       ├── references/          # On-demand documentation loaded by the agent
+│       │   ├── planning-practices.md  # Stage decomposition, task scoping, gap detection
+│       │   ├── testing-guidelines.md  # Testing taxonomy by code context
+│       │   └── cost-estimation.md     # T-shirt sizing guide and calibration
+│       ├── assets/              # Static resources and templates
+│       │   ├── index.md         # Curated asset index
+│       │   ├── templates/       # plan.md template
+│       │   └── archive/         # Full originals (reserved for future use)
+│       └── scripts/             # Reserved for future tooling
 ```
 
 ## Before Making Changes
@@ -98,25 +99,25 @@ adr-skills/
 
    ```bash
    # author-adr
-   cd author-adr
+   cd src/skills/author-adr
    grep -oP '(?:assets|references)/[^\s)#]+\.md' SKILL.md | while read ref; do
      [ ! -f "$ref" ] && echo "BROKEN: $ref"
    done
-   cd ..
+   cd ../../..
 
    # implement-adr
-   cd implement-adr
+   cd src/skills/implement-adr
    grep -oP '(?:assets|references)/[^\s)#]+\.md' SKILL.md | while read ref; do
      [ ! -f "$ref" ] && echo "BROKEN: $ref"
    done
-   cd ..
+   cd ../../..
    ```
 
 4. **Verify SKILL.md stays under 500 lines** (spec recommendation for
    progressive disclosure):
 
    ```bash
-   wc -l author-adr/SKILL.md implement-adr/SKILL.md
+   wc -l src/skills/author-adr/SKILL.md src/skills/implement-adr/SKILL.md
    ```
 
 ## Spec Constraints
@@ -152,7 +153,7 @@ Templates live in `assets/templates/`. When adding a new template:
 
 ### adr-tools (Nygard format)
 
-Bundled third-party scripts at `author-adr/scripts/adr-tools-3.0.0/`. Tests use
+Bundled third-party scripts at `src/skills/author-adr/scripts/adr-tools-3.0.0/`. Tests use
 diff-based validation: `tests/*.sh` (commands) vs `tests/*.expected` (output).
 
 ```bash
@@ -161,13 +162,13 @@ make test-nygard
 
 ### madr-tools (MADR format)
 
-Custom scripts at `author-adr/scripts/madr-tools/`. Same test pattern.
+Custom scripts at `src/skills/author-adr/scripts/madr-tools/`. Same test pattern.
 
 To add a new test:
 1. Create `tests/<name>.sh` with the commands to run
 2. Generate expected output by running the test manually
 3. Save output as `tests/<name>.expected`
-4. Verify: `make -C author-adr/scripts/madr-tools clean check`
+4. Verify: `make -C src/skills/author-adr/scripts/madr-tools clean check`
 
 ```bash
 make test-madr

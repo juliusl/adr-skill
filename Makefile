@@ -1,13 +1,13 @@
 # ADR Skills — Development Makefile
 # Targets for maintaining and testing the skills in this repo.
 
-AUTHOR_SKILL_DIR    := $(CURDIR)/author-adr
-IMPLEMENT_SKILL_DIR := $(CURDIR)/implement-adr
+AUTHOR_SKILL_DIR    := $(CURDIR)/src/skills/author-adr
+IMPLEMENT_SKILL_DIR := $(CURDIR)/src/skills/implement-adr
 
 # Legacy alias so existing references keep working
 SKILL_DIR := $(AUTHOR_SKILL_DIR)
 
-.PHONY: help test test-nygard test-madr install-agents dogfood-copilot validate-setup validate validate-all
+.PHONY: help test test-nygard test-madr install-agents install-user-copilot validate-setup validate validate-all
 
 help: ## Show available targets
 	@echo "ADR Skill Development Makefile"

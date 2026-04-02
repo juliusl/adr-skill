@@ -77,9 +77,9 @@ without it.
 
 Both skill documents will reference this convention:
 
-- `implement-adr/SKILL.md` will include a "Behavioral Policies" section
+- `src/skills/implement-adr/SKILL.md` will include a "Behavioral Policies" section
   describing how to read `.meta/`, and the silent session-context fallback.
-- `author-adr/SKILL.md` will document the `.meta` directory as part of ADR
+- `src/skills/author-adr/SKILL.md` will document the `.meta` directory as part of ADR
   directory initialization.
 
 ### 6. Alternatives considered
