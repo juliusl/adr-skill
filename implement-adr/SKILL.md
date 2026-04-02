@@ -33,7 +33,7 @@ criteria, cost estimates, and full traceability back to the source decisions.
 
 ```
 User request
-├─ docs/adr/ exists? ────────────► List ADRs → user selects scope
+├─ docs/adr/ exists? ────────────► List ADRs → check .meta/ → user selects scope
 ├─ docs/adr/ missing? ──────────► Recommend: use author-adr skill first
 │
 ├─ "Implement this ADR" ────────► Go to: Generating an Implementation Plan
@@ -53,7 +53,14 @@ User request
    ```bash
    ls docs/adr/*.md
    ```
-4. Ask the user which ADR(s) to implement. Accept one or more by number.
+4. **Check for behavioral policies:** Look for `<adr-dir>/.meta/` directory.
+   - If present, read all `.md` files in `.meta/`.
+   - Apply any meta-ADR with status `Accepted` as a behavioral policy for this
+     session (e.g., participation mode preference).
+   - Ignore meta-ADRs with status `Proposed`, `Deprecated`, or `Superseded`.
+   - If `.meta/` does not exist, proceed silently — behavioral preferences
+     will be established interactively and stored in session context only.
+5. Ask the user which ADR(s) to implement. Accept one or more by number.
 
 ### Step 1 — Read and Analyze ADRs
 
@@ -200,7 +207,91 @@ tasks, and is ready for implementation.
 The status update is performed by editing the ADR file's `## Status` section
 in-place, replacing `Proposed` with `Planned`.
 
-### Step 5 — Review and Iterate
+### Step 5 — Participation Check
+
+After updating ADR statuses, determine how the user wants to participate during
+implementation.
+
+1. **Check for existing preference:** If a behavioral policy for participation
+   mode was loaded in Step 0 (from `.meta/`), apply it and inform the user:
+   > Using participation mode: **Guided** (from .meta policy).
+   > Say "change mode" at any time to switch.
+   Skip to Step 6.
+
+2. **If no preference exists**, prompt:
+   > How much participation would you like during implementation?
+   > 1. **Full control** — I'll review each stage and select what to start
+   > 2. **Guided** — Summarize the plan, let me pick stages or request changes
+   > 3. **Autonomous** — Execute the plan, check in at major milestones
+   > 4. **Weighted** — Automatically adjust based on task complexity
+
+3. **Apply the chosen mode** for the remainder of the session. See the
+   behavior table below.
+
+4. **Offer to persist** — if `.meta/` exists, ask the user whether to save
+   this preference as a meta-ADR. If `.meta/` does not exist, store in
+   session context only (no prompt about creating `.meta/`).
+
+#### Participation Mode Behaviors
+
+| Mode | Granularity | Behavior |
+|------|-------------|----------|
+| **Full control** | Per-stage | Present each stage individually. Wait for explicit approval before starting. After each stage, ask which to proceed with next. |
+| **Guided** (default) | Plan-level | Summarize the full plan. Ask if changes are needed or which stages to start. Proceed with approved stages, reporting at stage boundaries. |
+| **Autonomous** | Milestone-only | Execute all stages in order. Report at stage boundaries but do not wait for approval. Pause only on errors or ambiguity. |
+| **Weighted** | Per-task, cost-driven | Evaluate each task by cost estimate. `[small]` → autonomous. `[medium]`/`[heavy]` → sentinel (pause for approval). Report at stage boundaries. |
+
+**Mode switching:** The user may change modes at any time during a session.
+In-session changes override the loaded preference but do not update `.meta/`.
+
+#### Capturing Behavioral Decisions
+
+When persisting a participation preference (or any behavioral decision):
+
+1. **If `.meta/` exists** — write a meta-ADR in Nygard format:
+   - Determine the next number by listing existing files in `.meta/`.
+   - Title: "Participation mode: [chosen mode]"
+   - Status: `Accepted`
+   - Context: describe the user's reasoning if provided.
+   - Decision: record the chosen mode and any customizations.
+   - Consequences: note that future sessions will use this mode by default.
+
+2. **If `.meta/` does not exist** — store in session context only.
+   Do not prompt to create `.meta/`.
+
+This same fallback chain applies whenever the skill encounters a behavioral
+decision during implementation (e.g., error handling strategy, stage ordering
+preference) that is not yet recorded.
+
+#### Weighted Mode — Per-Task Evaluation
+
+In Weighted mode, the skill evaluates each task independently as it proceeds
+through a stage, using the task's cost estimate:
+
+| Task Cost | Behavior | Agent Action |
+|-----------|----------|-------------|
+| `[small]` | Autonomous | Execute immediately, no approval needed |
+| `[medium]` | Sentinel | Pause, summarize what's next, wait for approval |
+| `[heavy]` | Sentinel | Pause, summarize what's next, wait for approval |
+
+**Example:**
+
+```
+Stage 2: Authentication
+  Task 2.1: Add auth config constants        [small]  → autonomous ✓
+  Task 2.2: Create user model from schema    [small]  → autonomous ✓
+  Task 2.3: Implement JWT middleware          [medium] → sentinel ⏸
+  Task 2.4: Add rate limiting to auth routes  [small]  → autonomous ✓
+  Task 2.5: Write integration tests           [medium] → sentinel ⏸
+```
+
+After the user approves a sentinel task and it completes, the skill continues
+evaluating subsequent tasks by the same rule.
+
+At the end of each stage, the skill reports a summary of what was completed,
+regardless of whether individual tasks were autonomous or guided.
+
+### Step 6 — Review and Iterate
 
 1. Present the generated plan to the user.
 2. Ask if any stages or tasks need adjustment.
@@ -311,3 +402,25 @@ on-demand:
   edge cases, and guidance for mixed-size tasks.
 - **[Asset Index](assets/index.md)** — Curated index of all available assets
   and templates.
+
+## Behavioral Policies
+
+The skill supports persistent behavioral preferences stored as meta-ADRs in
+`<adr-dir>/.meta/`. These are read during Step 0 and applied for the session.
+
+### Supported Policies
+
+| Policy | Meta-ADR Title Pattern | Effect |
+|--------|----------------------|--------|
+| Participation mode | "Participation mode: *" | Sets the default participation level (Full control, Guided, Autonomous, Weighted) |
+
+### Persistence Hierarchy
+
+1. **`.meta/` directory** — if `<adr-dir>/.meta/` exists and contains an
+   `Accepted` meta-ADR for the policy, use it.
+2. **Session context** — if `.meta/` is absent, store the preference in
+   session context (ephemeral, current session only).
+
+The skill never prompts the user to create `.meta/`. If the user wants
+persistent policies, they should use the `author-adr` skill to run
+`make init-meta`.

@@ -243,6 +243,21 @@ export PATH="$PWD/scripts/madr-tools/src:$PATH"
 madr init docs/adr && madr new -t full Use PostgreSQL
 ```
 
+#### Meta-ADR Directory
+
+The `init` target also creates `<adr-dir>/.meta/` — a subdirectory for storing
+behavioral policies consumed by companion skills (e.g., `implement-adr`). Meta-ADRs
+use the same Nygard format as project ADRs but are numbered independently.
+
+To create the `.meta` directory for an existing ADR setup:
+
+```bash
+make -f <skill-root>/Makefile init-meta
+```
+
+See [ADR-0008](docs/adr/0008-meta-adr-directory-for-skill-behavioral-policies.md)
+for the full convention.
+
 ### Visualization
 
 Use **Mermaid** for all diagrams. Diagrams are valuable when complex

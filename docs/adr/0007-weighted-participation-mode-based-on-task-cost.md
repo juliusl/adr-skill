@@ -4,7 +4,7 @@ Date: 2026-04-02
 
 ## Status
 
-Proposed
+Accepted
 
 Partially supersedes [ADR-0006](0006-implement-adr-checks-user-participation-level-after-planning.md)
 

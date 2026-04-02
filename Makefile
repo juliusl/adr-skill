@@ -27,7 +27,7 @@ test-madr: ## Run madr-tools tests
 install-agents: ## Install custom agents (ADR_AGENTS_DIR overrides target)
 	$(MAKE) -C $(SKILL_DIR) install-agents $(if $(ADR_AGENTS_DIR),ADR_AGENTS_DIR=$(ADR_AGENTS_DIR))
 
-dogfood-copilot: ## Install all skills to ~/.copilot/skills for local testing
+install-user-copilot: ## Install all skills to ~/.copilot/skills for local testing
 	@mkdir -p $(HOME)/.copilot/skills
 	@rm -rf $(HOME)/.copilot/skills/author-adr
 	cp -r $(AUTHOR_SKILL_DIR) $(HOME)/.copilot/skills/author-adr

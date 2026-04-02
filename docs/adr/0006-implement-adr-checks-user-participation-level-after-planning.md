@@ -4,7 +4,7 @@ Date: 2026-04-01
 
 ## Status
 
-Proposed
+Accepted
 
 Partially superseded by [ADR-0007](0007-weighted-participation-mode-based-on-task-cost.md)
 

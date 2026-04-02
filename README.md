@@ -14,6 +14,7 @@ Create, review, and manage ADRs.
 | **Review** ADRs | Evaluate existing records for quality and completeness |
 | **Manage** ADRs | Supersede, deprecate, link, and generate tables of contents |
 | **Tooling** | Bundled `adr-tools` (Nygard) and `madr-tools` (MADR) format scripts |
+| **Meta-ADRs** | Bootstrap `.meta/` directory for persistent behavioral policies |
 
 ### implement-adr
 
@@ -27,6 +28,7 @@ Turn accepted ADRs into actionable implementation plans.
 | **Test criteria** | Include test & acceptance criteria per code context |
 | **Gap detection** | Identify missing decisions and recommend additional ADRs |
 | **Traceability** | Link plan tasks back to source ADR sections |
+| **Participation modes** | Full control, Guided, Autonomous, or Weighted (cost-driven) |
 
 ## Quick Start
 
@@ -38,12 +40,25 @@ Create an ADR for choosing PostgreSQL as our primary database.
 
 The agent will select the appropriate template, scaffold the record, and guide you through filling in the decision context, options, and rationale.
 
+**Note:** Running sessions will need to be restarted for the skill to be picked up.
+
+**Installing to copilot user-scoped skills**
+
+```sh
+# Clone the repo
+git clone github.com/juliusl/adr-skills
+
+# Install the skills to ~/.copilot/skills
+make install-user-copilot
+```
+
 ## Project Structure
 
 ```
 ├── AGENTS.md                         # Contributor guide
 ├── Makefile                          # Dev targets (test, validate)
 ├── docs/adr/                         # Project-level ADRs
+├── docs/plans/                       # Implementation plans generated from ADRs
 ├── author-adr/                       # Skill: create, review, manage ADRs
 │   ├── SKILL.md                      # Skill entry point
 │   ├── Makefile                      # Downstream agent interface
