@@ -98,6 +98,33 @@ User request
    [Definition of Done](assets/PRACTICES_NOTES.md#definition-of-done-ecadr):
    Evidence, Criteria, Agreement, Documentation, Realization/Review.
 
+7. **Recommend review** — after creating the ADR, recommend reviewing it with
+   the bundled `adr-reviewer` agent:
+
+   > Would you like to review this ADR with the adr-reviewer agent? It will
+   > check for completeness, reasoning fallacies, and anti-patterns — and
+   > validate your consequences with you directly.
+
+   If the user agrees:
+
+   a. **Check if installed** — look for `adr-reviewer.agent.md` in the
+      project's agents directory (e.g., `.github/agents/`, `agents/`).
+   b. **If not installed, ask for consent:**
+
+      > The adr-reviewer agent needs to be installed as a custom agent in your
+      > project. This will copy `adr-reviewer.agent.md` to your agents
+      > directory. Is that okay?
+
+   c. **If user consents** — install via:
+      ```bash
+      make -C <skill-root> install-agents
+      ```
+   d. **If user declines installation** — fall back to the manual review
+      process: run the inline ecADR checklist, fallacy scan, and anti-pattern
+      check as documented in [Reviewing an ADR](#reviewing-an-adr).
+   e. **Run the reviewer** on the newly created ADR. The reviewer will
+      interactively validate each consequence with the user.
+
 ### Reviewing an ADR
 
 For reviews, this skill bundles a custom **adr-reviewer** agent

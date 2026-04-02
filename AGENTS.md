@@ -1,6 +1,6 @@
-# Contributing to the ADR Skill
+# Contributing to the ADR Skills
 
-Instructions for agents and developers making changes to this skill.
+Instructions for agents and developers making changes to skills in this repo.
 
 ## Git Policy
 
@@ -22,29 +22,42 @@ Scope is optional but encouraged (e.g., `skill`, `makefile`, `tooling`).
 ## Directory Structure
 
 ```
-adr-skill/
+adr-skills/
 ├── AGENTS.md                    # This file — development guide
 ├── README.md                    # Project overview
 ├── Makefile                     # Dev targets (test, install-agents)
 ├── eval_queries.json            # Trigger evaluation queries for description optimization
-└── author-adr/  # Skill root (copy this to install)
+├── docs/adr/                    # Project-level ADRs (decisions about these skills)
+├── author-adr/                  # Skill: create, review, manage ADRs
+│   ├── SKILL.md                 # Skill entry point (spec-compliant frontmatter + instructions)
+│   ├── Makefile                 # Downstream agent interface (init, new, list, etc.)
+│   ├── references/              # On-demand documentation loaded by the agent
+│   │   ├── practices.md         # AD practice guide with inline summaries
+│   │   ├── templates.md         # Template selection guide (Nygard primary, MADR, Y-Statement)
+│   │   └── tooling.md           # Dual-format command reference + visualization guidance
+│   ├── assets/                  # Static resources, templates, and distilled notes
+│   │   ├── index.md             # Curated asset index with summaries
+│   │   ├── PRACTICES_NOTES.md   # Tagged practice fragments (create, review, assess, etc.)
+│   │   ├── SUPPLEMENTAL.md      # Medium-value context (adoption model, alt tooling)
+│   │   ├── mermaid-chart-examples.md
+│   │   ├── adr-reviewer.agent.md  # Custom agent (installed via make install-agents)
+│   │   ├── templates/           # Ready-to-use ADR templates (Nygard, MADR, Y-Statement)
+│   │   └── archive/             # Full originals of distilled notes (deep context only)
+│   └── scripts/
+│       ├── adr-tools-3.0.0/     # Nygard format (bundled, 22 tests)
+│       └── madr-tools/          # MADR format (custom, 9 tests)
+└── implement-adr/               # Skill: turn ADRs into implementation plans
     ├── SKILL.md                 # Skill entry point (spec-compliant frontmatter + instructions)
-    ├── Makefile                 # Downstream agent interface (init, new, list, etc.)
+    ├── Makefile                 # Downstream agent interface (list-adrs, show-template)
     ├── references/              # On-demand documentation loaded by the agent
-    │   ├── practices.md         # AD practice guide with inline summaries
-    │   ├── templates.md         # Template selection guide (Nygard primary, MADR, Y-Statement)
-    │   └── tooling.md           # Dual-format command reference + visualization guidance
-    ├── assets/                  # Static resources, templates, and distilled notes
-    │   ├── index.md             # Curated asset index with summaries
-    │   ├── PRACTICES_NOTES.md   # Tagged practice fragments (create, review, assess, etc.)
-    │   ├── SUPPLEMENTAL.md      # Medium-value context (adoption model, alt tooling)
-    │   ├── mermaid-chart-examples.md
-    │   ├── adr-reviewer.agent.md  # Custom agent (installed via make install-agents)
-    │   ├── templates/           # Ready-to-use ADR templates (Nygard, MADR, Y-Statement)
-    │   └── archive/             # Full originals of distilled notes (deep context only)
-    └── scripts/
-        ├── adr-tools-3.0.0/     # Nygard format (bundled, 22 tests)
-        └── madr-tools/          # MADR format (custom, 9 tests)
+    │   ├── planning-practices.md  # Stage decomposition, task scoping, gap detection
+    │   ├── testing-guidelines.md  # Testing taxonomy by code context
+    │   └── cost-estimation.md     # T-shirt sizing guide and calibration
+    ├── assets/                  # Static resources and templates
+    │   ├── index.md             # Curated asset index
+    │   ├── templates/           # plan.md template
+    │   └── archive/             # Full originals (reserved for future use)
+    └── scripts/                 # Reserved for future tooling
 ```
 
 ## Before Making Changes
@@ -61,7 +74,9 @@ adr-skill/
 
    ```bash
    make validate-setup   # one-time: installs skills-ref
-   make validate
+   make validate          # validate author-adr
+   make validate-implement # validate implement-adr
+   make validate-all      # validate both
    ```
 
 ## After Making Changes
@@ -82,17 +97,26 @@ adr-skill/
    references/ must resolve to existing files:
 
    ```bash
+   # author-adr
    cd author-adr
    grep -oP '(?:assets|references)/[^\s)#]+\.md' SKILL.md | while read ref; do
      [ ! -f "$ref" ] && echo "BROKEN: $ref"
    done
+   cd ..
+
+   # implement-adr
+   cd implement-adr
+   grep -oP '(?:assets|references)/[^\s)#]+\.md' SKILL.md | while read ref; do
+     [ ! -f "$ref" ] && echo "BROKEN: $ref"
+   done
+   cd ..
    ```
 
 4. **Verify SKILL.md stays under 500 lines** (spec recommendation for
    progressive disclosure):
 
    ```bash
-   wc -l author-adr/SKILL.md
+   wc -l author-adr/SKILL.md implement-adr/SKILL.md
    ```
 
 ## Spec Constraints

@@ -9,7 +9,7 @@ description: >-
   checklist. Use when the user asks to review, critique, validate, or give
   feedback on an ADR — even if they just say "check this decision" or "is this
   ADR good enough?"
-tools: ["read", "search"]
+tools: ["read", "search", "ask_user"]
 ---
 
 # ADR Reviewer
@@ -79,7 +79,37 @@ Scan for the 11 ADR creation anti-patterns:
 **Magic Tricks:**
 - **Pseudo-accuracy** — false quantitative scoring to disguise subjective judgment
 
-### Step 4: Review Checklist
+### Step 4: Consequence Validation (Interactive)
+
+Review the Consequences section (Nygard format) or Pros/Cons sections (MADR
+format) with the user to verify factual accuracy. AI-drafted ADRs are
+especially prone to plausible-sounding but unverified assertions in this
+section.
+
+For each stated consequence or pro/con:
+
+1. **Present the assertion** — quote the specific consequence from the ADR.
+2. **Assess plausibility** — flag assertions that appear speculative,
+   unsubstantiated, or overly optimistic/pessimistic. Look for:
+   - Quantitative claims without cited evidence (e.g., "reduces latency by 50%")
+   - Unqualified absolutes ("eliminates all risk," "no downsides")
+   - Predictions stated as facts ("this will become the industry standard")
+3. **Ask the user directly** — confirm whether the stated consequence matches
+   their understanding of reality. For example:
+
+   > The ADR states: "Reduces deployment time by 50%."
+   > Is this based on measured data, an estimate, or an assumption? Should we
+   > qualify this assertion?
+
+4. **Suggest revisions** — if the user indicates a consequence is inaccurate or
+   unverified, propose revised wording that accurately reflects the level of
+   certainty (e.g., "Expected to reduce deployment time" vs. "Reduces deployment
+   time by 50%").
+
+If the ADR has many consequences, you may group related ones and ask about them
+together rather than one at a time — but never skip this step entirely.
+
+### Step 5: Review Checklist
 
 Answer each question:
 
@@ -91,7 +121,7 @@ Answer each question:
 6. Are consequences (positive and negative) reported objectively?
 7. Is the ADR actionable and traceable?
 
-### Step 5: Verdict
+### Step 6: Verdict
 
 Provide a summary verdict:
 
@@ -118,6 +148,9 @@ Structure your review as:
 
 ### Anti-Patterns Detected
 [list or "None detected"]
+
+### Consequence Validation
+[list of assertions reviewed with user, any revisions made]
 
 ### Checklist
 [7 answers]

@@ -1,8 +1,12 @@
-# Architectural Decision Records — Agent Skill
+# Architectural Decision Records — Agent Skills
 
-An [agentskills.io](https://agentskills.io)-compliant skill that enables AI coding agents to create, review, and manage **Architectural Decision Records (ADRs)**.
+An [agentskills.io](https://agentskills.io)-compliant skill suite for AI coding agents to work with **Architectural Decision Records (ADRs)** — from authoring decisions to planning their implementation.
 
-## What It Does
+## Skills
+
+### author-adr
+
+Create, review, and manage ADRs.
 
 | Capability | Details |
 |---|---|
@@ -10,6 +14,19 @@ An [agentskills.io](https://agentskills.io)-compliant skill that enables AI codi
 | **Review** ADRs | Evaluate existing records for quality and completeness |
 | **Manage** ADRs | Supersede, deprecate, link, and generate tables of contents |
 | **Tooling** | Bundled `adr-tools` (Nygard) and `madr-tools` (MADR) format scripts |
+
+### implement-adr
+
+Turn accepted ADRs into actionable implementation plans.
+
+| Capability | Details |
+|---|---|
+| **Plan** | Generate structured `plan.md` with staged tasks from ADRs |
+| **Decompose** | Break decisions into implementation stages and scoped tasks |
+| **Estimate** | Assign effort estimates (small / medium / heavy) per task |
+| **Test criteria** | Include test & acceptance criteria per code context |
+| **Gap detection** | Identify missing decisions and recommend additional ADRs |
+| **Traceability** | Link plan tasks back to source ADR sections |
 
 ## Quick Start
 
@@ -25,13 +42,19 @@ The agent will select the appropriate template, scaffold the record, and guide y
 
 ```
 ├── AGENTS.md                         # Contributor guide
-├── Makefile                          # Dev targets (test, install-agents)
-└── author-adr/   # Skill root (copy to install)
-    ├── SKILL.md                      # Skill entry point (frontmatter + instructions)
+├── Makefile                          # Dev targets (test, validate)
+├── docs/adr/                         # Project-level ADRs
+├── author-adr/                       # Skill: create, review, manage ADRs
+│   ├── SKILL.md                      # Skill entry point
+│   ├── Makefile                      # Downstream agent interface
+│   ├── references/                   # On-demand docs (practices, templates, tooling)
+│   ├── assets/                       # Templates, practice notes, static resources
+│   └── scripts/                      # Bundled CLI scripts (adr-tools, madr-tools)
+└── implement-adr/                    # Skill: ADR → implementation plans
+    ├── SKILL.md                      # Skill entry point
     ├── Makefile                      # Downstream agent interface
-    ├── references/                   # On-demand docs (practices, templates, tooling)
-    ├── assets/                       # Templates, practice notes, static resources
-    └── scripts/                      # Bundled CLI scripts (adr-tools, madr-tools)
+    ├── references/                   # On-demand docs (planning, testing, cost)
+    └── assets/                       # Plan template, static resources
 ```
 
 ## Development
@@ -44,8 +67,15 @@ make test
 make test-nygard
 make test-madr
 
-# Install the bundled reviewer agent
+# Validate skills against agentskills.io spec
+make validate-setup   # one-time
+make validate-all     # both skills
+
+# Install bundled custom agents
 make install-agents
+
+# Local testing in Copilot CLI
+make dogfood-copilot      # installs both skills
 ```
 
 ## License

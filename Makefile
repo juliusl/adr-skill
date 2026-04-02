@@ -1,9 +1,13 @@
-# ADR Skill — Development Makefile
-# Targets for maintaining and testing the skill itself.
+# ADR Skills — Development Makefile
+# Targets for maintaining and testing the skills in this repo.
 
-SKILL_DIR := $(CURDIR)/author-adr
+AUTHOR_SKILL_DIR    := $(CURDIR)/author-adr
+IMPLEMENT_SKILL_DIR := $(CURDIR)/implement-adr
 
-.PHONY: help test test-nygard test-madr install-agents dogfood-copilot validate-setup validate
+# Legacy alias so existing references keep working
+SKILL_DIR := $(AUTHOR_SKILL_DIR)
+
+.PHONY: help test test-nygard test-madr install-agents dogfood-copilot validate-setup validate validate-all
 
 help: ## Show available targets
 	@echo "ADR Skill Development Makefile"
@@ -23,11 +27,14 @@ test-madr: ## Run madr-tools tests
 install-agents: ## Install custom agents (ADR_AGENTS_DIR overrides target)
 	$(MAKE) -C $(SKILL_DIR) install-agents $(if $(ADR_AGENTS_DIR),ADR_AGENTS_DIR=$(ADR_AGENTS_DIR))
 
-dogfood-copilot: ## Install skill to ~/.copilot/skills for local testing
+dogfood-copilot: ## Install all skills to ~/.copilot/skills for local testing
 	@mkdir -p $(HOME)/.copilot/skills
 	@rm -rf $(HOME)/.copilot/skills/author-adr
-	cp -r $(SKILL_DIR) $(HOME)/.copilot/skills/author-adr
+	cp -r $(AUTHOR_SKILL_DIR) $(HOME)/.copilot/skills/author-adr
 	@echo "Installed to ~/.copilot/skills/author-adr"
+	@rm -rf $(HOME)/.copilot/skills/implement-adr
+	cp -r $(IMPLEMENT_SKILL_DIR) $(HOME)/.copilot/skills/implement-adr
+	@echo "Installed to ~/.copilot/skills/implement-adr"
 
 SKILLS_REF_DIR := /tmp/agentskills/skills-ref
 SKILLS_REF := $(SKILLS_REF_DIR)/.venv/bin/skills-ref
@@ -44,9 +51,18 @@ validate-setup: ## Install skills-ref validator (one-time)
 		echo "Done. skills-ref installed."; \
 	fi
 
-validate: ## Validate skill against agentskills.io spec
+validate: ## Validate author-adr skill against agentskills.io spec
 	@if [ ! -x "$(SKILLS_REF)" ]; then \
 		echo "skills-ref not found. Run 'make validate-setup' first."; \
 		exit 1; \
 	fi
-	$(SKILLS_REF) validate $(SKILL_DIR)
+	$(SKILLS_REF) validate $(AUTHOR_SKILL_DIR)
+
+validate-implement: ## Validate implement-adr skill against agentskills.io spec
+	@if [ ! -x "$(SKILLS_REF)" ]; then \
+		echo "skills-ref not found. Run 'make validate-setup' first."; \
+		exit 1; \
+	fi
+	$(SKILLS_REF) validate $(IMPLEMENT_SKILL_DIR)
+
+validate-all: validate validate-implement ## Validate all skills
