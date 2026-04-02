@@ -4,7 +4,7 @@ Date: 2026-04-02
 
 ## Status
 
-Proposed
+Accepted
 
 ## Context
 
@@ -69,12 +69,17 @@ When enabled and all checkboxes for a task are marked `- [x]`:
 3. **Create a commit** with a conventional message:
 
    ```
-   implement(<adr-range>): complete task <N.M> — <task title>
+   <type>(<scope>): <brief summary>
 
    Plan: <plan-file-path>
    Task: <N.M> <task title> [<cost>]
    ADR: <adr-reference>
    ```
+
+   Use the canonical [Conventional Commits](https://www.conventionalcommits.org/)
+   type and scope that best describes the work (e.g., `feat`, `fix`, `refactor`,
+   `docs`, `test`, `chore`). The summary should be a brief sentence describing
+   what was done.
 
 4. **Do not push** — commits are local only. The user decides when to push.
 

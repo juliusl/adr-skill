@@ -232,6 +232,18 @@ implementation.
    this preference as a meta-ADR. If `.meta/` does not exist, store in
    session context only (no prompt about creating `.meta/`).
 
+5. **Auto-commit preference:** After determining participation mode, check
+   whether to enable automatic git commits at task boundaries.
+   - **If a `.meta/` policy exists** for auto-commit, apply it silently:
+     > Auto-commit on task completion: **enabled** (from .meta policy).
+   - **If no preference exists**, prompt:
+     > Would you like to create a git commit each time a task completes?
+     > 1. **Yes** — Commit after each task's acceptance criteria are all satisfied
+     > 2. **No** (default) — I'll manage commits myself
+   - **Offer to persist** — same fallback chain as participation mode (if
+     `.meta/` exists, offer to save; otherwise session context only).
+   - Meta-ADR title pattern: "Auto-commit on task completion: [enabled/disabled]"
+
 #### Participation Mode Behaviors
 
 | Mode | Granularity | Behavior |
@@ -290,6 +302,66 @@ evaluating subsequent tasks by the same rule.
 
 At the end of each stage, the skill reports a summary of what was completed,
 regardless of whether individual tasks were autonomous or guided.
+
+#### Auto-Commit on Task Completion
+
+The skill supports an optional behavior: **create a git commit each time a
+task's acceptance criteria are all satisfied**. This is opt-in and disabled by
+default.
+
+**When it triggers:** After all `- [ ]` checkboxes in a task's Test &
+Acceptance Criteria are marked `- [x]` (per the Task Execution Protocol
+embedded in the plan).
+
+**Commit steps:**
+
+1. **Stage the plan file** — `git add <plan-file>`.
+2. **Stage implementation files** — `git add` any files the agent created,
+   edited, or deleted during the task's execution.
+3. **Create a commit** with a conventional message:
+
+   ```
+   <type>(<scope>): <brief summary>
+
+   Plan: <plan-file-path>
+   Task: <N.M> <task title> [<cost>]
+   ADR: <adr-reference>
+   ```
+
+   Use the canonical [Conventional Commits](https://www.conventionalcommits.org/)
+   type and scope that best describes the work (e.g., `feat`, `fix`, `refactor`,
+   `docs`, `test`, `chore`). The summary should be a brief sentence describing
+   what was done.
+
+4. **Do not push** — commits are local only. The user decides when to push.
+
+**Guard rails:**
+
+- **Unrelated changes:** If the working tree has unstaged changes that the
+  agent did not create or modify during this task, warn the user and ask
+  whether to include them or commit only task-related files.
+  **Autonomous mode fallback:** do not prompt — commit only task-related files
+  and log a warning noting the skipped unrelated changes.
+- **Merge conflicts / dirty state:** If a task modifies files that have merge
+  conflicts or are in a dirty state from prior work, pause and ask the user to
+  resolve before committing.
+- **Pre-commit hook failures:** If `git commit` fails due to pre-commit hooks
+  (linters, formatters, security scanners), **pause and ask the user regardless
+  of participation mode**. Hook failures are unexpected and may indicate code
+  quality issues. Report the hook's error output and let the user decide
+  whether to fix the issue, skip the commit, or retry with `--no-verify`.
+- **Git state warning:** Auto-commit modifies the user's staging area and
+  commit history. Users who carefully manage their index (e.g., `git add -p`,
+  curated staging) should leave this feature disabled.
+
+**Interaction with participation modes:**
+
+| Mode | Auto-commit enabled | Behavior |
+|------|-------------------|----------|
+| **Full control** | Yes | Commit after each approved-and-completed task |
+| **Guided** | Yes | Commit after each completed task within approved stages |
+| **Autonomous** | Yes | Commit after each completed task; commit only task-related files without prompting when unrelated changes exist; still pause on hook failures |
+| **Weighted** | Yes | Commit after each completed task (autonomous or sentinel); same autonomous fallback for `[small]` tasks |
 
 ### Step 6 — Review and Iterate
 
@@ -413,6 +485,7 @@ The skill supports persistent behavioral preferences stored as meta-ADRs in
 | Policy | Meta-ADR Title Pattern | Effect |
 |--------|----------------------|--------|
 | Participation mode | "Participation mode: *" | Sets the default participation level (Full control, Guided, Autonomous, Weighted) |
+| Auto-commit | "Auto-commit on task completion: *" | Enables/disables git commits at task boundaries (disabled by default) |
 
 ### Persistence Hierarchy
 
