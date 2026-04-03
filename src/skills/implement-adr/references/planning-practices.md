@@ -4,22 +4,15 @@ Detailed guidance for decomposing ADRs into staged implementation plans.
 
 ## Stage Decomposition
 
-Stages represent logical phases of implementation. They impose order on work
-and make progress visible.
+Stages represent logical phases of implementation. They impose order on work and make progress visible.
 
 ### Principles
 
-1. **Foundation first** — Start with data models, configuration, and project
-   scaffolding. Later stages depend on these.
-2. **Inside out** — Build core logic before external interfaces. APIs,
-   CLI commands, and UIs come after the engine works.
-3. **Test alongside** — Don't defer all testing to a final stage. Each stage
-   should leave the codebase in a testable state.
-4. **2–5 tasks per stage** — Fewer than 2 means the stage is too narrow; more
-   than 5 means it should be split.
-5. **Minimize cross-stage dependencies** — Tasks within a stage may depend on
-   each other, but stages should depend only on prior stages, not on partial
-   completion of parallel stages.
+1. **Foundation first** — Start with data models, configuration, and project scaffolding. Later stages depend on these.
+2. **Inside out** — Build core logic before external interfaces. APIs, CLI commands, and UIs come after the engine works.
+3. **Test alongside** — Don't defer all testing to a final stage. Each stage should leave the codebase in a testable state.
+4. **2–5 tasks per stage** — Fewer than 2 means the stage is too narrow; more than 5 means it should be split.
+5. **Minimize cross-stage dependencies** — Tasks within a stage may depend on each other, but stages should depend only on prior stages, not on partial completion of parallel stages.
 
 ### Common Stage Patterns
 
@@ -39,8 +32,7 @@ Use short, descriptive names that communicate the phase:
 
 ## Task Scoping
 
-Each task must be independently executable. An engineer or agent should be able
-to pick up a task and complete it without reading other task plans.
+Each task must be independently executable. An engineer or agent should be able to pick up a task and complete it without reading other task plans.
 
 ### Self-Containment Checklist
 
@@ -52,11 +44,9 @@ to pick up a task and complete it without reading other task plans.
 
 ### Splitting Oversized Tasks
 
-If a task feels too large (rule of thumb: more than ~200 lines of code or
-touches more than 3 files), consider:
+If a task feels too large (rule of thumb: more than ~200 lines of code or touches more than 3 files), consider:
 
-1. **Extract setup** — Move scaffolding, config, or boilerplate into a separate
-   `[small]` task.
+1. **Extract setup** — Move scaffolding, config, or boilerplate into a separate `[small]` task.
 2. **Split by concern** — Separate validation, business logic, and persistence.
 3. **Split by interface** — One task per public method or endpoint.
 
@@ -123,5 +113,4 @@ Each task should cite the specific ADR section that drives it:
 **ADR Reference:** ADR-0002, Decision §1 (Staged Implementation Tree)
 ```
 
-This maintains traceability from implementation back to the decision that
-motivated it.
+This maintains traceability from implementation back to the decision that motivated it.

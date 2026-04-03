@@ -43,26 +43,22 @@ Guide for assigning t-shirt size cost estimates to implementation tasks.
 
 ### Splitting Heavy Tasks
 
-If a task is estimated as `[heavy]`, consider whether it can be decomposed
-into smaller tasks:
+If a task is estimated as `[heavy]`, consider whether it can be decomposed into smaller tasks:
 
 - Can setup / scaffolding be separated? → Extract a `[small]` task
 - Are there independent sub-components? → Split into multiple `[medium]` tasks
 - Is research or prototyping needed first? → Add a `[small]` spike task
 
-A `[heavy]` estimate is acceptable when the complexity is inherent and
-indivisible, but it should be the exception rather than the norm.
+A `[heavy]` estimate is acceptable when the complexity is inherent and indivisible, but it should be the exception rather than the norm.
 
 ### Uncertainty Premium
 
-If a task's scope is unclear because of a decision gap (see Gap Detection),
-add one size level:
+If a task's scope is unclear because of a decision gap (see Gap Detection), add one size level:
 
 - Would be `[small]` but has ambiguity → estimate as `[medium]`
 - Would be `[medium]` but has ambiguity → estimate as `[heavy]`
 
-Note the uncertainty in the task description so the user knows the estimate
-may improve once the gap is resolved.
+Note the uncertainty in the task description so the user knows the estimate may improve once the gap is resolved.
 
 ## Presenting Estimates
 

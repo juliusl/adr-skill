@@ -1,23 +1,17 @@
 # Testing Guidelines
 
-Guidance for selecting appropriate test and acceptance criteria based on code
-context. Every task in an implementation plan must include testing instructions.
+Guidance for selecting appropriate test and acceptance criteria based on code context. Every task in an implementation plan must include testing instructions.
 
 ## Testing by Code Context
 
 ### User Input Processing
 
-Code that processes user-supplied data (form fields, CLI arguments, file
-uploads, API request bodies) is a common source of security vulnerabilities
-and crashes.
+Code that processes user-supplied data (form fields, CLI arguments, file uploads, API request bodies) is a common source of security vulnerabilities and crashes.
 
 **Required testing:**
-- **Fuzz testing** — Generate randomized, malformed, and boundary-case inputs
-  to verify the code does not crash, hang, or produce incorrect results.
-- **Input validation tests** — Verify that invalid inputs are rejected with
-  clear error messages.
-- **Encoding / injection tests** — Test for SQL injection, XSS, command
-  injection, and path traversal as appropriate.
+- **Fuzz testing** — Generate randomized, malformed, and boundary-case inputs to verify the code does not crash, hang, or produce incorrect results.
+- **Input validation tests** — Verify that invalid inputs are rejected with clear error messages.
+- **Encoding / injection tests** — Test for SQL injection, XSS, command injection, and path traversal as appropriate.
 
 **Example task criteria:**
 ```markdown
@@ -29,14 +23,11 @@ and crashes.
 
 ### Hot Path / Performance-Critical Code
 
-Code on a hot path (request handlers, tight loops, serialization, core
-algorithms) must demonstrate acceptable performance.
+Code on a hot path (request handlers, tight loops, serialization, core algorithms) must demonstrate acceptable performance.
 
 **Required testing:**
-- **Benchmarking** — Measure throughput and latency under expected load.
-  Establish a baseline and fail if performance regresses beyond a threshold.
-- **Profiling** — Identify allocations, lock contention, or algorithmic
-  inefficiency during review.
+- **Benchmarking** — Measure throughput and latency under expected load. Establish a baseline and fail if performance regresses beyond a threshold.
+- **Profiling** — Identify allocations, lock contention, or algorithmic inefficiency during review.
 - **Load testing** — For network-facing hot paths, simulate concurrent requests.
 
 **Example task criteria:**
@@ -49,12 +40,10 @@ algorithms) must demonstrate acceptable performance.
 
 ### Public APIs
 
-Public-facing APIs (REST endpoints, library exports, SDK methods, CLI commands)
-define the contract with consumers and must be thoroughly tested.
+Public-facing APIs (REST endpoints, library exports, SDK methods, CLI commands) define the contract with consumers and must be thoroughly tested.
 
 **Required testing:**
-- **Unit tests** — Cover happy path, edge cases, error cases, and boundary
-  values for every public method or endpoint.
+- **Unit tests** — Cover happy path, edge cases, error cases, and boundary values for every public method or endpoint.
 - **Contract tests** — Verify request/response schemas match documentation.
 - **Error response tests** — Validate error codes, messages, and status codes.
 
@@ -68,14 +57,11 @@ define the contract with consumers and must be thoroughly tested.
 
 ### Internal Modules
 
-Internal modules (helpers, utilities, data access layers) need testing at key
-boundaries to prevent regressions.
+Internal modules (helpers, utilities, data access layers) need testing at key boundaries to prevent regressions.
 
 **Required testing:**
-- **Unit tests at boundaries** — Test the public interface of the module, not
-  every private function.
-- **Error handling tests** — Verify the module handles failures from its
-  dependencies (e.g., DB down, file not found).
+- **Unit tests at boundaries** — Test the public interface of the module, not every private function.
+- **Error handling tests** — Verify the module handles failures from its dependencies (e.g., DB down, file not found).
 
 **Example task criteria:**
 ```markdown
@@ -86,16 +72,12 @@ boundaries to prevent regressions.
 
 ### Integration Points
 
-Code that integrates with external systems (databases, third-party APIs,
-message queues, file systems) needs tests that verify the integration works
-end-to-end.
+Code that integrates with external systems (databases, third-party APIs, message queues, file systems) needs tests that verify the integration works end-to-end.
 
 **Required testing:**
 - **Integration tests** — Test against real or containerized dependencies.
-- **Contract tests** — Verify that the integration adheres to the expected
-  external contract.
-- **Resilience tests** — Verify behavior under failure conditions (timeout,
-  connection refused, malformed response).
+- **Contract tests** — Verify that the integration adheres to the expected external contract.
+- **Resilience tests** — Verify behavior under failure conditions (timeout, connection refused, malformed response).
 
 **Example task criteria:**
 ```markdown
@@ -113,17 +95,13 @@ This is a guideline, not a hard gate:
 - **New code** should target ≥80% coverage.
 - **Critical paths** (auth, payments, data integrity) should target higher.
 - **Generated code or boilerplate** may be excluded from coverage metrics.
-- Do not write low-value tests solely to hit a number — prioritize meaningful
-  assertions.
+- Do not write low-value tests solely to hit a number — prioritize meaningful assertions.
 
 ## Writing Test Criteria in Tasks
 
 When writing the "Test & Acceptance Criteria" section of a task:
 
 1. **Be specific** — Name the type of test (unit, fuzz, benchmark, integration).
-2. **Be measurable** — Include quantities where possible (e.g., "≥3 edge cases",
-   "1000 fuzz inputs", "p99 < 50ms").
-3. **Be contextual** — Match the test type to the code context using the table
-   above.
-4. **Include a "done" signal** — What does "passing" look like? (e.g., "all
-   tests green", "no regressions in benchmark", "coverage ≥ 80%").
+2. **Be measurable** — Include quantities where possible (e.g., "≥3 edge cases", "1000 fuzz inputs", "p99 < 50ms").
+3. **Be contextual** — Match the test type to the code context using the table above.
+4. **Include a "done" signal** — What does "passing" look like? (e.g., "all tests green", "no regressions in benchmark", "coverage ≥ 80%").
