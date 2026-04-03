@@ -4,17 +4,19 @@ description: >-
   Use this skill when the user needs to create, review, revise, or manage
   Architectural Decision Records (ADRs) — including drafting new decisions,
   evaluating existing ones for quality, addressing review comments
-  interactively, choosing between ADR templates (Nygard, MADR, Y-Statement),
-  setting up ADR tooling, or understanding ADR best practices. Activate when
-  the user says things like "create an ADR," "write an ADR," "new ADR,"
-  "draft a decision," "review this ADR," "revise this ADR," "address review
-  comments," or "document this decision." Also activate when the user wants
-  to justify a technology selection, record why an architecture was chosen
-  over alternatives, capture tradeoffs, or establish a decision log — even
-  if they don't explicitly say "ADR" or "architecture decision." Also use
-  when the user asks about decision rationale, design justification, or
-  reversibility of technical choices. Do not use for general code review,
-  project management, or non-architectural documentation.
+  interactively, solving architectural problems through guided exploration,
+  choosing between ADR templates (Nygard, MADR, Y-Statement), setting up ADR
+  tooling, or understanding ADR best practices. Activate when the user says
+  things like "create an ADR," "write an ADR," "new ADR," "draft a decision,"
+  "review this ADR," "revise this ADR," "address review comments," "I have a
+  problem to solve," "help me decide," "explore options," or "document this
+  decision." Also activate when the user wants to justify a technology
+  selection, record why an architecture was chosen over alternatives, capture
+  tradeoffs, or establish a decision log — even if they don't explicitly say
+  "ADR" or "architecture decision." Also use when the user asks about decision
+  rationale, design justification, or reversibility of technical choices. Do
+  not use for general code review, project management, or non-architectural
+  documentation.
 license: CC-BY-4.0
 metadata:
   source: adr.github.io
@@ -60,6 +62,7 @@ User request
 ├─ docs/adr/ missing? ──────────► Bootstrap with nygard-agent → set format
 │
 ├─ "Create an ADR" ──────────────► Go to: Creating an ADR
+├─ "I have a problem to solve" ─► Go to: Solving a Problem
 ├─ "Review an ADR" ──────────────► Go to: Reviewing an ADR
 ├─ "Revise an ADR" ──────────────► Go to: Revising an ADR
 ├─ "Update/supersede an ADR" ───► Go to: Managing ADRs
@@ -90,6 +93,21 @@ Read [references/create.md](references/create.md) for the full creation workflow
    > Would you like to review this ADR? It will be checked for completeness, > reasoning fallacies, and anti-patterns.
 
    If the user agrees, proceed to [Reviewing an ADR](#reviewing-an-adr).
+
+### Solving a Problem
+
+Read [references/solve.md](references/solve.md) for the full problem-first solve workflow. Use this when the user has a problem to solve but hasn't yet identified a decision.
+
+The solve process covers:
+
+1. **Problem intake** — gather the problem statement, create a TBD ADR (`make new TITLE="tbd"`), populate the Context section
+2. **Option discovery** — agent proposes candidate solutions, user collaborates to refine and add options
+3. **Requirements refinement** — as options are evaluated, new requirements emerge and are folded back into Context
+4. **Optional prototyping** — lightweight spikes to validate options; ADR stays in `Prototype` status
+5. **Convergence** — user selects an option; agent drafts Decision and Consequences, renames the ADR (`make rename NUM=<n> TITLE="..."`), transitions status to `Proposed`
+6. **Handoff** — the `Proposed` ADR is ready for the existing review workflow
+
+**Solve vs. Create:** Use solve when the user describes a problem without a predetermined solution. Use create when the user arrives with a decision already made.
 
 ### Reviewing an ADR
 
@@ -164,6 +182,7 @@ export ADR_AGENT_SKILL_FORMAT=nygard-agent
 
 make -f <skill-root>/Makefile init DIR=docs/adr     # bootstrap ADR directory
 make -f <skill-root>/Makefile new TITLE="Use PostgreSQL"
+make -f <skill-root>/Makefile rename NUM=2 TITLE="Use PostgreSQL"  # rename ADR file and heading
 make -f <skill-root>/Makefile list                   # list all ADRs
 make -f <skill-root>/Makefile status NUM=2 STATUS=Accepted  # update status
 ```
@@ -176,6 +195,7 @@ Only use direct scripts when the Makefile is unavailable. See [references/toolin
 export PATH="$PWD/scripts:$PATH"
 nygard-agent-format.sh init docs/adr
 new.sh nygard-agent "Use PostgreSQL"
+nygard-agent-format.sh rename 2 "Use PostgreSQL"
 nygard-agent-format.sh list
 nygard-agent-format.sh status 2 Accepted
 ```
@@ -189,6 +209,7 @@ Use **Mermaid** for all diagrams. Diagrams are valuable when complex relationshi
 For detailed guidance beyond what is covered above, consult these references on-demand:
 
 - [references/create.md](references/create.md) — full ADR creation workflow with significance assessment, readiness checks, and anti-patterns
+- [references/solve.md](references/solve.md) — problem-first solve workflow with option discovery, requirements refinement, and convergence
 - [references/review.md](references/review.md) — structured review process with ecADR checks, fallacy scan, and verdict format
 - [references/revise.md](references/revise.md) — interactive revision workflow for addressing review comments after a Revise verdict
 - [references/manage.md](references/manage.md) — status transitions, superseding, linking, splitting, and guardrails
