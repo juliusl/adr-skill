@@ -277,14 +277,11 @@ file.
 
 #### Persisting Preferences
 
-When the user opts to save a preference:
-
-1. Resolve the config path (see [Configuration](#configuration)).
-2. Create the directory with `mkdir -p` if it does not exist.
-3. Read the existing `preferences.toml` (if any) to preserve other keys.
-4. Write or update the relevant key under the `[implement]` table.
-5. Confirm to the user:
-   > Saved to ~/.config/adr-skills/preferences.toml
+When the user opts to save a preference, resolve the config path (see
+[Configuration](#configuration)), create the directory with `mkdir -p` if
+needed, read the existing `preferences.toml` to preserve other keys, and write
+the relevant key under `[implement]`. Confirm:
+> Saved to ~/.config/adr-skills/preferences.toml
 
 #### Weighted Mode — Per-Task Evaluation
 
@@ -308,21 +305,16 @@ Stage 2: Authentication
   Task 2.5: Write integration tests           [medium] → sentinel ⏸
 ```
 
-After the user approves a sentinel task and it completes, the skill continues
-evaluating subsequent tasks by the same rule.
-
-At the end of each stage, the skill reports a summary of what was completed,
-regardless of whether individual tasks were autonomous or guided.
+After the user approves a sentinel task, the skill continues with subsequent
+tasks. At stage boundaries, it reports what was completed.
 
 #### Auto-Commit on Task Completion
 
 The skill supports an optional behavior: **create a git commit each time a
-task's acceptance criteria are all satisfied**. This is opt-in and disabled by
-default.
+task's acceptance criteria are all satisfied**. Opt-in, disabled by default.
 
 **When it triggers:** After all `- [ ]` checkboxes in a task's Test &
-Acceptance Criteria are marked `- [x]` (per the Task Execution Protocol
-embedded in the plan).
+Acceptance Criteria are marked `- [x]` (per the Task Execution Protocol).
 
 **Commit steps:**
 
@@ -488,23 +480,21 @@ on-demand:
 
 ## Behavioral Policies
 
-The skill supports persistent behavioral preferences stored as meta-ADRs in
-`<adr-dir>/.meta/`. These are read during Step 0 and applied for the session.
+The skill supports persistent behavioral preferences stored in the user-scoped
+config file at `~/.config/adr-skills/preferences.toml` (see
+[Configuration](#configuration)).
 
 ### Supported Policies
 
-| Policy | Meta-ADR Title Pattern | Effect |
-|--------|----------------------|--------|
-| Participation mode | "Participation mode: *" | Sets the default participation level (Full control, Guided, Autonomous, Weighted) |
-| Auto-commit | "Auto-commit on task completion: *" | Enables/disables git commits at task boundaries (disabled by default) |
+| Policy | Config Key | Default | Effect |
+|--------|-----------|---------|--------|
+| Participation mode | `[implement].participation` | `"guided"` | Sets the default participation level (full-control, guided, autonomous, weighted) |
+| Auto-commit | `[implement].auto_commit` | `false` | Enables/disables git commits at task boundaries |
 
 ### Persistence Hierarchy
 
-1. **`.meta/` directory** — if `<adr-dir>/.meta/` exists and contains an
-   `Accepted` meta-ADR for the policy, use it.
-2. **Session context** — if `.meta/` is absent, store the preference in
-   session context (ephemeral, current session only).
-
-The skill never prompts the user to create `.meta/`. If the user wants
-persistent policies, they should use the `author-adr` skill to run
-`make init-meta`.
+1. **Config file** — if `preferences.toml` contains the key under the
+   `[implement]` table, use it.
+2. **Session context** — if the key is absent, store the preference in session
+   context (ephemeral, current session only). The user may opt to save it to
+   the config file when prompted.
