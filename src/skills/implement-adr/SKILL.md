@@ -228,11 +228,11 @@ in-place, replacing `Proposed` with `Planned`.
 After updating ADR statuses, determine how the user wants to participate during
 implementation.
 
-1. **Check for existing preference:** If a behavioral policy for participation
-   mode was loaded in Step 0 (from `.meta/`), apply it and inform the user:
-   > Using participation mode: **Guided** (from .meta policy).
+1. **Check for existing preference:** If `[implement].participation` was loaded
+   from the config file in Step 0, apply it and inform the user:
+   > Using participation mode: **Guided** (from preferences.toml).
    > Say "change mode" at any time to switch.
-   Skip to Step 6.
+   Skip to the auto-commit check (item 5).
 
 2. **If no preference exists**, prompt:
    > How much participation would you like during implementation?
@@ -244,21 +244,23 @@ implementation.
 3. **Apply the chosen mode** for the remainder of the session. See the
    behavior table below.
 
-4. **Offer to persist** — if `.meta/` exists, ask the user whether to save
-   this preference as a meta-ADR. If `.meta/` does not exist, store in
-   session context only (no prompt about creating `.meta/`).
+4. **Offer to persist** — ask the user whether to save their choice to the
+   config file:
+   > Save this as your default participation mode?
+   If yes, write `participation = "<mode>"` under the `[implement]` table in
+   `preferences.toml` (creating the file and directory with `mkdir -p` if
+   needed).
 
 5. **Auto-commit preference:** After determining participation mode, check
    whether to enable automatic git commits at task boundaries.
-   - **If a `.meta/` policy exists** for auto-commit, apply it silently:
-     > Auto-commit on task completion: **enabled** (from .meta policy).
-   - **If no preference exists**, prompt:
+   - **If `[implement].auto_commit` was set** in the config file, apply
+     silently:
+     > Auto-commit on task completion: **enabled** (from preferences.toml).
+   - **If not set**, prompt:
      > Would you like to create a git commit each time a task completes?
      > 1. **Yes** — Commit after each task's acceptance criteria are all satisfied
      > 2. **No** (default) — I'll manage commits myself
-   - **Offer to persist** — same fallback chain as participation mode (if
-     `.meta/` exists, offer to save; otherwise session context only).
-   - Meta-ADR title pattern: "Auto-commit on task completion: [enabled/disabled]"
+   - **Offer to persist** — same pattern as participation mode.
 
 #### Participation Mode Behaviors
 
@@ -270,26 +272,19 @@ implementation.
 | **Weighted** | Per-task, cost-driven | Evaluate each task by cost estimate. `[small]` → autonomous. `[medium]`/`[heavy]` → sentinel (pause for approval). Report at stage boundaries. |
 
 **Mode switching:** The user may change modes at any time during a session.
-In-session changes override the loaded preference but do not update `.meta/`.
+In-session changes override the loaded preference but do not update the config
+file.
 
-#### Capturing Behavioral Decisions
+#### Persisting Preferences
 
-When persisting a participation preference (or any behavioral decision):
+When the user opts to save a preference:
 
-1. **If `.meta/` exists** — write a meta-ADR in Nygard format:
-   - Determine the next number by listing existing files in `.meta/`.
-   - Title: "Participation mode: [chosen mode]"
-   - Status: `Accepted`
-   - Context: describe the user's reasoning if provided.
-   - Decision: record the chosen mode and any customizations.
-   - Consequences: note that future sessions will use this mode by default.
-
-2. **If `.meta/` does not exist** — store in session context only.
-   Do not prompt to create `.meta/`.
-
-This same fallback chain applies whenever the skill encounters a behavioral
-decision during implementation (e.g., error handling strategy, stage ordering
-preference) that is not yet recorded.
+1. Resolve the config path (see [Configuration](#configuration)).
+2. Create the directory with `mkdir -p` if it does not exist.
+3. Read the existing `preferences.toml` (if any) to preserve other keys.
+4. Write or update the relevant key under the `[implement]` table.
+5. Confirm to the user:
+   > Saved to ~/.config/adr-skills/preferences.toml
 
 #### Weighted Mode — Per-Task Evaluation
 
