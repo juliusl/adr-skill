@@ -217,7 +217,7 @@ madr status 2                # show status of ADR 2
 madr status 2 Accepted       # update status of ADR 2
 ```
 
-Status values: Proposed, Accepted, Deprecated, Superseded
+Status values: Prototype, Proposed, Accepted, Deprecated, Superseded
 
 #### `madr generate` — Generate table of contents
 

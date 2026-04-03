@@ -8,15 +8,23 @@ Use this reference as a prompt for a general-purpose agent to perform the review
 
 ### Step 1: Completeness Check (ecADR)
 
-Verify the five Definition of Done criteria:
+Verify the core Definition of Done criteria:
 
 1. **Evidence** — Is there confidence the design will work? (PoC, spike, peer validation)
 2. **Criteria** — Are ≥2 genuine alternatives identified and compared?
-3. **Agreement** — Is there stakeholder consensus? Was involvement planned early?
-4. **Documentation** — Is the decision captured in a template and shared?
-5. **Realization/Review** — Is implementation scheduled? Is there a revisit date?
+3. **Documentation** — Is the decision captured in a template and shared?
 
 Report which criteria are met and which are missing.
+
+**Extended checks (PR-submitted ADRs only):**
+
+The following criteria apply when the ADR's status is `Proposed` — indicating it
+is ready for team review. When the ADR is in `Prototype` status — meaning it is
+driving immediate local prototyping — these checks are not applicable and should
+be skipped.
+
+4. **Agreement** — Is there stakeholder consensus? Was involvement planned early?
+5. **Realization/Review** — Is implementation scheduled? Is there a revisit date?
 
 ### Step 2: Fallacy Scan
 
@@ -135,9 +143,9 @@ Structure the review as:
 ### Completeness (ecADR)
 - Evidence: ...
 - Criteria: ...
-- Agreement: ...
 - Documentation: ...
-- Realization/Review: ...
+- Agreement: ... (PR-submitted ADRs only)
+- Realization/Review: ... (PR-submitted ADRs only)
 
 ### Fallacies Detected
 [list or "None detected"]

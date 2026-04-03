@@ -7,7 +7,7 @@ set -e
 ## With NUMBER, shows the status of that ADR.
 ## With NUMBER and STATUS, updates the status of that ADR.
 ##
-## STATUS is one of: Proposed, Accepted, Deprecated, Superseded
+## STATUS is one of: Prototype, Proposed, Accepted, Deprecated, Superseded
 
 if [ -f .madr-dir ]; then
     madr_dir=$(cat .madr-dir)

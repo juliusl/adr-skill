@@ -7,17 +7,24 @@ Self-contained reference for ADR management tasks. Read this file when the user 
 Every ADR has a status that tracks its progression:
 
 ```
-Proposed ──► Accepted ──► Deprecated
-                │              │
-                └──► Superseded by ADR-NNNN
+Prototype ──► Proposed ──► Accepted ──► Deprecated
+                              │              │
+                              └──► Superseded by ADR-NNNN
 ```
 
 | Status | Meaning | When to Use |
 |--------|---------|-------------|
-| **Proposed** | Decision is drafted but not yet agreed | Initial state after creation |
+| **Prototype** | Decision is drafted to drive immediate prototyping | Initial state for local agent-developer workflow |
+| **Proposed** | Decision is ready for team review | When submitting for PR-based review or stakeholder sign-off |
 | **Accepted** | Decision is agreed and ready for implementation | After stakeholder consensus or plan execution |
 | **Deprecated** | Decision is no longer relevant | When the problem it solved no longer exists |
 | **Superseded** | Decision is replaced by a newer ADR | When a new decision explicitly replaces this one |
+
+**Workflow note:** In the local agent-developer workflow, new ADRs start as
+`Prototype`. The author promotes to `Proposed` when the decision is ready for
+team review (e.g., before opening a PR). ADRs may also go directly from
+`Prototype` to `Planned` via the `implement-adr` skill if the author chooses to
+skip team review and proceed straight to implementation.
 
 ### Transitioning Status
 
@@ -36,7 +43,7 @@ make -f <skill-root>/Makefile status NUM=3 STATUS=Deprecated
 **Rules:**
 - Only transition one status at a time per ADR.
 - Record the reason for status changes in the ADR's context or as a brief note below the status line when the change is non-obvious.
-- The `Planned` status is used by the `implement-adr` skill when an ADR has been decomposed into a plan but not yet fully implemented.
+- The `Planned` status is used by the `implement-adr` skill when an ADR has been decomposed into a plan but not yet fully implemented. Both `Prototype` and `Proposed` ADRs can transition to `Planned`.
 
 ## Superseding Decisions
 

@@ -66,7 +66,7 @@ User request
 
 1. Read the full content of each selected ADR.
 2. Extract the structured sections:
-   - **Status** — only proceed with `Accepted`, `Proposed`, or `Planned` ADRs. Warn if status is `Deprecated` or `Superseded`.
+   - **Status** — only proceed with `Prototype`, `Proposed`, `Accepted`, or `Planned` ADRs. Warn if status is `Deprecated` or `Superseded`.
    - **Context** — understand the forces, constraints, and tensions.
    - **Decision** — identify the concrete commitments and design choices.
    - **Consequences** — note positive outcomes to preserve, negative outcomes to mitigate, and neutral observations.
@@ -181,14 +181,14 @@ End the plan with a summary table:
 
 ### Step 4 — Update ADR Statuses
 
-After generating the plan, update each source ADR whose status is `Proposed` to `Planned`. This signals that the decision has been analyzed, decomposed into tasks, and is ready for implementation.
+After generating the plan, update each source ADR whose status is `Prototype` or `Proposed` to `Planned`. This signals that the decision has been analyzed, decomposed into tasks, and is ready for implementation.
 
 **Guard rails:**
-- Only ADRs with status `Proposed` are transitioned to `Planned`.
+- ADRs with status `Prototype` or `Proposed` are transitioned to `Planned`.
 - ADRs that are already `Accepted`, `Planned`, `Deprecated`, or `Superseded` are left unchanged.
 - If an ADR has an unexpected status, warn the user and ask whether to proceed.
 
-The status update is performed by editing the ADR file's `## Status` section in-place, replacing `Proposed` with `Planned`.
+The status update is performed by editing the ADR file's `## Status` section in-place, replacing `Prototype` or `Proposed` with `Planned`.
 
 ### Step 5 — Participation Check
 
@@ -292,6 +292,11 @@ The skill supports an optional behavior: **create a git commit each time a task'
    - File name: `<adr-range>.0.plan.md` (initial plan).
    - Example: `docs/plans/0003-0004.0.plan.md`
 5. If the user requests changes to an existing plan: a. Increment the revision number. b. Create a new file (e.g., `0003-0004.1.plan.md`). c. Add a revision header linking to the previous revision: ```markdown **Revision:** 1 (previous: [0003-0004.0.plan.md](docs/plans/0003-0004.0.plan.md)) **Changes:** <summary of requested changes> ``` d. Preserve the previous revision file unchanged.
+6. **Planning-phase commit:** If auto-commit is enabled, create a commit after writing the plan file that captures the planning work as a single atomic commit:
+   - `git add <plan-file>` — the newly written plan.
+   - `git add docs/adr/<updated-adrs>` — any ADR files whose status was changed to `Planned` in Step 4.
+   - Commit with: ```docs(plan): generate implementation plan for ADR-NNNN Plan: <plan-file-path> ADR: <adr-references>```
+   - This ensures the plan and its corresponding ADR status transitions are recorded together before task execution begins.
 
 ## Plan Structure
 

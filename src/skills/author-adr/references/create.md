@@ -147,7 +147,7 @@ If using MADR format, the full template sections are:
 - Start with **MADR Light** (5 core sections) if templates feel overwhelming
 - Evaluate all options at the same abstraction level
 - Document "Good, because…" and "Bad, because…" separately for each option
-- Status values: proposed → accepted → deprecated → superseded by
+- Status values: prototype → proposed → accepted → deprecated → superseded by
 
 ## Seven AD Making Fallacies
 

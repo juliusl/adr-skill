@@ -11,7 +11,7 @@ The **Nygard template** is the default format used by adr-tools. It is the simpl
 ### Structure
 
 1. **Title** — short noun phrase (e.g., "ADR 1: Use React for frontend")
-2. **Status** — proposed, accepted, deprecated, superseded
+2. **Status** — prototype, proposed, accepted, deprecated, superseded
 3. **Context** — forces at play: technological, political, social, project-local
 4. **Decision** — the response to the forces; active voice imperative ("We will...")
 5. **Consequences** — all outcomes, positive and negative
