@@ -31,6 +31,7 @@ Links:
 - [ ] Load testing
 - [ ] Performance testing
 - [ ] Backwards Compatible
+- [ ] User documentation
 
 ### Additional Quality Concerns
 
@@ -58,3 +59,4 @@ Links:
 - **Testing checkboxes** — feed directly into the implement-adr skill's plan
   generation for automatic testing task creation
 - **Backwards Compatible** — explicit signal for breaking change assessment
+- **User Documentation** — explicit signal to ensure user facing documentation has been updated. This includes README.md, manuals, cli docs, document headers in code, existing docs, or if new docs need to be created to explain usage patterns.
