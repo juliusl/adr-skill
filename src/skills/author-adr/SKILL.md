@@ -46,30 +46,18 @@ When this skill is activated, **always start with Format Detection** before proc
 Before any ADR operation, determine which ADR format to use:
 
 1. **Read the config file** — resolve the config path (see [Configuration](#configuration)) and read `[author].template` from `preferences.toml`.
-   - If set to `"nygard"` or `"madr"`, use it directly.
-   - If absent, default to `"nygard"`.
-2. **If `docs/adr/` does not exist** — prompt the user with a discrete choice:
-
-   > Which ADR format would you like to use? > 1. **Nygard** — lightweight, widely adopted (Status / Context / Decision / Consequences) > 2. **MADR** — structured tradeoff analysis (adds Options, Pros/Cons, Decision Outcome)
-
-3. **Bootstrap the decision log** — initialize `docs/adr` and create the first ADR recording the format choice. Use the Makefile target:
+   - If set (e.g., `"nygard-agent"`, `"nygard"`, or `"madr"`), use it directly.
+   - If absent, default to `"nygard-agent"`.
+2. **If `docs/adr/` does not exist** — bootstrap the decision log using the default nygard-agent format:
 
    ```bash make -f <skill-root>/Makefile init DIR=docs/adr ```
 
-   This first ADR always uses Nygard format (the bootstrap default). If the user chose MADR, set `ADR_AGENT_SKILL_FORMAT=madr` for all subsequent ADRs.
-
-4. **Offer to persist** — if the user chose a format during bootstrap, offer to save it to `[author].template` in `preferences.toml`:
-
-   > Save this format as your default for all projects?
-
-   If yes, write `[author]\ntemplate = "<format>"` to `preferences.toml` (creating the file and directory if needed with `mkdir -p`).
-
-5. **Cache the format** — for the rest of the session, pass `ADR_AGENT_SKILL_FORMAT=nygard` or `ADR_AGENT_SKILL_FORMAT=madr` to all Makefile targets.
+3. **Cache the format** — for the rest of the session, pass `ADR_AGENT_SKILL_FORMAT=nygard-agent` (or the configured format) to all Makefile targets.
 
 ```
 User request
 ├─ docs/adr/ exists? ────────────► Read config → set format
-├─ docs/adr/ missing? ──────────► Prompt user → bootstrap → persist → set format
+├─ docs/adr/ missing? ──────────► Bootstrap with nygard-agent → set format
 │
 ├─ "Create an ADR" ──────────────► Go to: Creating an ADR
 ├─ "Review an ADR" ──────────────► Go to: Reviewing an ADR
@@ -87,11 +75,11 @@ Read [references/create.md](references/create.md) for the full creation workflow
 
 1. **Assess significance** — score the decision against the 7 ASR criteria. If it's not architecturally significant, suggest informal documentation.
 2. **Check readiness** — verify the START criteria: Stakeholders, Time/MRM, Alternatives, Requirements, Template.
-3. **Pick a template** — default to Nygard. Use MADR if the user needs structured tradeoff analysis. See [Choosing a Template](#choosing-a-template).
+3. **Pick a template** — default to Nygard Agent. Use MADR if the user needs structured tradeoff analysis. See [Choosing a Template](#choosing-a-template).
 4. **Draft the ADR** — populate from the template in [assets/templates/](assets/templates/).
 5. **Create via Makefile** — always use the Makefile target:
 
-   ```bash make -f <skill-root>/Makefile new TITLE="Use PostgreSQL" make -f <skill-root>/Makefile new TITLE="Use MySQL" SUPERSEDE=2 ```
+   ```bash make -f <skill-root>/Makefile new TITLE="Use PostgreSQL" ```
 
    Only fall back to calling scripts directly if the Makefile is unavailable. See [Escape Hatch](#escape-hatch-direct-script-usage) for direct usage.
 
@@ -140,10 +128,11 @@ Read [references/manage.md](references/manage.md) for the full management refere
 
 | Situation | Template | File |
 |-----------|----------|------|
-| Using adr-tools (default) | Nygard | [nygard-template.md](assets/templates/nygard-template.md) |
+| Default (agent-developer workflow) | Nygard Agent | [nygard-agent-template.md](assets/templates/nygard-agent-template.md) |
 | Structured tradeoff analysis needed | MADR Full | [madr-full-template.md](assets/templates/madr-full-template.md) |
 | Quick capture, low ceremony | MADR Minimal | [madr-minimal-template.md](assets/templates/madr-minimal-template.md) |
 | Inline / single-sentence capture | Y-Statement | [y-statement-template.md](assets/templates/y-statement-template.md) |
+| Legacy projects using adr-tools | Standard Nygard | [nygard-template.md](assets/templates/nygard-template.md) |
 
 See [references/templates.md](references/templates.md) for full template details and guidance.
 
@@ -159,26 +148,24 @@ All of this falls under **Architectural Knowledge Management (AKM)**, but ADR us
 
 ## Tooling
 
-This skill supports two ADR formats via `ADR_AGENT_SKILL_FORMAT`:
+This skill uses a unified script architecture via `ADR_AGENT_SKILL_FORMAT`:
 
 | Format | Template | When to Use |
 |--------|----------|-------------|
-| `nygard` (default) | Nygard ADR | Simple decisions, existing adr-tools workflows |
-| `madr` | MADR 4.0 | Structured tradeoff analysis with options/pros/cons |
+| `nygard-agent` (default) | Nygard Agent | Agent-developer workflows, quality-aware decisions |
 
 ### Makefile Targets (Required)
 
 **Always use Makefile targets.** Only fall back to direct script usage if the Makefile is genuinely unavailable (e.g., not on `PATH`, broken environment).
 
 ```bash
-# Set format (default: nygard)
-export ADR_AGENT_SKILL_FORMAT=nygard   # or: madr
+# Set format (default: nygard-agent)
+export ADR_AGENT_SKILL_FORMAT=nygard-agent
 
 make -f <skill-root>/Makefile init DIR=docs/adr     # bootstrap ADR directory
 make -f <skill-root>/Makefile new TITLE="Use PostgreSQL"
-make -f <skill-root>/Makefile new TITLE="Use MySQL" SUPERSEDE=2
 make -f <skill-root>/Makefile list                   # list all ADRs
-make -f <skill-root>/Makefile generate               # generate table of contents
+make -f <skill-root>/Makefile status NUM=2 STATUS=Accepted  # update status
 ```
 
 ### Escape Hatch: Direct Script Usage
@@ -186,13 +173,11 @@ make -f <skill-root>/Makefile generate               # generate table of content
 Only use direct scripts when the Makefile is unavailable. See [references/tooling.md](references/tooling.md) for full command docs:
 
 ```bash
-# Nygard format
-export PATH="$PWD/scripts/adr-tools-3.0.0/src:$PATH"
-adr init docs/adr && adr new Use PostgreSQL
-
-# MADR format
-export PATH="$PWD/scripts/madr-tools/src:$PATH"
-madr init docs/adr && madr new -t full Use PostgreSQL
+export PATH="$PWD/scripts:$PATH"
+nygard-agent-format.sh init docs/adr
+new.sh nygard-agent "Use PostgreSQL"
+nygard-agent-format.sh list
+nygard-agent-format.sh status 2 Accepted
 ```
 
 ### Visualization
@@ -208,5 +193,5 @@ For detailed guidance beyond what is covered above, consult these references on-
 - [references/revise.md](references/revise.md) — interactive revision workflow for addressing review comments after a Revise verdict
 - [references/manage.md](references/manage.md) — status transitions, superseding, linking, splitting, and guardrails
 - [references/templates.md](references/templates.md) — template details and selection guide
-- [references/tooling.md](references/tooling.md) — dual-format command reference and visualization
+- [references/tooling.md](references/tooling.md) — unified script architecture and command reference
 

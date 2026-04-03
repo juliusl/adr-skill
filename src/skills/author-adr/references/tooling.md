@@ -1,269 +1,115 @@
 # Decision Capturing Tools
 
-> This skill supports two ADR formats controlled by `ADR_AGENT_SKILL_FORMAT`:
+> This skill uses a unified script architecture (per ADR-0018) with a single
+> default format: `nygard-agent`.
 >
-> | Runtime | Template | Scripts | Default Dir |
-> |---------|----------|---------|-------------|
-> | `nygard` (default) | Nygard ADR | `scripts/adr-tools-3.0.0/` | `doc/adr/` |
-> | `madr` | MADR 4.0 | `scripts/madr-tools/` | `docs/decisions/` |
+> | Format | Template | Scripts | Default Dir |
+> |--------|----------|---------|-------------|
+> | `nygard-agent` (default) | Nygard Agent | `scripts/new.sh` + `scripts/nygard-agent-format.sh` | `docs/adr/` |
 >
-> A top-level `Makefile` abstracts both formats behind unified targets.
+> Adding a new format = adding one `<name>-format.sh` file.
 
 ## Makefile Interface (Recommended)
 
-The Makefile auto-selects the correct scripts based on `ADR_AGENT_SKILL_FORMAT`.
+The Makefile routes to the correct scripts based on `ADR_AGENT_SKILL_FORMAT`.
 
 ```bash
-# Set format (default: nygard)
-export ADR_AGENT_SKILL_FORMAT=nygard   # or: madr
+# Set format (default: nygard-agent)
+export ADR_AGENT_SKILL_FORMAT=nygard-agent
 
 # Core targets
 make init                               # bootstrap ADR directory
 make init DIR=decisions                  # custom directory
 make new TITLE="Use PostgreSQL"         # create a new ADR
-make new TITLE="Use MySQL" SUPERSEDE=2  # supersede an existing ADR
-make new TITLE="Use Redis" TEMPLATE=full  # (madr only) use full template
 make list                               # list all ADRs
-make status                             # show all ADR statuses (madr only)
-make status NUM=2 STATUS=Accepted       # update status (madr only)
-make generate                           # generate table of contents
-make generate PREFIX="docs/adr/"        # with path prefix
-make link SOURCE=12 LINK="Amends" TARGET=10 REVERSE="Amended by"  # (nygard only)
-make test                               # run tests for both formats
+make status                             # show all ADR statuses
+make status NUM=2 STATUS=Accepted       # update status
 ```
 
-## Runtime: Nygard (adr-tools)
+### Available Targets
 
-Direct script usage when the Makefile is not available or the agent needs to adapt.
+| Target | Description |
+|--------|-------------|
+| `init` | Bootstrap ADR directory and create first ADR |
+| `new` | Create a new ADR from the format's baked-in template |
+| `list` | List all ADRs with number, title, and status |
+| `status` | Show or update an ADR's status |
+| `install-agents` | Install custom agent files |
 
-### Quick Start
+## Script Architecture
+
+### Two-Level Dispatch
+
+```
+new.sh <format> <title...>
+  └─► <format>-format.sh new <number> <title> <dir>
+```
+
+**Orchestrator (`new.sh`):**
+- Resolves the ADR directory (reads `.adr-dir` or defaults to `docs/adr`)
+- Computes the next sequential number (4-digit zero-padded)
+- Slugifies the title into a filename
+- Delegates to `<format>-format.sh new <number> <title> <dir>`
+
+**Format script (`nygard-agent-format.sh`):**
+- Self-contained: the template is baked into the script, no external files
+- Subcommands via `case "$1" in`:
 
 ```bash
-# Add to PATH (from skill root)
-export PATH="$PWD/scripts/adr-tools-3.0.0/src:$PATH"
-
-# Initialize ADR directory in a project
-adr init              # creates doc/adr/ with ADR 0001
-adr init decisions    # or use a custom directory name
+case "$1" in
+  new)    # generate ADR document with baked-in template
+  init)   # bootstrap ADR directory + first ADR
+  list)   # list ADRs with number, title, status
+  status) # show or update status (parses inline Status: field)
+esac
 ```
 
-## Commands
+### Direct Script Usage
 
-### `adr new` — Create a new ADR
+When the Makefile is not available:
 
 ```bash
-adr new Use PostgreSQL for persistence
-# → creates doc/adr/0002-use-postgresql-for-persistence.md and opens editor
+# Add scripts to PATH (from skill root)
+export PATH="$PWD/scripts:$PATH"
 
-# Supercede an existing ADR
-adr new -s 2 Use MySQL instead of PostgreSQL
+# Initialize ADR directory
+nygard-agent-format.sh init              # creates docs/adr/ with ADR 0001
+nygard-agent-format.sh init decisions    # custom directory name
 
-# Link to an existing ADR
-adr new -l "3:Complements:Complemented by" Add read replicas
+# Create a new ADR
+new.sh nygard-agent "Use PostgreSQL for persistence"
+
+# List all ADRs
+nygard-agent-format.sh list
+
+# Show status
+nygard-agent-format.sh status 2          # show status of ADR 2
+nygard-agent-format.sh status 2 Accepted # update status
 ```
 
-Options:
-- `-s NUMBER` — marks the referenced ADR as superceded by this one
-- `-l TARGET:LINK:REVERSE-LINK` — creates bidirectional links between ADRs
+### Backward Compatibility
 
-### `adr list` — List all ADRs
+The `list` and `status` commands handle both:
+- **Inline `Status:` metadata** (nygard-agent format)
+- **`## Status` heading** (standard Nygard format)
 
-```bash
-adr list
-# doc/adr/0001-record-architecture-decisions.md
-# doc/adr/0002-use-postgresql-for-persistence.md
-```
+This ensures existing ADRs written in standard Nygard format work correctly
+during the transition period.
 
-### `adr link` — Link two existing ADRs
+### Adding a New Format
 
-```bash
-adr link 12 Amends 10 "Amended by"
-# Creates forward link in ADR 12 and reverse link in ADR 10
-```
+To add support for a new format (e.g., MADR):
 
-### `adr generate` — Generate reports
-
-```bash
-adr generate toc                        # table of contents
-adr generate graph                      # Graphviz dependency graph
-adr generate toc -p "docs/adr/"         # with path prefix
-adr generate toc -e "included-header"   # with header/footer includes
-```
-
-### `adr config` — Show configuration
-
-```bash
-adr config
-# Outputs adr_bin_dir and adr_template_dir paths
-```
-
-### `adr upgrade-repository` — Migrate date format
-
-```bash
-adr upgrade-repository
-# Converts dates from DD/MM/YYYY to ISO 8601 (YYYY-MM-DD)
-```
-
-## Template
-
-adr-tools uses the Nygard ADR format by default:
-
-```markdown
-# NUMBER. TITLE
-
-Date: DATE
-
-## Status
-
-STATUS
-
-## Context
-
-The issue motivating this decision, and any context that influences or
-constrains the decision.
-
-## Decision
-
-The change that we're proposing or have agreed to implement.
-
-## Consequences
-
-What becomes easier or more difficult to do and any risks introduced by the
-change that will need to be mitigated.
-```
-
-### Custom Templates
-
-Place a `template.md` in `templates/` within your ADR directory to override the default. The template can use the following placeholders:
-- `NUMBER` — auto-incremented ADR number
-- `TITLE` — from the command line arguments
-- `DATE` — current date (or `ADR_DATE` env var)
-- `STATUS` — initial status (typically "Proposed" or "Accepted")
-
-## Workflow
-
-```
-1. adr init                          ← bootstrap
-2. adr new <title>                   ← capture a decision
-3. edit the generated file           ← fill in context, decision, consequences
-4. adr link / adr new -s / -l       ← connect related decisions
-5. adr generate toc                  ← update documentation
-6. commit to version control         ← share with team
-```
+1. Create `scripts/<name>-format.sh` with the four subcommands
+2. Set `ADR_AGENT_SKILL_FORMAT=<name>` when using the Makefile
+3. No changes needed to `new.sh` or the Makefile
 
 ## Environment Variables
 
 | Variable | Purpose |
 |----------|---------|
-| `VISUAL` | Editor for new ADRs (preferred over EDITOR) |
-| `EDITOR` | Fallback editor if VISUAL is not set |
 | `ADR_DATE` | Override the date stamp (useful in CI/tests) |
-
-## Shell Completion
-
-Source the autocomplete script for bash completion:
-
-```bash
-source scripts/adr-tools-3.0.0/autocomplete/adr
-```
-
-## Runtime: MADR (madr-tools)
-
-Direct script usage for the MADR format.
-
-### Quick Start
-
-```bash
-# Add to PATH (from skill root)
-export PATH="$PWD/scripts/madr-tools/src:$PATH"
-
-# Initialize MADR directory
-madr init                    # creates docs/decisions/ with first MADR
-madr init decisions          # or use a custom directory name
-```
-
-### Commands
-
-#### `madr new` — Create a new MADR
-
-```bash
-madr new Use PostgreSQL for persistence
-# → creates docs/decisions/0002-use-postgresql-for-persistence.md
-
-# Use full template (default: minimal)
-madr new -t full Use PostgreSQL for persistence
-
-# Supersede an existing ADR
-madr new -s 2 Use MySQL instead of PostgreSQL
-```
-
-Options:
-- `-s NUMBER` — marks the referenced ADR as superseded
-- `-t TYPE` — template type: `minimal` (default) or `full`
-
-#### `madr list` — List all MADRs
-
-```bash
-madr list
-# docs/decisions/0001-record-architecture-decisions-with-madr.md
-# docs/decisions/0002-use-postgresql-for-persistence.md
-```
-
-#### `madr status` — Show or update status
-
-```bash
-madr status                  # show all statuses
-madr status 2                # show status of ADR 2
-madr status 2 Accepted       # update status of ADR 2
-```
-
-Status values: Prototype, Proposed, Accepted, Deprecated, Superseded
-
-#### `madr generate` — Generate table of contents
-
-```bash
-madr generate toc
-madr generate toc -p "docs/decisions/"    # with path prefix
-```
-
-#### `madr help` — Show help
-
-```bash
-madr help          # list commands
-madr help new      # help for a specific command
-```
-
-### Template
-
-madr-tools defaults to the MADR minimal template. Use `-t full` for the full template with decision drivers, pros/cons analysis, and confirmation sections.
-
-Templates are sourced from `assets/templates/`:
-- `madr-minimal-template.md` — Context, Options, Outcome, Consequences
-- `madr-full-template.md` — adds Drivers, Pros/Cons, Confirmation, More Info
-
-### Custom Templates
-
-Place a custom `adr-template.md` in your decisions directory during `madr init`. The tool copies both templates there; modify them to suit your project.
-
-### Environment Variables
-
-| Variable | Purpose |
-|----------|---------|
-| `VISUAL` | Editor for new MADRs (preferred over EDITOR) |
-| `EDITOR` | Fallback editor if VISUAL is not set |
-| `MADR_DATE` | Override the date stamp (useful in CI/tests) |
-
-## Other Tools (For Reference)
-
-While this skill standardizes on adr-tools, agents may encounter projects using alternative tooling. Key alternatives are documented in [assets/](../assets/index.md) under "Tooling":
-
-- **ADG** (Go) — multi-template CLI supporting Nygard, MADR, and QOC
-- **dotnet-adr** (.NET) — cross-platform .NET Global Tool
-- **Log4brains** (Node.js) — docs-as-code with rendering
-- **VS Code ADR Manager** — GUI extension for MADR
-- **Backstage ADR Plugin** — developer portal integration
-- **Talo** (dotnet) — multi-format design doc CLI
-- **ReflectRally** — collaborative SaaS platform
+| `ADR_AGENT_SKILL_FORMAT` | Select the format (default: `nygard-agent`) |
 
 ## Visualization
 

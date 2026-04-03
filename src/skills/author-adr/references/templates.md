@@ -2,25 +2,43 @@
 
 > All templates are available in [assets/templates/](../assets/templates/).
 
-## Primary: Nygard ADR (adr-tools default)
+## Primary: Nygard Agent (default)
 
-The **Nygard template** is the default format used by adr-tools. It is the simplest and most widely adopted ADR format, introduced by Michael Nygard in his [2011 blog post](../assets/nygard-documenting-architecture-decisions.md).
+The **nygard-agent template** is the default format for ADRs created by this
+skill (per ADR-0017). It extends the original Nygard format with inline
+metadata, a dedicated Options section, a Quality Strategy checklist, and a
+Comments area for revision dialogue.
 
-**Template:** [nygard-template.md](../assets/templates/nygard-template.md) — with inline guidance: [gh-joelparkerhenderson-nygard-template.md](../assets/templates/gh-joelparkerhenderson-nygard-template.md)
+**Template:** [nygard-agent-template.md](../assets/templates/nygard-agent-template.md)
 
 ### Structure
 
 1. **Title** — short noun phrase (e.g., "ADR 1: Use React for frontend")
-2. **Status** — prototype, proposed, accepted, deprecated, superseded
+2. **Inline metadata** — `Date:`, `Status:`, `Last Updated:`, `Links:` as
+   compact key-value lines
 3. **Context** — forces at play: technological, political, social, project-local
-4. **Decision** — the response to the forces; active voice imperative ("We will...")
-5. **Consequences** — all outcomes, positive and negative
+4. **Options** — dedicated section for alternatives with strengths/weaknesses
+5. **Decision** — the response to the forces; active voice imperative ("We will...")
+6. **Consequences** — all outcomes, positive and negative
+7. **Quality Strategy** — checklist: semantic changes, testing types, backward
+   compatibility. Inapplicable items struck through (`~~`).
+8. **Comments** — below `---` separator, mutable worksheet for revision Q&A
 
 ### When to Use
 
-- Default choice for all ADRs managed by adr-tools
-- Teams that value simplicity and low ceremony
-- Projects starting with ADRs for the first time
+- Default choice for all new ADRs
+- Agent-developer workflows where ADRs drive implementation
+- Teams that need quality planning at decision time
+
+---
+
+## Legacy: Standard Nygard
+
+The original four-section format from Michael Nygard's 2011 article. Still
+supported for reading — `list` and `status` commands handle both inline
+`Status:` and `## Status` heading formats.
+
+**Template:** [nygard-template.md](../assets/templates/nygard-template.md) — with inline guidance: [gh-joelparkerhenderson-nygard-template.md](../assets/templates/gh-joelparkerhenderson-nygard-template.md)
 
 ---
 
@@ -102,10 +120,11 @@ A single-sentence format originated from the [Sustainable Architectural Decision
 
 | Situation | Template |
 |-----------|----------|
-| Using adr-tools (default workflow) | **Nygard** |
-| Team wants structured tradeoff analysis | **MADR Full** |
+| Default (agent-developer workflow) | **Nygard Agent** |
+| Structured tradeoff analysis needed | **MADR Full** |
 | Quick capture, minimal ceremony | **MADR Minimal** or **Y-Statement** |
 | Inline documentation in a single sentence | **Y-Statement** |
+| Legacy projects using adr-tools | **Standard Nygard** |
 | Custom template needed | Place `template.md` in your ADR directory's `templates/` folder |
 
 ## Other Templates
