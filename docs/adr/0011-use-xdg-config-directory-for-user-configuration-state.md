@@ -4,7 +4,7 @@ Date: 2026-04-02
 
 ## Status
 
-Proposed
+Accepted
 
 Supersedes [ADR-0008](0008-meta-adr-directory-for-skill-behavioral-policies.md)
 
