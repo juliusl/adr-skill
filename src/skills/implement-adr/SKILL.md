@@ -30,11 +30,26 @@ This skill consumes ADRs produced by the `author-adr` skill (or any
 Nygard/MADR-formatted ADR) and generates a `plan.md` with staged tasks, test
 criteria, cost estimates, and full traceability back to the source decisions.
 
+## Configuration
+
+This skill reads user-scoped preferences from a TOML configuration file at
+`~/.config/adr-skills/preferences.toml` (per ADR-0011 and ADR-0012).
+
+**Path resolution:**
+1. If `$XDG_CONFIG_HOME` is set, use `$XDG_CONFIG_HOME/adr-skills/preferences.toml`.
+2. Otherwise, use `$HOME/.config/adr-skills/preferences.toml`.
+
+**Graceful degradation:** If the file or directory does not exist, use built-in
+defaults. Never fail because config is absent.
+
+**Create on first write:** When persisting a preference, create the directory
+with `mkdir -p` before writing. Never assume it already exists.
+
 ## Agent Workflow
 
 ```
 User request
-├─ docs/adr/ exists? ────────────► List ADRs → check .meta/ → user selects scope
+├─ docs/adr/ exists? ────────────► List ADRs → check config → user selects scope
 ├─ docs/adr/ missing? ──────────► Recommend: use author-adr skill first
 │
 ├─ "Implement this ADR" ────────► Go to: Generating an Implementation Plan
@@ -54,13 +69,13 @@ User request
    ```bash
    ls docs/adr/*.md
    ```
-4. **Check for behavioral policies:** Look for `<adr-dir>/.meta/` directory.
-   - If present, read all `.md` files in `.meta/`.
-   - Apply any meta-ADR with status `Accepted` as a behavioral policy for this
-     session (e.g., participation mode preference).
-   - Ignore meta-ADRs with status `Proposed`, `Deprecated`, or `Superseded`.
-   - If `.meta/` does not exist, proceed silently — behavioral preferences
-     will be established interactively and stored in session context only.
+4. **Check for saved preferences:** Read the config file (see
+   [Configuration](#configuration)) and look for `[implement].participation`
+   and `[implement].auto_commit`.
+   - If set, store for use in Step 5 (applied silently, skip corresponding
+     prompts).
+   - If absent, proceed silently — preferences will be established
+     interactively in Step 5 and optionally saved.
 5. Ask the user which ADR(s) to implement. Accept one or more by number.
 
 ### Step 1 — Read and Analyze ADRs
