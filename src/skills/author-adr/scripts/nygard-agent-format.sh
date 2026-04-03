@@ -181,6 +181,57 @@ cmd_list() {
   done
 }
 
+cmd_rename() {
+  local dir num new_title slug old_file new_file display_number
+  dir=$(resolve_dir)
+
+  if [ $# -lt 2 ]; then
+    echo "Usage: nygard-agent-format.sh rename <num> <new-title>" >&2
+    exit 1
+  fi
+
+  num=$(printf "%04d" "$1")
+  shift
+  new_title="$*"
+  slug=$(slugify "$new_title")
+  display_number=$(echo "$num" | sed 's/^0*//')
+
+  old_file=""
+  for f in "$dir"/${num}-*.md; do
+    [ -f "$f" ] && old_file="$f" && break
+  done
+
+  if [ -z "$old_file" ]; then
+    echo "ERROR: ADR $num not found in $dir" >&2
+    exit 1
+  fi
+
+  new_file="$dir/${num}-${slug}.md"
+
+  if [ "$old_file" = "$new_file" ]; then
+    echo "No rename needed: $(basename "$old_file")"
+    return
+  fi
+
+  if [ -f "$new_file" ]; then
+    echo "ERROR: target file already exists: $new_file" >&2
+    exit 1
+  fi
+
+  # Update heading (first line)
+  local today
+  today=$(adr_date)
+  sed -i '' "1s/.*/# ${display_number}. ${new_title}/" "$old_file"
+
+  # Update Last Updated date
+  if grep -q '^Last Updated:' "$old_file"; then
+    sed -i '' "s/^Last Updated:.*/Last Updated: ${today}/" "$old_file"
+  fi
+
+  mv "$old_file" "$new_file"
+  echo "Renamed: $(basename "$old_file") → $(basename "$new_file")"
+}
+
 cmd_status() {
   local dir
   dir=$(resolve_dir)
@@ -238,14 +289,16 @@ case "${1:-help}" in
   new)    shift; cmd_new "$@" ;;
   init)   shift; cmd_init "$@" ;;
   list)   shift; cmd_list "$@" ;;
+  rename) shift; cmd_rename "$@" ;;
   status) shift; cmd_status "$@" ;;
   *)
-    echo "Usage: nygard-agent-format.sh {new|init|list|status}" >&2
+    echo "Usage: nygard-agent-format.sh {new|init|list|rename|status}" >&2
     echo "" >&2
     echo "Subcommands:" >&2
     echo "  new <number> <title> <dir>   Generate ADR from baked-in template" >&2
     echo "  init [dir]                   Bootstrap ADR directory" >&2
     echo "  list                         List ADRs with title and status" >&2
+    echo "  rename <num> <new-title>     Rename an ADR file and update heading" >&2
     echo "  status [num] [new-status]    Show or update ADR status" >&2
     exit 1
     ;;

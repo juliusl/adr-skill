@@ -1,7 +1,7 @@
 # 19. Add problem-first solve task to author-adr workflow
 
 Date: 2026-04-03
-Status: Proposed
+Status: Planned
 Last Updated: 2026-04-03
 Links:
 - [ADR-0015: Add interactive revise task](0015-add-interactive-revise-task-to-author-adr-workflow.md)

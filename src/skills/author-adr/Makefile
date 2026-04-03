@@ -18,7 +18,7 @@ ORCHESTRATOR   := $(SCRIPTS_DIR)/new.sh
 
 # --- Targets ---
 
-.PHONY: help init new list status install-agents
+.PHONY: help init new rename list status install-agents
 
 help: ## Show available targets
 	@echo "ADR Skill Makefile (format: $(ADR_AGENT_SKILL_FORMAT))"
@@ -34,6 +34,9 @@ init: ## Initialize ADR directory (DIR=path)
 
 new: ## Create a new ADR (TITLE="...")
 	$(ORCHESTRATOR) $(ADR_AGENT_SKILL_FORMAT) $(TITLE)
+
+rename: ## Rename an ADR (NUM=N TITLE="New Title")
+	$(FORMAT_SCRIPT) rename $(NUM) $(TITLE)
 
 list: ## List all ADRs
 	$(FORMAT_SCRIPT) list

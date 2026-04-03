@@ -1,0 +1,45 @@
+docs/adr/0001-record-architecture-decisions.md
+docs/adr/0002-tbd.md
+--- before rename ---
+0001-record-architecture-decisions.md
+0002-tbd.md
+--- rename ---
+Renamed: 0002-tbd.md → 0002-use-postgresql-for-persistence.md
+--- after rename ---
+0001-record-architecture-decisions.md
+0002-use-postgresql-for-persistence.md
+--- content ---
+# 2. Use PostgreSQL for persistence
+
+Date: 2026-01-15
+Status: Prototype
+Last Updated: 2026-01-15
+Links:
+
+## Context
+
+## Options
+
+## Decision
+
+## Consequences
+
+## Quality Strategy
+
+- [ ] Introduces major semantic changes
+- [ ] Introduces minor semantic changes
+- [ ] Fuzz testing
+- [ ] Unit testing
+- [ ] Load testing
+- [ ] Performance testing
+- [ ] Backwards Compatible
+
+### Additional Quality Concerns
+
+---
+
+## Comments
+--- no-op rename ---
+No rename needed: 0002-use-postgresql-for-persistence.md
+--- error: not found ---
+ERROR: ADR 0099 not found in docs/adr
