@@ -1,19 +1,20 @@
 ---
 name: implement-adr
 description: >-
-  Use this skill when the user needs to turn Architectural Decision Records
-  (ADRs) into actionable implementation plans — including decomposing decisions
-  into staged work, generating plan.md files with scoped tasks, estimating
-  effort (small/medium/heavy), identifying gaps in decision records, or
-  understanding how to go from "we decided X" to "X is built." Activate this
-  skill when the user says things like "implement this ADR," "plan the work
-  for this decision," "break this decision into tasks," "what's missing before
-  I can build this," or "generate an implementation plan." Also use when the
-  user asks about ADR-to-code traceability, task decomposition from decisions,
-  or test and acceptance criteria for planned work. Do not use for authoring,
-  reviewing, or managing ADRs themselves — use the author-adr skill for that.
-  Do not use for general project management, sprint planning, or work that is
-  not grounded in an architectural decision record.
+  Use this skill when the user wants to implement an ADR — turning an
+  architectural decision into code by decomposing it into staged work,
+  generating plan.md files with scoped tasks, estimating effort
+  (small/medium/heavy), identifying gaps, or understanding how to go from
+  "we decided X" to "X is built." Activate when the user says things like
+  "implement ADR 0013," "implement this ADR," "let's implement," "start
+  implementing," "execute this decision," "plan the work for this decision,"
+  "break this decision into tasks," "what's missing before I can build this,"
+  or "generate an implementation plan." Also activate when the user references
+  an ADR by number and wants to build, execute, or plan work for it. Also use
+  for ADR-to-code traceability, task decomposition, or test and acceptance
+  criteria for planned work. Do not use for authoring, reviewing, or managing
+  ADRs — use author-adr for that. Do not use for general project management
+  or sprint planning.
 license: CC-BY-4.0
 metadata:
   version: "1.0"
