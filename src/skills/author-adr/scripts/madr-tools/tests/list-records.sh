@@ -1,2 +1,0 @@
-madr init
-madr list
