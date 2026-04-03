@@ -24,7 +24,7 @@ endif
 
 # --- Targets ---
 
-.PHONY: help init init-meta new list status generate link check-format install-agents
+.PHONY: help init new list status generate link check-format install-agents
 
 help: ## Show available targets
 	@echo "ADR Skill Makefile (format: $(ADR_AGENT_SKILL_FORMAT))"
@@ -41,17 +41,6 @@ ifeq ($(ADR_AGENT_SKILL_FORMAT),madr)
 else
 	$(ADR_CMD) init $(DIR)
 endif
-	@$(MAKE) -f $(lastword $(MAKEFILE_LIST)) init-meta
-
-init-meta: ## Create .meta/ directory for behavioral policies
-	@adr_dir=$$(cat .adr-dir 2>/dev/null || echo "docs/adr"); \
-	if [ -d "$$adr_dir" ]; then \
-		mkdir -p "$$adr_dir/.meta"; \
-		echo "Created $$adr_dir/.meta/ for behavioral policies."; \
-	else \
-		echo "ADR directory $$adr_dir does not exist. Run 'make init' first."; \
-		exit 1; \
-	fi
 
 new: check-format ## Create a new ADR (TITLE="..." [SUPERSEDE=N] [TEMPLATE=minimal|full])
 ifeq ($(ADR_AGENT_SKILL_FORMAT),madr)
