@@ -25,25 +25,22 @@ Scope is optional but encouraged (e.g., `skill`, `makefile`, `tooling`).
 adr-skills/
 ├── AGENTS.md                    # This file — development guide
 ├── README.md                    # Project overview
-├── Makefile                     # Dev targets (test, install-agents)
+├── Makefile                     # Dev targets (test)
 ├── eval_queries.json            # Trigger evaluation queries for description optimization
 ├── docs/adr/                    # Project-level ADRs (decisions about these skills)
+├── docs/plans/                  # Implementation plans generated from ADRs
 ├── src/skills/
 │   ├── author-adr/              # Skill: create, review, manage ADRs
 │   │   ├── SKILL.md             # Skill entry point (spec-compliant frontmatter + instructions)
 │   │   ├── Makefile             # Downstream agent interface (init, new, list, etc.)
 │   │   ├── references/          # On-demand documentation loaded by the agent
-│   │   │   ├── practices.md     # AD practice guide with inline summaries
+│   │   │   ├── create.md        # ADR creation workflow (significance, readiness, practices)
+│   │   │   ├── review.md        # ADR review process (ecADR, fallacies, anti-patterns)
+│   │   │   ├── manage.md        # ADR management (status, supersede, link, split)
 │   │   │   ├── templates.md     # Template selection guide (Nygard primary, MADR, Y-Statement)
 │   │   │   └── tooling.md       # Dual-format command reference + visualization guidance
-│   │   ├── assets/              # Static resources, templates, and distilled notes
-│   │   │   ├── index.md         # Curated asset index with summaries
-│   │   │   ├── PRACTICES_NOTES.md   # Tagged practice fragments (create, review, assess, etc.)
-│   │   │   ├── SUPPLEMENTAL.md      # Medium-value context (adoption model, alt tooling)
-│   │   │   ├── mermaid-chart-examples.md
-│   │   │   ├── adr-reviewer.agent.md  # Custom agent (installed via make install-agents)
-│   │   │   ├── templates/       # Ready-to-use ADR templates (Nygard, MADR, Y-Statement)
-│   │   │   └── archive/         # Full originals of distilled notes (deep context only)
+│   │   ├── assets/              # Static resources and templates
+│   │   │   └── templates/       # Ready-to-use ADR templates (Nygard, MADR, Y-Statement)
 │   │   └── scripts/
 │   │       ├── adr-tools-3.0.0/ # Nygard format (bundled, 22 tests)
 │   │       └── madr-tools/      # MADR format (custom, 9 tests)
@@ -55,9 +52,7 @@ adr-skills/
 │       │   ├── testing-guidelines.md  # Testing taxonomy by code context
 │       │   └── cost-estimation.md     # T-shirt sizing guide and calibration
 │       ├── assets/              # Static resources and templates
-│       │   ├── index.md         # Curated asset index
-│       │   ├── templates/       # plan.md template
-│       │   └── archive/         # Full originals (reserved for future use)
+│       │   └── templates/       # plan.md template
 │       └── scripts/             # Reserved for future tooling
 ```
 
@@ -100,14 +95,14 @@ adr-skills/
    ```bash
    # author-adr
    cd src/skills/author-adr
-   grep -oP '(?:assets|references)/[^\s)#]+\.md' SKILL.md | while read ref; do
+   grep -oE '\((assets|references)/[^)]+\.md\)' SKILL.md | sed 's/[()]//g' | while read ref; do
      [ ! -f "$ref" ] && echo "BROKEN: $ref"
    done
    cd ../../..
 
    # implement-adr
    cd src/skills/implement-adr
-   grep -oP '(?:assets|references)/[^\s)#]+\.md' SKILL.md | while read ref; do
+   grep -oE '\((assets|references)/[^)]+\.md\)' SKILL.md | sed 's/[()]//g' | while read ref; do
      [ ! -f "$ref" ] && echo "BROKEN: $ref"
    done
    cd ../../..
@@ -131,15 +126,16 @@ From the [agentskills.io specification](https://agentskills.io/specification):
 | `SKILL.md` body | Recommended < 500 lines |
 | File references | Relative paths from skill root, keep one level deep |
 
-## Adding or Modifying Practice Notes
+## Adding or Modifying References
 
-Practice notes live in `assets/PRACTICES_NOTES.md` as tagged fragments.
+Task-specific references live in `references/` (one file per workflow task):
 
-- Each fragment has a `<!-- tags: ... -->` comment listing relevant intents
-- Available tags: `create`, `review`, `assess`, `template`, `justify`, `adopt`
-- Each fragment has an `*Archive:*` link pointing to the full original
-- When adding a new fragment, choose tags based on which workflow steps
-  (in SKILL.md's "Agent Workflow" section) the content supports
+- `create.md` — ADR creation workflow
+- `review.md` — ADR review process
+- `manage.md` — ADR management operations
+
+When modifying a reference file, keep it self-contained — each reference should
+be usable on its own without reading the others.
 
 ## Adding or Modifying Templates
 
@@ -147,7 +143,6 @@ Templates live in `assets/templates/`. When adding a new template:
 
 1. Place the template file in `assets/templates/`
 2. Add an entry in `references/templates.md`
-3. Add an entry in `assets/index.md` under the Templates section
 
 ## Modifying Scripts
 
