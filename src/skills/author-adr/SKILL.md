@@ -145,6 +145,25 @@ The review process covers:
    the user
 5. **7-point checklist** — structured quality assessment
 6. **Verdict** — Accept, Revise, or Rethink
+7. **Offer revision** — if the verdict is "Revise," offer to interactively
+   address the review comments. If the user agrees, proceed to
+   [Revising an ADR](#revising-an-adr).
+
+### Revising an ADR
+
+Read [references/revise.md](references/revise.md) for the full interactive
+revision workflow. Use this after a review produces a "Revise" verdict.
+
+The revision process covers:
+
+1. **Load review comments** — parse the structured review output into discrete
+   revision items
+2. **Present each comment** — show findings one at a time with context
+3. **Collect user response** — for each comment, the user can address it or
+   reject it
+4. **Apply revisions** — update the ADR with the user's approved changes
+5. **Produce revision summary** — document what was addressed vs. rejected
+6. **Recommend re-review** — suggest re-review if substantive changes were made
 
 ### Managing ADRs
 
