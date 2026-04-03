@@ -4,12 +4,9 @@
 
 ## Primary: Nygard ADR (adr-tools default)
 
-The **Nygard template** is the default format used by adr-tools. It is the
-simplest and most widely adopted ADR format, introduced by Michael Nygard in
-his [2011 blog post](../assets/nygard-documenting-architecture-decisions.md).
+The **Nygard template** is the default format used by adr-tools. It is the simplest and most widely adopted ADR format, introduced by Michael Nygard in his [2011 blog post](../assets/nygard-documenting-architecture-decisions.md).
 
-**Template:** [nygard-template.md](../assets/templates/nygard-template.md)
-— with inline guidance: [gh-joelparkerhenderson-nygard-template.md](../assets/templates/gh-joelparkerhenderson-nygard-template.md)
+**Template:** [nygard-template.md](../assets/templates/nygard-template.md) — with inline guidance: [gh-joelparkerhenderson-nygard-template.md](../assets/templates/gh-joelparkerhenderson-nygard-template.md)
 
 ### Structure
 
@@ -74,9 +71,7 @@ For a section-by-section walkthrough, see the
 
 ## Alternative: Y-Statement
 
-A single-sentence format originated from the
-[Sustainable Architectural Decisions](../assets/zdun-sustainable-architectural-decisions.md)
-paper by Zdun et al.
+A single-sentence format originated from the [Sustainable Architectural Decisions](../assets/zdun-sustainable-architectural-decisions.md) paper by Zdun et al.
 
 **Template:** [y-statement-template.md](../assets/templates/y-statement-template.md)
 
@@ -115,7 +110,4 @@ paper by Zdun et al.
 
 ## Other Templates
 
-Many additional templates exist and are catalogued in
-[joelparkerhenderson's ADR guide](../assets/gh-joelparkerhenderson-adr.md),
-including Alexandrian, Business Case, Merson, Planguage, and Tyree-Akerman
-formats.
+Many additional templates exist and are catalogued in [joelparkerhenderson's ADR guide](../assets/gh-joelparkerhenderson-adr.md), including Alexandrian, Business Case, Merson, Planguage, and Tyree-Akerman formats.

@@ -1,12 +1,10 @@
 # Creating an ADR
 
-Self-contained reference for the ADR creation workflow. Read this file when
-the user asks to create, draft, or write an ADR.
+Self-contained reference for the ADR creation workflow. Read this file when the user asks to create, draft, or write an ADR.
 
 ## Step 1: Assess Architectural Significance (ASR Test)
 
-Before creating an ADR, verify that the decision is architecturally significant.
-Score the issue against these 7 criteria (takes 1–2 minutes):
+Before creating an ADR, verify that the decision is architecturally significant. Score the issue against these 7 criteria (takes 1–2 minutes):
 
 | # | Criterion | Ask |
 |---|-----------|-----|
@@ -20,13 +18,9 @@ Score the issue against these 7 criteria (takes 1–2 minutes):
 
 - Score each Y/N/?/H/M/L — more criteria met = higher significance
 - Prioritize issues with high business value/risk and cross-cutting impact
-- **ECSA core decisions** that typically need early attention: minimal
-  functionality/regulations, architectural style, technology stacks, integration
-  options, governance structure, development environment standards
+- **ECSA core decisions** that typically need early attention: minimal functionality/regulations, architectural style, technology stacks, integration options, governance structure, development environment standards
 
-If the decision is not architecturally significant, suggest informal
-documentation (e.g., a comment, wiki page, or team channel post) instead of
-a formal ADR.
+If the decision is not architecturally significant, suggest informal documentation (e.g., a comment, wiki page, or team channel post) instead of a formal ADR.
 
 ## Step 2: Check Readiness (START)
 
@@ -40,15 +34,11 @@ Verify these five criteria before beginning a decision:
 
 ### Identifying Big/Early Decisions
 
-Look for 7 markers: high significance, financial cost, long execution time,
-many dependencies, long decision-making time, high abstraction level, unusual
-problem/solution space.
+Look for 7 markers: high significance, financial cost, long execution time, many dependencies, long decision-making time, high abstraction level, unusual problem/solution space.
 
 ### Most Responsible Moment
 
-Don't decide too early (reduces flexibility) or too late (causes costly
-rework). The MRM is the last point at which the cost of deferral begins to
-exceed the cost of deciding now.
+Don't decide too early (reduces flexibility) or too late (causes costly rework). The MRM is the last point at which the cost of deferral begins to exceed the cost of deciding now.
 
 ### ADMM — 5 Logical Steps
 
@@ -64,8 +54,7 @@ exceed the cost of deciding now.
 
 1. **Select by priority and architectural significance** — use the ASR Test
 2. **Don't defer high-impact, hard-to-reverse decisions**
-3. **Prioritize meta-qualities** (observability, reactivity) over presumed
-   long-term goals
+3. **Prioritize meta-qualities** (observability, reactivity) over presumed long-term goals
 4. **Root decisions in actual requirements** and personal experience
 5. **Invest in editorial quality** — write clearly and concisely
 6. **Split complex decisions into stages** (short-term → mid-term → long-term)
@@ -99,12 +88,9 @@ exceed the cost of deciding now.
 
 ### Decision Criteria
 
-When defining evaluation criteria, normalize DOWN to the same abstraction level
-by decomposing high-level criteria into 3–4 specific sub-criteria. Avoid
-weighted scoring systems — they create false precision and maintenance burden.
+When defining evaluation criteria, normalize DOWN to the same abstraction level by decomposing high-level criteria into 3–4 specific sub-criteria. Avoid weighted scoring systems — they create false precision and maintenance burden.
 
-**Example:** "Maintainability" (too abstract) → API stability, major release
-frequency, developer familiarity (concrete, comparable).
+**Example:** "Maintainability" (too abstract) → API stability, major release frequency, developer familiarity (concrete, comparable).
 
 ### Writing Justifications
 
@@ -127,14 +113,11 @@ frequency, developer familiarity (concrete, comparable).
 
 Verify these five criteria before considering the ADR complete:
 
-1. **Evidence** — confident the design will work (via PoC, spike, trusted peer
-   validation)
+1. **Evidence** — confident the design will work (via PoC, spike, trusted peer validation)
 2. **Criteria** — ≥2 alternatives identified and compared systematically
-3. **Agreement** — peer/team consensus reached with adequate stakeholder
-   involvement
+3. **Agreement** — peer/team consensus reached with adequate stakeholder involvement
 4. **Documentation** — decision captured in a template and shared
-5. **Realization/Review** — implementation scheduled; revisit date and
-   expiration defined
+5. **Realization/Review** — implementation scheduled; revisit date and expiration defined
 
 ### Quick Self-Test
 
@@ -180,7 +163,6 @@ Watch for these fallacies when drafting and use the countermeasures:
 | 6 | **Golden hammer / silver bullet** — one size fits all | **Grow your toolbox** — stay curious, learn from peers |
 | 7 | **Time irrelevance** — old evidence never expires | **Look back, think ahead** — set review dates, re-validate measurements |
 
-**Bonus: AI über-confidence** — using AI-generated design advice without QA;
-baking fallacies into prompts yields fallacious outputs.
+**Bonus: AI über-confidence** — using AI-generated design advice without QA; baking fallacies into prompts yields fallacious outputs.
 
 > AD making is a team sport — group decisions mitigate fallacy risk.

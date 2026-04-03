@@ -34,8 +34,7 @@ make test                               # run tests for both formats
 
 ## Runtime: Nygard (adr-tools)
 
-Direct script usage when the Makefile is not available or the agent needs to
-adapt.
+Direct script usage when the Makefile is not available or the agent needs to adapt.
 
 ### Quick Start
 
@@ -135,8 +134,7 @@ change that will need to be mitigated.
 
 ### Custom Templates
 
-Place a `template.md` in `templates/` within your ADR directory to override the
-default. The template can use the following placeholders:
+Place a `template.md` in `templates/` within your ADR directory to override the default. The template can use the following placeholders:
 - `NUMBER` — auto-incremented ADR number
 - `TITLE` — from the command line arguments
 - `DATE` — current date (or `ADR_DATE` env var)
@@ -237,8 +235,7 @@ madr help new      # help for a specific command
 
 ### Template
 
-madr-tools defaults to the MADR minimal template. Use `-t full` for the full
-template with decision drivers, pros/cons analysis, and confirmation sections.
+madr-tools defaults to the MADR minimal template. Use `-t full` for the full template with decision drivers, pros/cons analysis, and confirmation sections.
 
 Templates are sourced from `assets/templates/`:
 - `madr-minimal-template.md` — Context, Options, Outcome, Consequences
@@ -246,8 +243,7 @@ Templates are sourced from `assets/templates/`:
 
 ### Custom Templates
 
-Place a custom `adr-template.md` in your decisions directory during `madr init`.
-The tool copies both templates there; modify them to suit your project.
+Place a custom `adr-template.md` in your decisions directory during `madr init`. The tool copies both templates there; modify them to suit your project.
 
 ### Environment Variables
 
@@ -259,9 +255,7 @@ The tool copies both templates there; modify them to suit your project.
 
 ## Other Tools (For Reference)
 
-While this skill standardizes on adr-tools, agents may encounter projects using
-alternative tooling. Key alternatives are documented in
-[assets/](../assets/index.md) under "Tooling":
+While this skill standardizes on adr-tools, agents may encounter projects using alternative tooling. Key alternatives are documented in [assets/](../assets/index.md) under "Tooling":
 
 - **ADG** (Go) — multi-template CLI supporting Nygard, MADR, and QOC
 - **dotnet-adr** (.NET) — cross-platform .NET Global Tool
@@ -275,11 +269,7 @@ alternative tooling. Key alternatives are documented in
 
 ### When to Use Diagrams
 
-Use diagrams when complex relationships between processes or entities are better
-understood visually. Humans tend to have limited working memory, and
-visualizations can compress information into a digestible format. However, by
-that same token, overuse of visualizations can overload context — so use them
-sparingly and only when they genuinely clarify what prose or tables cannot.
+Use diagrams when complex relationships between processes or entities are better understood visually. Humans tend to have limited working memory, and visualizations can compress information into a digestible format. However, by that same token, overuse of visualizations can overload context — so use them sparingly and only when they genuinely clarify what prose or tables cannot.
 
 **Good uses for diagrams:**
 - ADR status transitions (state diagram)
@@ -294,17 +284,13 @@ sparingly and only when they genuinely clarify what prose or tables cannot.
 
 ### Mermaid Charts
 
-All diagrams should use **Mermaid** syntax. Mermaid renders natively in GitHub
-Markdown, most documentation platforms, and many editors.
+All diagrams should use **Mermaid** syntax. Mermaid renders natively in GitHub Markdown, most documentation platforms, and many editors.
 
-See [assets/mermaid-chart-examples.md](../assets/mermaid-chart-examples.md) for
-ADR-specific diagram patterns and general syntax reference.
+See [assets/mermaid-chart-examples.md](../assets/mermaid-chart-examples.md) for ADR-specific diagram patterns and general syntax reference.
 
 ### Markdown Tables for Comparisons
 
-When presenting decision justification, use markdown tables to condense the
-analysis. Tables are lower-overhead than diagrams, scannable, and keep the ADR
-focused on substance:
+When presenting decision justification, use markdown tables to condense the analysis. Tables are lower-overhead than diagrams, scannable, and keep the ADR focused on substance:
 
 ```markdown
 | Criteria   | Option A  | Option B  | Option C  |

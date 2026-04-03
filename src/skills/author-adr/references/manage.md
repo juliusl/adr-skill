@@ -1,8 +1,6 @@
 # Managing ADRs
 
-Self-contained reference for ADR management tasks. Read this file when the
-user asks to update, supersede, deprecate, link, split, or generate a decision
-log for existing ADRs.
+Self-contained reference for ADR management tasks. Read this file when the user asks to update, supersede, deprecate, link, split, or generate a decision log for existing ADRs.
 
 ## Status Lifecycle
 
@@ -37,10 +35,8 @@ make -f <skill-root>/Makefile status NUM=3 STATUS=Deprecated
 
 **Rules:**
 - Only transition one status at a time per ADR.
-- Record the reason for status changes in the ADR's context or as a brief
-  note below the status line when the change is non-obvious.
-- The `Planned` status is used by the `implement-adr` skill when an ADR has
-  been decomposed into a plan but not yet fully implemented.
+- Record the reason for status changes in the ADR's context or as a brief note below the status line when the change is non-obvious.
+- The `Planned` status is used by the `implement-adr` skill when an ADR has been decomposed into a plan but not yet fully implemented.
 
 ## Superseding Decisions
 
@@ -58,24 +54,19 @@ make -f <skill-root>/Makefile status NUM=3 STATUS=Deprecated
 
 1. Create the new ADR with the `SUPERSEDE` parameter:
 
-   ```bash
-   make -f <skill-root>/Makefile new TITLE="Use OAuth2 instead of API keys" SUPERSEDE=3
-   ```
+   ```bash make -f <skill-root>/Makefile new TITLE="Use OAuth2 instead of API keys" SUPERSEDE=3 ```
 
    This automatically:
    - Creates the new ADR with a link to the superseded ADR
    - Updates the old ADR's status to `Superseded by ADR-NNNN`
 
-2. In the new ADR's Context section, explain why the previous decision is
-   being replaced. Reference the old ADR by number.
+2. In the new ADR's Context section, explain why the previous decision is being replaced. Reference the old ADR by number.
 
-3. The new ADR starts in `Proposed` status — it still needs to go through
-   its own acceptance process.
+3. The new ADR starts in `Proposed` status — it still needs to go through its own acceptance process.
 
 ## Linking Related ADRs
 
-ADRs often relate to each other without one replacing the other. Use links to
-express these relationships.
+ADRs often relate to each other without one replacing the other. Use links to express these relationships.
 
 ### Relationship Types
 
@@ -99,13 +90,11 @@ For MADR format, add links manually by editing the ADR files directly.
 
 - Link bidirectionally — if ADR-5 amends ADR-3, both should mention the link.
 - Keep link text concise — use the relationship type as the link label.
-- Don't over-link — only express relationships that aid navigation or
-  understanding. Not every ADR in the same domain needs to link to every other.
+- Don't over-link — only express relationships that aid navigation or understanding. Not every ADR in the same domain needs to link to every other.
 
 ## Splitting Mega-ADRs
 
-A Mega-ADR bundles too many decisions into one document. Signs that an ADR
-should be split:
+A Mega-ADR bundles too many decisions into one document. Signs that an ADR should be split:
 
 ### Signs of a Mega-ADR
 
@@ -130,33 +119,25 @@ should be split:
 
 When managing ADRs, follow these rules:
 
-1. **Never modify other ADRs without explicit instruction.** Cross-references
-   and status updates to other ADRs (e.g., marking one as superseded) are the
-   user's responsibility. Suggest the change but do not apply it unilaterally.
+1. **Never modify other ADRs without explicit instruction.** Cross-references and status updates to other ADRs (e.g., marking one as superseded) are the user's responsibility. Suggest the change but do not apply it unilaterally.
 
-2. **One ADR, one decision.** If the user's request implies multiple decisions,
-   recommend splitting into separate ADRs.
+2. **One ADR, one decision.** If the user's request implies multiple decisions, recommend splitting into separate ADRs.
 
-3. **Preserve history.** Do not delete ADRs. Use `Deprecated` or `Superseded`
-   status instead. The decision log is an append-only record.
+3. **Preserve history.** Do not delete ADRs. Use `Deprecated` or `Superseded` status instead. The decision log is an append-only record.
 
-4. **Status changes are intentional.** Don't change status as a side effect of
-   other edits. Status transitions should be explicit actions.
+4. **Status changes are intentional.** Don't change status as a side effect of other edits. Status transitions should be explicit actions.
 
-5. **Numbering is sequential.** New ADRs always get the next available number.
-   Never reuse numbers from deprecated or superseded ADRs.
+5. **Numbering is sequential.** New ADRs always get the next available number. Never reuse numbers from deprecated or superseded ADRs.
 
 ## Generating the Decision Log
 
-The decision log is a table-of-contents view of all ADRs in the project.
-Generate it with:
+The decision log is a table-of-contents view of all ADRs in the project. Generate it with:
 
 ```bash
 make -f <skill-root>/Makefile generate
 ```
 
-This produces a table of contents listing all ADRs with their numbers, titles,
-and statuses. Use the `PREFIX` parameter to add a URL prefix for links:
+This produces a table of contents listing all ADRs with their numbers, titles, and statuses. Use the `PREFIX` parameter to add a URL prefix for links:
 
 ```bash
 make -f <skill-root>/Makefile generate PREFIX="https://github.com/org/repo/blob/main/"
