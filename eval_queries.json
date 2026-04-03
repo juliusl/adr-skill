@@ -10,6 +10,7 @@
   { "query": "Help me compare the options we have for our database and write up the rationale", "should_trigger": true },
   { "query": "We need a decision log for this project, where do we start?", "should_trigger": true },
   { "query": "Can you check if our ADR has any logical fallacies in the justification?", "should_trigger": true },
+  { "query": "Let's create an ADR regarding the format of the config file", "should_trigger": true },
   { "query": "Write a fibonacci function in Python", "should_trigger": false },
   { "query": "Fix the CSS on our landing page, the button colors are wrong", "should_trigger": false },
   { "query": "Review this pull request for code quality issues", "should_trigger": false },

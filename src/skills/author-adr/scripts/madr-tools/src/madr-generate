@@ -31,7 +31,7 @@ echo ""
 
 for f in $(find "$madr_dir" -maxdepth 1 -name "[0-9]*.md" | sort); do
     name=$(basename "$f")
-    title=$(head -1 "$f" | sed 's/^#\s*//')
+    title=$(head -1 "$f" | sed 's/^# *//')
     status=$(grep -m1 "^## Status" -A2 "$f" | tail -1 | sed 's/^[[:space:]]*//')
     echo "- [$title](${prefix}${name}) — *${status}*"
 done

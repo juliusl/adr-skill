@@ -5,13 +5,15 @@ description: >-
   Decision Records (ADRs) — including drafting new decisions, evaluating
   existing ones for quality, choosing between ADR templates (Nygard, MADR,
   Y-Statement), setting up ADR tooling, or understanding ADR best practices.
-  Activate this skill when the user wants to document a design choice, justify
-  a technology selection, record why an architecture was chosen over
-  alternatives, capture tradeoffs, or establish a decision log — even if they
-  don't explicitly say "ADR" or "architecture decision." Also use when the user
-  asks about decision rationale, design justification, or reversibility of
-  technical choices. Do not use for general code review, project management,
-  or non-architectural documentation.
+  Activate when the user says things like "create an ADR," "write an ADR,"
+  "new ADR," "draft a decision," "review this ADR," or "document this
+  decision." Also activate
+  when the user wants to justify a technology selection, record why an
+  architecture was chosen over alternatives, capture tradeoffs, or establish
+  a decision log — even if they don't explicitly say "ADR" or "architecture
+  decision." Also use when the user asks about decision rationale, design
+  justification, or reversibility of technical choices. Do not use for general
+  code review, project management, or non-architectural documentation.
 license: CC-BY-4.0
 metadata:
   source: adr.github.io
@@ -73,6 +75,11 @@ User request
 ```
 
 ### Creating an ADR
+
+**Guardrail:** When creating or editing an ADR, never modify other existing
+ADRs. Cross-references and status updates to other ADRs (e.g., marking one as
+superseded) are the user's responsibility — suggest the change but do not apply
+it without explicit instruction.
 
 1. **Assess significance** — read the
    [ASR Test](assets/PRACTICES_NOTES.md#asr-test--core-decisions) and score

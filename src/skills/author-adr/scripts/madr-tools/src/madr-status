@@ -44,7 +44,12 @@ if [ -z "$2" ]; then
 else
     # Update status
     new_status="$2"
-    # Replace the line after "## Status" (skip blank lines)
-    sed -i "/^## Status/{n;/^$/n;s/.*/$new_status/}" "$target"
+    # Replace the status value: find line after "## Status" (skip blanks)
+    awk -v ns="$new_status" '
+        /^## Status/ { print; found=1; next }
+        found && /^[[:space:]]*$/ { print; next }
+        found { print ns; found=0; next }
+        { print }
+    ' "$target" > "$target.tmp" && mv "$target.tmp" "$target"
     echo "Updated $(basename "$target") → $new_status"
 fi

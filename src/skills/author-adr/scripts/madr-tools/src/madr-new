@@ -79,10 +79,10 @@ if [ -n "$superseded" ]; then
     if [ -n "$sup_file" ] && [ -f "$sup_file" ]; then
         sup_name=$(basename "$sup_file")
         # Add supersedes link to new ADR status
-        sed -i "s/^Proposed$/Proposed. Supersedes [$sup_name]($sup_name)/" "$filepath"
+        sed -i '' "s/^Proposed$/Proposed. Supersedes [$sup_name]($sup_name)/" "$filepath"
         # Update old ADR status
-        sed -i "s/^Accepted$/Superseded by [$filename]($filename)/" "$sup_file"
-        sed -i "s/^Proposed$/Superseded by [$filename]($filename)/" "$sup_file"
+        sed -i '' "s/^Accepted$/Superseded by [$filename]($filename)/" "$sup_file"
+        sed -i '' "s/^Proposed$/Superseded by [$filename]($filename)/" "$sup_file"
     else
         echo "WARNING: could not find ADR matching '$superseded'" >&2
     fi
