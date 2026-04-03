@@ -52,8 +52,11 @@ This will generate a file w/ the format `NNNN-<title>.md`. The skill should ask 
 
 After this step, you can use the `implement-adr` skill when you are ready to implement,
 
-```
+```sh
 /implement-adr Implement adr 0002
+
+# w/ options
+/implement-adr 0002, autonomously w/ auto-commits
 ```
 
 This will first write a plan under docs/plans in the format `<ADR-RANGE>.<REVISION>.plan.md`. If the plan is quite extensive, and the session is already saturated, you can easily create a new session and use the prompt.
