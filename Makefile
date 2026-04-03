@@ -7,7 +7,7 @@ IMPLEMENT_SKILL_DIR := $(CURDIR)/src/skills/implement-adr
 # Legacy alias so existing references keep working
 SKILL_DIR := $(AUTHOR_SKILL_DIR)
 
-.PHONY: help test test-nygard test-madr install-agents install-user-copilot validate-setup validate validate-all
+.PHONY: help test test-nygard test-madr install-agents install-user-copilot validate-setup validate validate-all check-refs
 
 help: ## Show available targets
 	@echo "ADR Skill Development Makefile"
@@ -23,6 +23,9 @@ test-nygard: ## Run adr-tools tests
 
 test-madr: ## Run madr-tools tests
 	$(MAKE) -C $(SKILL_DIR)/scripts/madr-tools clean check
+
+check-refs: ## Check for broken markdown references in all skills
+	@$(CURDIR)/scripts/check-refs $(AUTHOR_SKILL_DIR) $(IMPLEMENT_SKILL_DIR)
 
 install-agents: ## Install custom agents (ADR_AGENTS_DIR overrides target)
 	$(MAKE) -C $(SKILL_DIR) install-agents $(if $(ADR_AGENTS_DIR),ADR_AGENTS_DIR=$(ADR_AGENTS_DIR))

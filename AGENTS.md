@@ -93,19 +93,8 @@ adr-skills/
    references/ must resolve to existing files:
 
    ```bash
-   # author-adr
-   cd src/skills/author-adr
-   grep -oE '\((assets|references)/[^)]+\.md\)' SKILL.md | sed 's/[()]//g' | while read ref; do
-     [ ! -f "$ref" ] && echo "BROKEN: $ref"
-   done
-   cd ../../..
-
-   # implement-adr
-   cd src/skills/implement-adr
-   grep -oE '\((assets|references)/[^)]+\.md\)' SKILL.md | sed 's/[()]//g' | while read ref; do
-     [ ! -f "$ref" ] && echo "BROKEN: $ref"
-   done
-   cd ../../..
+   make check-refs
+   ```
    ```
 
 4. **Verify SKILL.md stays under 500 lines** (spec recommendation for

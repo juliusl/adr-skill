@@ -1,0 +1,90 @@
+#!/usr/bin/env bash
+# check-refs — verify that all markdown file links resolve to existing files.
+#
+# Usage: check-refs <skill-dir> [<skill-dir> ...]
+#
+# Scans SKILL.md and references/*.md for markdown links of the form
+# [text](path.md) or [text](path.md#anchor) where path is a relative
+# file reference. Reports any links that point to non-existent files.
+
+set -euo pipefail
+
+status=0
+
+check_dir() {
+  local dir="$1"
+  local files=()
+  local broken=0
+
+  # Collect files to scan
+  [[ -f "$dir/SKILL.md" ]] && files+=("$dir/SKILL.md")
+  for f in "$dir"/references/*.md; do
+    [[ -f "$f" ]] && files+=("$f")
+  done
+
+  if [[ ${#files[@]} -eq 0 ]]; then
+    echo "WARNING: no .md files found in $dir"
+    return
+  fi
+
+  for file in "${files[@]}"; do
+    local relfile="${file#"$dir/"}"
+    local lineno=0
+    local in_code=0
+    local link_re='\]\(([^)]+)\)'
+    local fence_re='^ *```'
+
+    while IFS= read -r line; do
+      lineno=$((lineno + 1))
+
+      # Track fenced code blocks
+      if [[ "$line" =~ $fence_re ]]; then
+        in_code=$(( 1 - in_code ))
+        continue
+      fi
+      [[ $in_code -eq 1 ]] && continue
+
+      while [[ "$line" =~ $link_re ]]; do
+        local target="${BASH_REMATCH[1]}"
+        line="${line#*"](${target})"}"
+
+        # Skip URLs, anchors-only, and non-file refs
+        [[ "$target" =~ ^https?:// ]] && continue
+        [[ "$target" =~ ^mailto: ]] && continue
+        [[ "$target" =~ ^# ]] && continue
+
+        # Strip anchor fragment
+        local filepath="${target%%#*}"
+
+        # Skip empty paths (pure anchor after stripping)
+        [[ -z "$filepath" ]] && continue
+
+        # Resolve relative to the file's directory
+        local filedir
+        filedir="$(dirname "$file")"
+        if [[ ! -e "$filedir/$filepath" ]]; then
+          echo "BROKEN: $relfile:$lineno → $target"
+          broken=$((broken + 1))
+        fi
+      done
+    done < "$file"
+  done
+
+  if [[ $broken -eq 0 ]]; then
+    echo "OK: $dir — all references valid"
+  else
+    echo "FAILED: $dir — $broken broken reference(s)"
+    status=1
+  fi
+}
+
+if [[ $# -eq 0 ]]; then
+  echo "Usage: check-refs <skill-dir> [<skill-dir> ...]"
+  exit 1
+fi
+
+for dir in "$@"; do
+  check_dir "$dir"
+done
+
+exit $status
