@@ -1,0 +1,7 @@
+docs/adr/0001-record-architecture-decisions.md
+docs/adr/0002-use-postgresql.md
+docs/adr/0003-add-redis-caching.md
+---
+1. Record architecture decisions	[Accepted]
+2. Use PostgreSQL	[Prototype]
+3. Add Redis caching	[Prototype]

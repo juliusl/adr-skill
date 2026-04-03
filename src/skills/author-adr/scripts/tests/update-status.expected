@@ -1,0 +1,10 @@
+docs/adr/0002-modern-format.md
+=== before ===
+Proposed
+Prototype
+=== update ===
+Updated: 0001-legacy-format.md → Accepted
+Updated: 0002-modern-format.md → Proposed
+=== after ===
+Accepted
+Proposed

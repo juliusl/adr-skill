@@ -1,0 +1,33 @@
+docs/adr/0001-record-architecture-decisions.md
+docs/adr/0002-use-postgresql-for-persistence.md
+---
+# 2. Use PostgreSQL for persistence
+
+Date: 2026-01-15
+Status: Prototype
+Last Updated: 2026-01-15
+Links:
+
+## Context
+
+## Options
+
+## Decision
+
+## Consequences
+
+## Quality Strategy
+
+- [ ] Introduces major semantic changes
+- [ ] Introduces minor semantic changes
+- [ ] Fuzz testing
+- [ ] Unit testing
+- [ ] Load testing
+- [ ] Performance testing
+- [ ] Backwards Compatible
+
+### Additional Quality Concerns
+
+---
+
+## Comments
