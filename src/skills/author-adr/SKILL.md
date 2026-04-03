@@ -1,19 +1,20 @@
 ---
 name: author-adr
 description: >-
-  Use this skill when the user needs to create, review, or manage Architectural
-  Decision Records (ADRs) — including drafting new decisions, evaluating
-  existing ones for quality, choosing between ADR templates (Nygard, MADR,
-  Y-Statement), setting up ADR tooling, or understanding ADR best practices.
-  Activate when the user says things like "create an ADR," "write an ADR,"
-  "new ADR," "draft a decision," "review this ADR," or "document this
-  decision." Also activate
-  when the user wants to justify a technology selection, record why an
-  architecture was chosen over alternatives, capture tradeoffs, or establish
-  a decision log — even if they don't explicitly say "ADR" or "architecture
-  decision." Also use when the user asks about decision rationale, design
-  justification, or reversibility of technical choices. Do not use for general
-  code review, project management, or non-architectural documentation.
+  Use this skill when the user needs to create, review, revise, or manage
+  Architectural Decision Records (ADRs) — including drafting new decisions,
+  evaluating existing ones for quality, addressing review comments
+  interactively, choosing between ADR templates (Nygard, MADR, Y-Statement),
+  setting up ADR tooling, or understanding ADR best practices. Activate when
+  the user says things like "create an ADR," "write an ADR," "new ADR,"
+  "draft a decision," "review this ADR," "revise this ADR," "address review
+  comments," or "document this decision." Also activate when the user wants
+  to justify a technology selection, record why an architecture was chosen
+  over alternatives, capture tradeoffs, or establish a decision log — even
+  if they don't explicitly say "ADR" or "architecture decision." Also use
+  when the user asks about decision rationale, design justification, or
+  reversibility of technical choices. Do not use for general code review,
+  project management, or non-architectural documentation.
 license: CC-BY-4.0
 metadata:
   source: adr.github.io
@@ -89,6 +90,7 @@ User request
 │
 ├─ "Create an ADR" ──────────────► Go to: Creating an ADR
 ├─ "Review an ADR" ──────────────► Go to: Reviewing an ADR
+├─ "Revise an ADR" ──────────────► Go to: Revising an ADR
 ├─ "Update/supersede an ADR" ───► Go to: Managing ADRs
 ├─ "Set up ADR tooling" ─────────► Go to: Tooling
 ├─ "Which template?" ────────────► Go to: Choosing a Template
@@ -257,6 +259,7 @@ on-demand:
 
 - [references/create.md](references/create.md) — full ADR creation workflow with significance assessment, readiness checks, and anti-patterns
 - [references/review.md](references/review.md) — structured review process with ecADR checks, fallacy scan, and verdict format
+- [references/revise.md](references/revise.md) — interactive revision workflow for addressing review comments after a Revise verdict
 - [references/manage.md](references/manage.md) — status transitions, superseding, linking, splitting, and guardrails
 - [references/templates.md](references/templates.md) — template details and selection guide
 - [references/tooling.md](references/tooling.md) — dual-format command reference and visualization
