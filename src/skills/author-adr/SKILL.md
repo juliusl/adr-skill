@@ -26,6 +26,21 @@ You are an expert on Architectural Decision Records. Use this skill whenever a
 user needs to create, review, or manage ADRs, choose an ADR template, select
 tooling, or understand best practices for architectural decision making.
 
+## Configuration
+
+This skill reads user-scoped preferences from a TOML configuration file at
+`~/.config/adr-skills/preferences.toml` (per ADR-0011 and ADR-0012).
+
+**Path resolution:**
+1. If `$XDG_CONFIG_HOME` is set, use `$XDG_CONFIG_HOME/adr-skills/preferences.toml`.
+2. Otherwise, use `$HOME/.config/adr-skills/preferences.toml`.
+
+**Graceful degradation:** If the file or directory does not exist, use built-in
+defaults. Never fail because config is absent.
+
+**Create on first write:** When persisting a preference, create the directory
+with `mkdir -p` before writing. Never assume it already exists.
+
 ## Agent Workflow
 
 When this skill is activated, **always start with Format Detection** before
@@ -33,11 +48,12 @@ proceeding to the relevant task.
 
 ### Format Detection
 
-Before any ADR operation, determine which ADR format the project uses:
+Before any ADR operation, determine which ADR format to use:
 
-1. **Check for `docs/adr/`** — if the directory exists, read the first ADR
-   (e.g., `0001-record-architecture-decisions.md`) to determine the chosen
-   format (Nygard or MADR).
+1. **Read the config file** — resolve the config path (see [Configuration](#configuration))
+   and read `[author].template` from `preferences.toml`.
+   - If set to `"nygard"` or `"madr"`, use it directly.
+   - If absent, default to `"nygard"`.
 2. **If `docs/adr/` does not exist** — prompt the user with a discrete choice:
 
    > Which ADR format would you like to use?
@@ -54,14 +70,22 @@ Before any ADR operation, determine which ADR format the project uses:
    This first ADR always uses Nygard format (the bootstrap default). If the user
    chose MADR, set `ADR_AGENT_SKILL_FORMAT=madr` for all subsequent ADRs.
 
-4. **Cache the format** — for the rest of the session, pass
+4. **Offer to persist** — if the user chose a format during bootstrap, offer to
+   save it to `[author].template` in `preferences.toml`:
+
+   > Save this format as your default for all projects?
+
+   If yes, write `[author]\ntemplate = "<format>"` to `preferences.toml`
+   (creating the file and directory if needed with `mkdir -p`).
+
+5. **Cache the format** — for the rest of the session, pass
    `ADR_AGENT_SKILL_FORMAT=nygard` or `ADR_AGENT_SKILL_FORMAT=madr` to all
-   Makefile targets based on what was recorded in the first ADR.
+   Makefile targets.
 
 ```
 User request
-├─ docs/adr/ exists? ────────────► Read first ADR → set format
-├─ docs/adr/ missing? ──────────► Prompt user → bootstrap → set format
+├─ docs/adr/ exists? ────────────► Read config → set format
+├─ docs/adr/ missing? ──────────► Prompt user → bootstrap → persist → set format
 │
 ├─ "Create an ADR" ──────────────► Go to: Creating an ADR
 ├─ "Review an ADR" ──────────────► Go to: Reviewing an ADR
