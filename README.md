@@ -34,13 +34,33 @@ Turn accepted ADRs into actionable implementation plans.
 
 Install the skill by adding it to your agent's skill configuration, then ask your agent to:
 
+> **Note:** Running sessions will need to be restarted for the skill to be picked up.
+
 ```
 Create an ADR for choosing PostgreSQL as our primary database.
 ```
 
 The agent will select the appropriate template, scaffold the record, and guide you through filling in the decision context, options, and rationale.
 
-**Note:** Running sessions will need to be restarted for the skill to be picked up.
+> For more explicit control if you are using copilot you can instead use,
+> 
+> ```sh
+> /author-adr Create an ADR for choosing PostgreSQL as our primary database.
+> ```
+
+This will generate a file w/ the format `NNNN-<title>.md`. The skill should ask if you'd like to review/revise the adr (recommended).
+
+After this step, you can use the `implement-adr` skill when you are ready to implement,
+
+```
+/implement-adr Implement adr 0002
+```
+
+This will first write a plan under docs/plans in the format `<ADR-RANGE>.<REVISION>.plan.md`. If the plan is quite extensive, and the session is already saturated, you can easily create a new session and use the prompt.
+
+```
+/implement-adr Implement adr 0002 using plan 0002.0.plan.md
+```
 
 **Installing to copilot user-scoped skills**
 
@@ -51,6 +71,22 @@ git clone github.com/juliusl/adr-skills
 # Install the skills to ~/.copilot/skills
 make install-user-copilot
 ```
+
+
+## Usage Tips
+
+### Elaborate when describing the ADR you wish to write
+
+This skill is mainly used to drive development with an agent so it's important that during the author phase you capture important context needed for the adr. The author-adr skill can also review an ADR which will end up re-inforcing this, but it's better to be in the habit of writing good prompts.
+
+In the above example "Create an ADR for choosing PostgreSQL as our primary database" is missing important context, such as 
+alternatives considered, overall reasons for it, any historical detail. So a better prompt might be:
+
+```
+/author-adr Create an ADR for choosing PostgreSQL as our primary database. PostgreSQL shows significant performance over other alternatives (MySQL, Sqlite) which is important as our service is called in a hot-path. 
+```
+
+This gives the agent much more context when authoring the rest of the ADR.
 
 ## Project Structure
 
