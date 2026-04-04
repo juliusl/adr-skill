@@ -1,7 +1,7 @@
 # 26. Add Rust CLI for data plumbing
 
 Date: 2026-04-04
-Status: Planned
+Status: Accepted
 Last Updated: 2026-04-04
 Links:
 - Builds on [ADR-0020](0020-establish-adr-directory-as-project-scoped-convention.md) (`.adr/` project-scoped directory for database file)
