@@ -199,7 +199,6 @@ Only use direct scripts when the Makefile is unavailable. See [references/toolin
 ```bash
 export PATH="$PWD/scripts:$PATH"
 nygard-agent-format.sh init docs/adr
-nygard-agent-format.sh init-data
 new.sh nygard-agent "Use PostgreSQL"
 nygard-agent-format.sh rename 2 "Use PostgreSQL"
 nygard-agent-format.sh list

@@ -289,30 +289,20 @@ cmd_status() {
   fi
 }
 
-cmd_init_data() {
-  mkdir -p .adr/var
-  if [ ! -f .adr/.gitignore ]; then
-    echo "var/" > .adr/.gitignore
-  fi
-  echo "Initialized .adr/ project-scoped directory"
-}
-
 # --- Dispatch ---
 
 case "${1:-help}" in
-  new)       shift; cmd_new "$@" ;;
-  init)      shift; cmd_init "$@" ;;
-  init-data) shift; cmd_init_data "$@" ;;
-  list)      shift; cmd_list "$@" ;;
-  rename)    shift; cmd_rename "$@" ;;
-  status)    shift; cmd_status "$@" ;;
+  new)    shift; cmd_new "$@" ;;
+  init)   shift; cmd_init "$@" ;;
+  list)   shift; cmd_list "$@" ;;
+  rename) shift; cmd_rename "$@" ;;
+  status) shift; cmd_status "$@" ;;
   *)
-    echo "Usage: nygard-agent-format.sh {new|init|init-data|list|rename|status}" >&2
+    echo "Usage: nygard-agent-format.sh {new|init|list|rename|status}" >&2
     echo "" >&2
     echo "Subcommands:" >&2
     echo "  new <number> <title> <dir>   Generate ADR from baked-in template" >&2
     echo "  init [dir]                   Bootstrap ADR directory" >&2
-    echo "  init-data                    Bootstrap .adr/ project-scoped directory" >&2
     echo "  list                         List ADRs with title and status" >&2
     echo "  rename <num> <new-title>     Rename an ADR file and update heading" >&2
     echo "  status [num] [new-status]    Show or update ADR status" >&2

@@ -59,11 +59,10 @@ new.sh <format> <title...>
 
 ```bash
 case "$1" in
-  new)       # generate ADR document with baked-in template
-  init)      # bootstrap ADR directory + first ADR
-  init-data) # bootstrap .adr/ project-scoped directory
-  list)      # list ADRs with number, title, status
-  status)    # show or update status (parses inline Status: field)
+  new)    # generate ADR document with baked-in template
+  init)   # bootstrap ADR directory + first ADR
+  list)   # list ADRs with number, title, status
+  status) # show or update status (parses inline Status: field)
 esac
 ```
 
@@ -78,9 +77,6 @@ export PATH="$PWD/scripts:$PATH"
 # Initialize ADR directory
 nygard-agent-format.sh init              # creates docs/adr/ with ADR 0001
 nygard-agent-format.sh init decisions    # custom directory name
-
-# Initialize .adr/ project-scoped directory
-nygard-agent-format.sh init-data         # creates .adr/, .adr/var/, .adr/.gitignore
 
 # Create a new ADR
 new.sh nygard-agent "Use PostgreSQL for persistence"

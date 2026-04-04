@@ -33,7 +33,9 @@ init: ## Initialize ADR directory (DIR=path)
 	$(FORMAT_SCRIPT) init $(DIR)
 
 init-data: ## Bootstrap .adr/ project-scoped directory
-	$(FORMAT_SCRIPT) init-data
+	@mkdir -p .adr/var
+	@if [ ! -f .adr/.gitignore ]; then echo "var/" > .adr/.gitignore; fi
+	@echo "Initialized .adr/ project-scoped directory"
 
 new: ## Create a new ADR (TITLE="...")
 	$(ORCHESTRATOR) $(ADR_AGENT_SKILL_FORMAT) $(TITLE)
