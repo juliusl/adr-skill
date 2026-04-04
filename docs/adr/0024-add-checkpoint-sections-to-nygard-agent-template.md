@@ -1,7 +1,7 @@
 # 24. Add checkpoint sections to nygard-agent template
 
 Date: 2026-04-04
-Status: Proposed
+Status: Planned
 Last Updated: 2026-04-04
 Links:
 - Extends [ADR-0017](0017-adopt-nygard-agent-template-as-default-adr-format.md) (template being modified)
@@ -225,7 +225,7 @@ Comments
 # [Number]. [Short Title]
 
 Date: [YYYY-MM-DD]
-Status: [Prototype | Proposed | Accepted | Deprecated | Superseded by ADR-XXXX]
+Status: Planned
 Last Updated: [YYYY-MM-DD]
 Links:
 

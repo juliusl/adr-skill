@@ -1,7 +1,7 @@
 # 23. Add prototype-adr skill for structured decision validation
 
 Date: 2026-04-03
-Status: Proposed
+Status: Planned
 Last Updated: 2026-04-03
 Links:
 - Refined by [ADR-0019](0019-add-problem-first-solve-task-to-author-adr-workflow.md) (solve workflow's optional prototyping step)
