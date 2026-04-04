@@ -1,5 +1,8 @@
 use clap::{Parser, Subcommand};
 
+mod models;
+mod schema;
+
 #[derive(Parser)]
 #[command(name = "adr-db")]
 #[command(about = "Plumbing CLI for ingesting JSONL data into a local SQLite database")]
