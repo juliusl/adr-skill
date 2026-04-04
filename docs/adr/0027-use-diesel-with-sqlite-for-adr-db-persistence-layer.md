@@ -1,7 +1,7 @@
 # 27. Use Diesel with SQLite for adr-db persistence layer
 
 Date: 2026-04-04
-Status: Proposed
+Status: Planned
 Last Updated: 2026-04-04
 Links:
 - Implements [ADR-0026](0026-add-rust-cli-for-data-plumbing.md) (unblocks `adr-db` implementation — ADR-0026 deferred database backend to this decision)

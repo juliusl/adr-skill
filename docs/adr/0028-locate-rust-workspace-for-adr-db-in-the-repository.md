@@ -1,7 +1,7 @@
 # 28. Locate Rust workspace for adr-db in the repository
 
 Date: 2026-04-04
-Status: Proposed
+Status: Planned
 Last Updated: 2026-04-04
 Links:
 - Amends [ADR-0026](0026-add-rust-cli-for-data-plumbing.md) (ADR-0026 specified `tools/` — this ADR re-evaluates the directory location)
