@@ -6,6 +6,7 @@ Last Updated: 2026-04-04
 Links:
 - Builds on [ADR-0020](0020-establish-adr-directory-as-project-scoped-convention.md) (`.adr/` project-scoped directory for database file)
 - Extends [ADR-0021](0021-append-implementation-summary-to-plan-after-execution.md) (JSONL extraction pattern — structured database replaces JSONL for cross-cutting queries)
+- Amended by [ADR-0028](0028-locate-rust-workspace-for-adr-db-in-the-repository.md) (directory changed from `tools/` to `crates/`)
 
 ## Context
 
