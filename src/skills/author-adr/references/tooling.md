@@ -20,6 +20,7 @@ export ADR_AGENT_SKILL_FORMAT=nygard-agent
 # Core targets
 make init                               # bootstrap ADR directory
 make init DIR=decisions                  # custom directory
+make init-data                          # bootstrap .adr/ project-scoped directory
 make new TITLE="Use PostgreSQL"         # create a new ADR
 make list                               # list all ADRs
 make status                             # show all ADR statuses
@@ -31,6 +32,7 @@ make status NUM=2 STATUS=Proposed       # update status
 | Target | Description |
 |--------|-------------|
 | `init` | Bootstrap ADR directory and create first ADR |
+| `init-data` | Bootstrap `.adr/` project-scoped directory (opt-in) |
 | `new` | Create a new ADR from the format's baked-in template |
 | `list` | List all ADRs with number, title, and status |
 | `status` | Show or update an ADR's status |
@@ -46,7 +48,7 @@ new.sh <format> <title...>
 ```
 
 **Orchestrator (`new.sh`):**
-- Resolves the ADR directory (reads `.adr-dir` or defaults to `docs/adr`)
+- Resolves the ADR directory (reads `.adr/adr-dir`, then `.adr-dir`, or defaults to `docs/adr`)
 - Computes the next sequential number (4-digit zero-padded)
 - Slugifies the title into a filename
 - Delegates to `<format>-format.sh new <number> <title> <dir>`
@@ -57,10 +59,11 @@ new.sh <format> <title...>
 
 ```bash
 case "$1" in
-  new)    # generate ADR document with baked-in template
-  init)   # bootstrap ADR directory + first ADR
-  list)   # list ADRs with number, title, status
-  status) # show or update status (parses inline Status: field)
+  new)       # generate ADR document with baked-in template
+  init)      # bootstrap ADR directory + first ADR
+  init-data) # bootstrap .adr/ project-scoped directory
+  list)      # list ADRs with number, title, status
+  status)    # show or update status (parses inline Status: field)
 esac
 ```
 
@@ -76,6 +79,9 @@ export PATH="$PWD/scripts:$PATH"
 nygard-agent-format.sh init              # creates docs/adr/ with ADR 0001
 nygard-agent-format.sh init decisions    # custom directory name
 
+# Initialize .adr/ project-scoped directory
+nygard-agent-format.sh init-data         # creates .adr/, .adr/var/, .adr/.gitignore
+
 # Create a new ADR
 new.sh nygard-agent "Use PostgreSQL for persistence"
 
@@ -86,6 +92,18 @@ nygard-agent-format.sh list
 nygard-agent-format.sh status 2          # show status of ADR 2
 nygard-agent-format.sh status 2 Proposed # update status
 ```
+
+### Path Discovery
+
+The scripts resolve the ADR directory using a priority chain:
+
+1. `.adr/adr-dir` — new convention (per ADR-0020)
+2. `.adr-dir` — legacy adr-tools convention (backwards compatible)
+3. `docs/adr` — default
+
+This means projects that adopt `.adr/` can migrate their directory pointer from
+the root-level `.adr-dir` file into `.adr/adr-dir`. Legacy projects continue to
+work unchanged.
 
 ### Backward Compatibility
 
