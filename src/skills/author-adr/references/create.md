@@ -109,23 +109,25 @@ When defining evaluation criteria, normalize DOWN to the same abstraction level 
 - "We've always done it this way" — inertia
 - "It'll look good on my resume" — personal interest over project needs
 
-## Step 4: Validate Completion (ecADR Definition of Done)
+## Step 4: Validate Completion (Implementability Criteria)
 
-Verify these five criteria before considering the ADR complete:
+Verify these six criteria before considering the ADR complete:
 
-1. **Evidence** — confident the design will work (via PoC, spike, trusted peer validation)
-2. **Criteria** — ≥2 alternatives identified and compared systematically
-3. **Agreement** — peer/team consensus reached with adequate stakeholder involvement
-4. **Documentation** — decision captured in a template and shared
-5. **Realization/Review** — implementation scheduled; revisit date and expiration defined
+1. **Criteria** — ≥2 alternatives identified and compared systematically
+2. **Documentation** — decision captured in a template and shared
+3. **Experimentation Tolerance** — is the decision well-supported by data, does it need validation, or is it deliberately experimental? Flag only if unvalidated claims are presented as fact.
+4. **Scope Clarity** — boundaries clear enough to decompose into implementation tasks
+5. **Actionable Consequences** — consequences specific enough to derive test/acceptance criteria
+6. **Dependency Visibility** — links to related ADRs, systems, or prerequisites are explicit
 
 ### Quick Self-Test
 
-1. Are we confident this design will work?
-2. Have we decided between ≥2 genuine options?
-3. Have we discussed adequately with stakeholders?
-4. Have we captured and shared the decision?
-5. Do we know when to revisit?
+1. Have we decided between ≥2 genuine options?
+2. Have we captured and shared the decision?
+3. Is this well-supported, or honestly framed as experimental?
+4. Are the scope boundaries clear enough to plan implementation?
+5. Can we derive acceptance criteria from the stated consequences?
+6. Are all dependencies and related decisions linked?
 
 > Don't treat agreement as a rubber stamp — plan stakeholder involvement early.
 

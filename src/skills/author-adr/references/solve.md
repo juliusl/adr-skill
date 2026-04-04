@@ -77,7 +77,7 @@ The agent and user collaborate to identify candidate solutions. This is the core
    - ...
    ```
 
-4. **Aim for ≥3 genuine options** — the ecADR quality criteria require at least 2 alternatives compared. Three or more options produce richer analysis.
+4. **Aim for ≥3 genuine options** — the implementability criteria require at least 2 alternatives compared. Three or more options produce richer analysis.
 
 ### Discovery Techniques
 

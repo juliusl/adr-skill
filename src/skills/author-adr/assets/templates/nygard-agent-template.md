@@ -47,7 +47,7 @@ Links:
 |---------|---------|
 | **Inline metadata** | Date, Status, Last Updated, Links — compact key-value pairs replacing `## Status` heading |
 | **Context** | Forces at play: technological, political, social, project-local |
-| **Options** | Dedicated section for alternatives (supports ecADR ≥2 alternatives criterion) |
+| **Options** | Dedicated section for alternatives (supports implementability ≥2 alternatives criterion) |
 | **Decision** | The concrete commitments and design choices; active voice |
 | **Consequences** | All outcomes — positive, negative, and neutral |
 | **Quality Strategy** | Checklist of quality concerns; inapplicable items struck through (`~~`) |

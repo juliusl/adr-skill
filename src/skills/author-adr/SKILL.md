@@ -90,7 +90,7 @@ Read [references/create.md](references/create.md) for the full creation workflow
 
    Only fall back to calling scripts directly if the Makefile is unavailable. See [Escape Hatch](#escape-hatch-direct-script-usage) for direct usage.
 
-6. **Validate completion** — check the ecADR Definition of Done criteria: Evidence, Criteria, Agreement, Documentation, Realization/Review.
+6. **Validate completion** — check the implementability criteria: Criteria, Documentation, Experimentation Tolerance, Scope Clarity, Actionable Consequences, Dependency Visibility.
 
 7. **Recommend review** — after creating the ADR, recommend reviewing it:
 
@@ -119,7 +119,7 @@ Read [references/review.md](references/review.md) for the full structured review
 
 The review process covers:
 
-1. **ecADR completeness check** — verify the 5 Definition of Done criteria
+1. **Implementability check** — verify the 6 implementability criteria
 2. **Fallacy scan** — check against 7 architectural decision-making fallacies
 3. **Anti-pattern check** — scan for 11 ADR creation anti-patterns
 4. **Consequence validation** — interactively verify stated consequences with the user
@@ -215,7 +215,7 @@ For detailed guidance beyond what is covered above, consult these references on-
 
 - [references/create.md](references/create.md) — full ADR creation workflow with significance assessment, readiness checks, and anti-patterns
 - [references/solve.md](references/solve.md) — problem-first solve workflow with option discovery, requirements refinement, and convergence
-- [references/review.md](references/review.md) — structured review process with ecADR checks, fallacy scan, and verdict format
+- [references/review.md](references/review.md) — structured review process with implementability checks, fallacy scan, and verdict format
 - [references/revise.md](references/revise.md) — interactive revision workflow for addressing review comments after a Revise verdict
 - [references/manage.md](references/manage.md) — status transitions, superseding, linking, splitting, and guardrails
 - [references/templates.md](references/templates.md) — template details and selection guide

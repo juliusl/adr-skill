@@ -16,7 +16,7 @@ Activate this workflow when:
 Parse the review output from the preceding review step. The review follows a structured format (see `review.md` Output Format):
 
 ```markdown
-### Completeness (ecADR)
+### Implementability
 ### Fallacies Detected
 ### Anti-Patterns Detected
 ### Consequence Validation
@@ -26,7 +26,7 @@ Parse the review output from the preceding review step. The review follows a str
 
 Extract discrete revision items from sections that report issues:
 
-- **Completeness** — each criterion marked ⚠️ or ❌ becomes an item
+- **Implementability** — each criterion marked ⚠️ or ❌ becomes an item
 - **Fallacies** — each detected fallacy becomes an item
 - **Anti-Patterns** — each detected anti-pattern becomes an item
 - **Consequence Validation** — each consequence flagged for revision becomes an item
