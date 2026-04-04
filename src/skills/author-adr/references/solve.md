@@ -168,6 +168,8 @@ The solve task produces a `Proposed` ADR ready for the existing review workflow.
    solve → review → revise → accept → implement
    ```
 
+   The `accept` and `implement` steps are performed by the `implement-adr` skill, not `author-adr`. The author-adr skill caps at `Proposed` status.
+
 ## Multi-Turn Session Management
 
 The solve workflow is inherently multi-turn and conversational, unlike the single-shot create task. Keep these practices in mind:

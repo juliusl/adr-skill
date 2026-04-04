@@ -23,7 +23,7 @@ make init DIR=decisions                  # custom directory
 make new TITLE="Use PostgreSQL"         # create a new ADR
 make list                               # list all ADRs
 make status                             # show all ADR statuses
-make status NUM=2 STATUS=Accepted       # update status
+make status NUM=2 STATUS=Proposed       # update status
 ```
 
 ### Available Targets
@@ -84,7 +84,7 @@ nygard-agent-format.sh list
 
 # Show status
 nygard-agent-format.sh status 2          # show status of ADR 2
-nygard-agent-format.sh status 2 Accepted # update status
+nygard-agent-format.sh status 2 Proposed # update status
 ```
 
 ### Backward Compatibility

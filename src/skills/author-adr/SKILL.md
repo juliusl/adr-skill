@@ -180,7 +180,7 @@ make -f <skill-root>/Makefile init DIR=docs/adr     # bootstrap ADR directory
 make -f <skill-root>/Makefile new TITLE="Use PostgreSQL"
 make -f <skill-root>/Makefile rename NUM=2 TITLE="Use PostgreSQL"  # rename ADR file and heading
 make -f <skill-root>/Makefile list                   # list all ADRs
-make -f <skill-root>/Makefile status NUM=2 STATUS=Accepted  # update status
+make -f <skill-root>/Makefile status NUM=2 STATUS=Proposed  # update status
 ```
 
 ### Escape Hatch: Direct Script Usage
@@ -193,7 +193,7 @@ nygard-agent-format.sh init docs/adr
 new.sh nygard-agent "Use PostgreSQL"
 nygard-agent-format.sh rename 2 "Use PostgreSQL"
 nygard-agent-format.sh list
-nygard-agent-format.sh status 2 Accepted
+nygard-agent-format.sh status 2 Proposed
 ```
 
 ### Visualization

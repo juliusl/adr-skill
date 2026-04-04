@@ -108,6 +108,8 @@ Provide a summary verdict:
 - **Revise** — ADR has addressable gaps. List specific changes needed.
 - **Rethink** — Fundamental issues with the decision or analysis. Explain why.
 
+> **Note:** The "Accept" verdict means the ADR passes review and is ready for implementation. It does **not** trigger a status transition to `Accepted` — that status is set by the `implement-adr` skill after plan execution. The `author-adr` skill caps at `Proposed` status.
+
 ## Review Perspectives
 
 Apply three perspectives progressively:

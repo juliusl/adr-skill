@@ -36,13 +36,14 @@ make -f <skill-root>/Makefile status NUM=<adr-number> STATUS=<new-status>
 
 **Examples:**
 ```bash
-make -f <skill-root>/Makefile status NUM=5 STATUS=Accepted
+make -f <skill-root>/Makefile status NUM=5 STATUS=Proposed
 make -f <skill-root>/Makefile status NUM=3 STATUS=Deprecated
 ```
 
 **Rules:**
 - Only transition one status at a time per ADR.
 - Record the reason for status changes in the ADR's context or as a brief note below the status line when the change is non-obvious.
+- The `Accepted` status is set by the `implement-adr` skill after successful plan execution — `author-adr` does not transition ADRs to `Accepted`.
 - The `Planned` status is used by the `implement-adr` skill when an ADR has been decomposed into a plan but not yet fully implemented. Both `Prototype` and `Proposed` ADRs can transition to `Planned`.
 
 ## Superseding Decisions
