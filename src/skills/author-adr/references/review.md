@@ -21,6 +21,16 @@ Verify 6 criteria that predict whether `implement-adr` can successfully plan fro
 
 Report which criteria are met and which are missing.
 
+#### Checkpoint State Review (ADR-0024)
+
+If the ADR uses the checkpoint template format, also review the state of each checkpoint:
+
+- **Evaluation Checkpoint** — check whether the assessment was `Proceed`, `Pause for validation`, or `Skipped`. If `Skipped`, evaluate whether the rationale is sound. If the checkpoint is **blank** (no assessment written), flag this as a finding — it means the checkpoint was ignored, not consciously skipped.
+- **Conclusion Checkpoint** — check whether the assessment was `Ready for review`, `Needs work`, or `Skipped`. A blank conclusion checkpoint suggests the ADR was not self-checked before requesting review.
+- **Validation needs** — if populated, check whether the listed experiments were actually run and findings incorporated. If validation needs are listed but not addressed, flag as a gap.
+
+Note: ADRs created before ADR-0024 will not have checkpoint sections. This is expected and not a finding.
+
 #### Experimentation Tolerance Spectrum
 
 Rather than a binary pass/fail, assess on a three-point spectrum:
@@ -154,6 +164,7 @@ Structure the review as:
 - Scope Clarity: ...
 - Actionable Consequences: ...
 - Dependency Visibility: ...
+- Checkpoint State: ... (if applicable — Evaluation/Conclusion checkpoint assessments)
 
 ### Fallacies Detected
 [list or "None detected"]

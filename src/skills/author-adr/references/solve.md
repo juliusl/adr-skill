@@ -105,17 +105,25 @@ As options are evaluated, new requirements and constraints emerge. This is expec
 
 3. **Re-evaluate options** — after adding new requirements, briefly reassess whether existing options still meet them. An option that was viable before a new requirement may no longer be.
 
-## Step 4: Optional Prototyping
+## Step 4: Evaluation Checkpoint
 
-For options that need validation, the user can ask the agent to create lightweight prototypes. This step is optional — skip it if the decision can be made based on analysis alone.
+After documenting options and refining requirements, pause at the **Evaluation Checkpoint (Optional)** section (per ADR-0024). This replaces the unstructured "Optional Prototyping" step with a procedural assessment.
 
-1. **Identify what needs validation** — typically performance claims, API ergonomics, or integration feasibility.
+1. **Assess the options holistically** — evaluate whether the analysis is sufficient to support a decision. Write the Assessment value:
+   - `Proceed` — analysis is sufficient, move to convergence.
+   - `Pause for validation` — experiments would strengthen confidence. Populate the **Validation needs** area with specific prototypes, benchmarks, or evidence needed.
+   - `Skipped — <rationale>` — the user chooses to proceed on intuition.
 
-2. **Create targeted spikes** — small, disposable code or configuration that answers a specific question. Prototype artifacts live outside the ADR (e.g., in a branch or spike directory).
+2. **If "Pause for validation"** — the Validation needs become inputs for the `prototype-adr` skill (ADR-0023). Ask the user:
+   - Which validation items to pursue now vs. defer?
+   - What isolation backend is appropriate (worktree for quick spikes, container for reproducible benchmarks)?
 
-3. **Record findings** — add prototype results to the relevant option's Strengths/Weaknesses in the Options section.
+3. **Run targeted experiments** — if the user opts to validate:
+   - Create disposable prototypes that answer specific questions.
+   - Record findings in the relevant option's Strengths/Weaknesses.
+   - The ADR status remains `Prototype` during this phase.
 
-4. **Status remains `Prototype`** — the ADR stays in `Prototype` status during this phase. This is the natural home for the Prototype status value.
+4. **When validation completes** — update the Assessment to `Proceed` and check the baseline items. Move to convergence.
 
 ## Step 5: Convergence
 

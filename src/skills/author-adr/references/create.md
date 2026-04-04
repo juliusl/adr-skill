@@ -109,7 +109,25 @@ When defining evaluation criteria, normalize DOWN to the same abstraction level 
 - "We've always done it this way" — inertia
 - "It'll look good on my resume" — personal interest over project needs
 
-## Step 4: Validate Completion (Implementability Criteria)
+## Step 4: Evaluate Readiness (Evaluation Checkpoint)
+
+After documenting options, pause at the **Evaluation Checkpoint (Optional)** section. This is an advisory gate between analysis and decision-making (per ADR-0024).
+
+1. **Assess the options holistically** — evaluate whether the options are sufficiently analyzed to support a decision:
+   - Are all options at comparable depth?
+   - Are decision drivers defined and referenced?
+   - Are there unvalidated claims that would benefit from experimentation?
+
+2. **Write the Assessment value:**
+   - `Proceed` — the analysis is sufficient, move to the Decision section.
+   - `Pause for validation` — experiments would strengthen confidence. Populate the **Validation needs** area with specific prototypes or evidence needed. These become inputs for the `prototype-adr` skill (ADR-0023).
+   - `Skipped — <rationale>` — the user chooses to skip (e.g., intuition, time pressure, trivial decision). Record the rationale.
+
+3. **Check the baseline items** — mark each checkbox as satisfied or note why it's not applicable.
+
+4. **If "Pause for validation"** — ask the user whether to prototype, selectively validate, or skip. The user controls what gets prototyped, not the checklist.
+
+## Step 5: Validate Completion (Implementability Criteria)
 
 Verify these six criteria before considering the ADR complete:
 
@@ -128,6 +146,23 @@ Verify these six criteria before considering the ADR complete:
 4. Are the scope boundaries clear enough to plan implementation?
 5. Can we derive acceptance criteria from the stated consequences?
 6. Are all dependencies and related decisions linked?
+
+## Step 6: Conclusion Checkpoint
+
+After completing the Quality Strategy section, pause at the **Conclusion Checkpoint (Optional)** section. This is an advisory gate between authoring and review (per ADR-0024).
+
+1. **Write the Assessment value:**
+   - `Ready for review` — the ADR is complete and ready for the review workflow.
+   - `Needs work` — specific items need attention before review.
+   - `Skipped — <rationale>` — the user chooses to skip (record why).
+
+2. **Check the baseline items:**
+   - [ ] Decision justified (Y-statement or equivalent)
+   - [ ] Consequences include positive, negative, and neutral outcomes
+   - [ ] Quality Strategy reviewed — relevant items checked, irrelevant struck through
+   - [ ] Links to related ADRs populated
+
+3. **Populate Pre-review notes** if there are caveats, open questions, or areas needing reviewer attention. Leave empty if none.
 
 > Don't treat agreement as a rubber stamp — plan stakeholder involvement early.
 
