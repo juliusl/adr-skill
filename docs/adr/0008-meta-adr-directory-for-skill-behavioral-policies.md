@@ -4,7 +4,7 @@ Date: 2026-04-02
 
 ## Status
 
-Accepted
+Superseded by [ADR-0011](0011-use-xdg-config-directory-for-user-configuration-state.md)
 
 ## Context
 
