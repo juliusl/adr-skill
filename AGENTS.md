@@ -25,8 +25,15 @@ Scope is optional but encouraged (e.g., `skill`, `makefile`, `tooling`).
 adr-skills/
 ├── AGENTS.md                    # This file — development guide
 ├── README.md                    # Project overview
-├── Makefile                     # Dev targets (test)
+├── Makefile                     # Dev targets (test, build-tools)
 ├── eval_queries.json            # Trigger evaluation queries for description optimization
+├── crates/                      # Cargo workspace — Rust tooling (ADR-0028)
+│   ├── Cargo.toml               # Workspace root
+│   └── adr-db/                  # Plumbing CLI: JSONL → SQLite (ADR-0026, ADR-0027)
+│       ├── Cargo.toml
+│       ├── diesel.toml          # Diesel schema output config
+│       ├── migrations/          # Diesel SQL migrations
+│       └── src/                 # Rust source
 ├── docs/adr/                    # Project-level ADRs (decisions about these skills)
 ├── docs/plans/                  # Implementation plans generated from ADRs
 ├── src/skills/
@@ -157,6 +164,47 @@ To add a new test:
 ```bash
 make test-madr
 ```
+
+## Rust Tooling (crates/)
+
+The `crates/` directory contains a Cargo workspace with Rust tooling. Currently
+this includes `adr-db`, a plumbing CLI for ingesting JSONL data into SQLite.
+
+### Building
+
+```bash
+make build-tools    # cargo build --release in crates/
+```
+
+The `build-tools` target is independent of `make test` — contributors who only
+work on shell scripts do not need Rust installed.
+
+### Working on adr-db
+
+**Prerequisites:**
+- Rust toolchain (`rustup`)
+- `diesel_cli` for migration authoring:
+  ```bash
+  cargo install diesel_cli --no-default-features --features sqlite
+  ```
+
+**Creating a new migration:**
+```bash
+cd crates/adr-db
+DATABASE_URL="sqlite:///tmp/dev.db" diesel migration generate <name>
+# Edit migrations/<timestamp>_<name>/up.sql and down.sql
+DATABASE_URL="sqlite:///tmp/dev.db" diesel migration run
+# schema.rs is regenerated — commit it to version control
+```
+
+**Running tests:**
+```bash
+cd crates && cargo test
+```
+
+`diesel_cli` is required only for creating or modifying migrations, not for
+building the binary. The generated `schema.rs` is committed to version control
+so `cargo build` works without `diesel_cli`.
 
 ## Evaluating Skill Description
 
