@@ -7,6 +7,7 @@ Curated index of assets available to the implement-adr skill.
 | Asset | Path | Purpose |
 |-------|------|---------|
 | **Plan Template** | `assets/templates/plan-template.md` | Ready-to-use `plan.md` template with all required sections |
+| **QA Plan Template** | `assets/templates/qa-plan-template.md` | Ready-to-use `qa-plan.md` template with security/UX checklists and recommendations |
 
 ## Scripts
 
@@ -20,6 +21,7 @@ Curated index of assets available to the implement-adr skill.
 |-----------|------|---------|
 | **Planning Practices** | `references/planning-practices.md` | Stage decomposition, task scoping, gap detection, ADR linkage |
 | **Plan Review Protocol** | `references/plan-review.md` | Plan-reviewer sub-agent checklist, iteration protocol, prompt template |
+| **QA Planning Protocol** | `references/qa-planning.md` | QA plan generation, procedural checklists, test-gap analysis, finding eligibility gate |
 | **Testing Guidelines** | `references/testing-guidelines.md` | Testing taxonomy by code context, coverage targets |
 | **Cost Estimation** | `references/cost-estimation.md` | T-shirt sizing calibration, edge cases, summary format |
 
