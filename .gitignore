@@ -18,3 +18,4 @@ __pycache__/
 *.pyc
 .venv/
 crates/target/
+crates/adr-db/.env

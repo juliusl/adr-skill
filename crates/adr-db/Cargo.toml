@@ -6,3 +6,7 @@ description = "Plumbing CLI for ingesting JSONL data into a local SQLite databas
 
 [dependencies]
 clap = { version = "4", features = ["derive"] }
+diesel = { version = "2", features = ["sqlite"] }
+diesel_migrations = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
