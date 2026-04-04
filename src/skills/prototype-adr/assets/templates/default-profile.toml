@@ -1,0 +1,10 @@
+# Default prototype profile
+# Minimal worktree-based isolation for quick experiments
+
+name = "default"
+isolation = "worktree"
+teardown = "automatic"
+
+[observe]
+format = "jsonl"
+output = "stdout"
