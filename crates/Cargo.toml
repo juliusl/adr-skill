@@ -1,0 +1,3 @@
+[workspace]
+members = ["adr-db"]
+resolver = "2"
