@@ -4,6 +4,10 @@ Date: 2026-04-03
 Status: Proposed
 Last Updated: 2026-04-03
 Links:
+- Refined by [ADR-0019](0019-add-problem-first-solve-task-to-author-adr-workflow.md) (solve workflow's optional prototyping step)
+- Builds on [ADR-0020](0020-establish-adr-directory-as-project-scoped-convention.md) (.adr/ project-scoped convention for profiles)
+- Extends [ADR-0021](0021-append-implementation-summary-to-plan-after-execution.md) (JSONL extraction pattern reused for observations)
+- Motivated by [ADR-0022](0022-replace-ecadr-completeness-check-with-implementability-criteria.md) (Experimentation Tolerance criterion)
 
 ## Context
 
@@ -32,14 +36,21 @@ The ADR skills ecosystem currently has two skills: `author-adr` (create, review,
 
 4. **Where does direction come from?** The `author-adr` skill could plant prototyping hints in the ADR itself — in the Options section (per-option "how to validate"), the AQC section (what to test), or a new section. This keeps the ADR as the single source of truth while giving `prototype-adr` high-level direction without prescribing execution details.
 
+### Prerequisites
+
+- **Author-adr prototype objectives support** — The `author-adr` skill does not currently produce structured prototype objectives. The solve workflow (ADR-0019) has an "optional prototyping" step that says "create targeted spikes" but provides no structured output format. Before the author-adr → prototype-adr contract can function, `author-adr` needs to support writing prototype objectives into the AQC section (or a dedicated section). This is an independent change to `author-adr` — it has value even without `prototype-adr` — but it is required for the "ADR-anchored" driver below to work as designed.
+
 ### Decision Drivers
 
+Must-haves:
 - **Isolation-first** — prototypes must not contaminate the project's working tree, git history, or runtime state
 - **Observable outcomes** — prototype results must be captured as structured data that feeds back into the ADR lifecycle
+- **ADR-anchored** — prototyping direction comes from the ADR itself; the skill reads cues from the decision record rather than requiring separate orchestration
+
+Nice-to-haves:
 - **Environment-adaptive** — the skill must handle both closed-system (containerized, fully autonomous) and open-system (external dependencies, user intervention) scenarios
 - **Platform-optional** — ACP/platform-specific features should be opt-in, not required; the skill must work with agentskills.io alone as a baseline
-- **Profile-driven** — common prototyping patterns should be codified as reusable profiles, similar to cloud-init, reducing setup friction
-- **ADR-anchored** — prototyping direction comes from the ADR itself; the skill reads cues from the decision record rather than requiring separate orchestration
+- **Profile-driven** — common prototyping patterns should be codified as reusable profiles, reducing setup friction
 
 ## Options
 
@@ -50,20 +61,20 @@ The skill reads a prototyping profile (a declarative file similar to cloud-init)
 For open-system scenarios (auth, external APIs), profiles declare `requires: user-intervention` which switches the skill from autonomous to interactive mode — the agent sets up the environment but pauses for user action at defined checkpoints.
 
 **Example profile:**
-```yaml
-# .adr/profiles/schema-migration.yaml
-name: schema-migration
-isolation: container
-image: postgres:16
-setup:
-  - createdb prototype_db
-  - psql -f schema.sql prototype_db
-validate:
-  - psql -c "SELECT count(*) FROM migrations" prototype_db
-observe:
-  - query_latency_ms
-  - row_counts
-teardown: automatic
+```toml
+# .adr/profiles/schema-migration.toml
+name = "schema-migration"
+isolation = "container"
+image = "postgres:16"
+setup = [
+  "createdb prototype_db",
+  "psql -f schema.sql prototype_db",
+]
+validate = [
+  'psql -c "SELECT count(*) FROM migrations" prototype_db',
+]
+observe = ["query_latency_ms", "row_counts"]
+teardown = "automatic"
 ```
 
 **Strengths:**
@@ -75,7 +86,7 @@ teardown: automatic
 **Weaknesses:**
 - Container dependency limits where the skill works (CI-only in some orgs, unavailable in some agent runtimes)
 - Profile authoring requires domain knowledge — the agent can propose but the user must validate
-- YAML-based profiles are yet another configuration format to maintain
+- Profiles add another configuration surface, though using TOML aligns with existing `preferences.toml` conventions
 - Doesn't leverage agent-specific capabilities (ACP, sub-agents)
 
 ### Option 2: Agent-directed prototyping with optional ACP orchestration
@@ -102,8 +113,8 @@ Combine profile-driven environment setup with agent-directed experiment executio
 
 ACP is one of several isolation backends, alongside containers and git-worktree, selectable via the profile:
 
-```yaml
-isolation: container | worktree | acp-sandbox
+```toml
+isolation = "container"  # or "worktree" or "acp-sandbox"
 ```
 
 The ADR provides high-level direction (Options section hints, AQC validation goals), profiles provide environment specifics, and the agent bridges the two.
@@ -150,42 +161,46 @@ author-adr                          prototype-adr                    implement-a
 
 ### Prototyping Profiles
 
-Profiles are declarative YAML files stored in `.adr/profiles/` (per ADR-0020's project-scoped convention). They define environment setup, not experiment logic.
+Profiles are declarative TOML files stored in `.adr/profiles/` (per ADR-0020's project-scoped convention). They define environment setup, not experiment logic. The profile grows as prototype capabilities expand — progressive complexity.
 
 **Minimal profile:**
-```yaml
-name: default
-isolation: worktree
-teardown: automatic
+```toml
+name = "default"
+isolation = "worktree"
+teardown = "automatic"
 ```
 
 **Container profile:**
-```yaml
-name: database-spike
-isolation: container
-image: postgres:16-alpine
-setup:
-  - createdb spike_db
-observe:
-  - format: jsonl
-    output: stdout
-teardown: automatic
+```toml
+name = "database-spike"
+isolation = "container"
+image = "postgres:16-alpine"
+setup = ["createdb spike_db"]
+teardown = "automatic"
+
+[observe]
+format = "jsonl"
+output = "stdout"
 ```
 
 **Open-system profile:**
-```yaml
-name: auth-flow
-isolation: worktree
-requires: user-intervention
-checkpoints:
-  - name: configure-oauth
-    prompt: "Set up OAuth credentials and press continue"
-  - name: verify-callback
-    prompt: "Verify the callback URL works"
-observe:
-  - format: jsonl
-    output: stdout
-teardown: manual
+```toml
+name = "auth-flow"
+isolation = "worktree"
+requires = "user-intervention"
+teardown = "manual"
+
+[[checkpoints]]
+name = "configure-oauth"
+prompt = "Set up OAuth credentials and press continue"
+
+[[checkpoints]]
+name = "verify-callback"
+prompt = "Verify the callback URL works"
+
+[observe]
+format = "jsonl"
+output = "stdout"
 ```
 
 ### Isolation Backends
@@ -231,7 +246,7 @@ Prototype results are captured as structured observations and fed back into the 
 
 **Positive:**
 - Closes the gap between deciding and implementing — experiments are structured, isolated, and observable rather than ad-hoc.
-- The author-adr → prototype-adr contract is clean: author-adr declares *what* to validate (prototype objectives in the ADR), prototype-adr decides *how* to validate. The ADR remains the single source of truth.
+- The author-adr → prototype-adr contract is clean: author-adr declares *what* to validate (prototype objectives in the ADR), prototype-adr decides *how* to validate. The ADR remains the single source of truth. (Note: this contract requires the prerequisite author-adr changes to produce structured prototype objectives.)
 - Profile-driven environment setup makes prototyping reproducible and shareable across team members.
 - Multiple isolation backends (worktree, container, ACP) adapt to diverse project environments without forcing a single approach.
 - Findings feed directly back into the ADR, enriching the decision record with empirical evidence.
@@ -240,26 +255,32 @@ Prototype results are captured as structured observations and fed back into the 
 - Three-layer coordination (ADR cues, profiles, agent logic) adds design complexity — the profile format especially needs careful scoping.
 - Container and ACP backends introduce optional dependencies that may not be available in all environments.
 - The skill doesn't exist yet — this ADR is itself "deliberately experimental" per ADR-0022's Experimentation Tolerance spectrum.
-- Profile format (YAML) adds another configuration surface beyond TOML preferences and Makefile targets.
+- Profile format (TOML) adds another configuration surface, though it aligns with existing `preferences.toml` conventions and grows progressively as prototype capabilities expand.
 
 **Neutral:**
-- The skill is a new addition to the ecosystem, not a modification of existing skills. `author-adr` and `implement-adr` continue to work unchanged.
+- The skill is a new addition to the ecosystem. `implement-adr` continues to work unchanged. `author-adr` will need independent changes to produce structured prototype objectives (see Prerequisites), but those changes have standalone value and are not blocked by this skill.
 - Whether the skill follows agentskills.io spec or uses ACP is a deployment-time configuration choice, not a build-time dependency.
 - The profile format and observation schema are intentionally under-specified in this ADR — they should be refined through prototyping the prototype skill itself (meta-prototyping).
 
 ## Quality Strategy
 
 - [ ] Introduces major semantic changes
-- [ ] Introduces minor semantic changes
+- [x] Introduces minor semantic changes
 - [ ] Fuzz testing
 - [ ] Unit testing
 - [ ] Load testing
 - [ ] Performance testing
-- [ ] Backwards Compatible
-- [ ] Integration tests
-- [ ] User documentation
+- [x] Backwards Compatible
+- [x] Integration tests
+- [x] User documentation
 
 ### Additional Quality Concerns
+
+- **Isolation backend verification** — each isolation backend (worktree, container, acp-sandbox) needs integration tests confirming non-contamination of the host project.
+- **Profile parsing** — TOML profile parsing should be validated against malformed inputs and missing optional fields.
+- **Observation format** — JSONL observation output must be validated as parseable by `jq` (consistent with ADR-0021's extraction pattern).
+- **Feedback loop** — verify that prototype findings can be appended to an ADR's Context section without corrupting the document structure.
+- **Graceful degradation** — when container runtime or ACP is unavailable, the skill must fall back to worktree without error.
 
 ---
 
