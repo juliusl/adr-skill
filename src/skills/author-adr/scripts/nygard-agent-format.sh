@@ -68,6 +68,17 @@ Links:
 
 ## Options
 
+## Evaluation Checkpoint (Optional)
+<!-- Gate: Options → Decision. Agent assesses and recommends. -->
+
+**Assessment:** [Proceed | Pause for validation | Skipped — <rationale>]
+
+- [ ] All options evaluated at comparable depth
+- [ ] Decision drivers are defined and referenced in option analysis
+- [ ] No unacknowledged experimentation gaps (ADR-0022 tolerance check)
+
+**Validation needs:**
+
 ## Decision
 
 ## Consequences
@@ -85,6 +96,18 @@ Links:
 - [ ] User documentation
 
 ### Additional Quality Concerns
+
+## Conclusion Checkpoint (Optional)
+<!-- Gate: Quality Strategy → Review. Verify before requesting review. -->
+
+**Assessment:** [Ready for review | Needs work | Skipped — <rationale>]
+
+- [ ] Decision justified (Y-statement or equivalent)
+- [ ] Consequences include positive, negative, and neutral outcomes
+- [ ] Quality Strategy reviewed — relevant items checked, irrelevant struck through
+- [ ] Links to related ADRs populated
+
+**Pre-review notes:**
 
 ---
 
@@ -138,6 +161,17 @@ Keep decisions informal, undocumented.
 
 Record decisions as Architecture Decision Records.
 
+## Evaluation Checkpoint (Optional)
+<!-- Gate: Options → Decision. Agent assesses and recommends. -->
+
+**Assessment:** Proceed
+
+- [x] All options evaluated at comparable depth
+- [x] Decision drivers are defined and referenced in option analysis
+- [x] No unacknowledged experimentation gaps (ADR-0022 tolerance check)
+
+**Validation needs:**
+
 ## Decision
 
 We will use Architecture Decision Records, as described by Michael Nygard.
@@ -160,6 +194,18 @@ see Nat Pryce's adr-tools.
 - ~~User documentation~~
 
 ### Additional Quality Concerns
+
+## Conclusion Checkpoint (Optional)
+<!-- Gate: Quality Strategy → Review. Verify before requesting review. -->
+
+**Assessment:** Ready for review
+
+- [x] Decision justified (Y-statement or equivalent)
+- [x] Consequences include positive, negative, and neutral outcomes
+- [x] Quality Strategy reviewed — relevant items checked, irrelevant struck through
+- [x] Links to related ADRs populated
+
+**Pre-review notes:**
 
 ---
 
