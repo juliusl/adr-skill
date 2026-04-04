@@ -31,6 +31,7 @@ Links:
 - [ ] Load testing
 - [ ] Performance testing
 - [ ] Backwards Compatible
+- [ ] Integration tests
 - [ ] User documentation
 
 ### Additional Quality Concerns
@@ -59,4 +60,5 @@ Links:
 - **Testing checkboxes** — feed directly into the implement-adr skill's plan
   generation for automatic testing task creation
 - **Backwards Compatible** — explicit signal for breaking change assessment
+- **Integration tests** — explicit signal that the decision involves a dependency external to the immediate system (e.g., databases, third-party APIs, message queues, external services). If integration tests do not yet exist for the relevant dependency, an ADR should be scheduled to address the gap. If integration tests already exist, they must be kept up to date with the changes introduced by this decision.
 - **User Documentation** — explicit signal to ensure user facing documentation has been updated. This includes README.md, manuals, cli docs, document headers in code, existing docs, or if new docs need to be created to explain usage patterns.

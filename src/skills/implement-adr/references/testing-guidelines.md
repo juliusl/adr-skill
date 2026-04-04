@@ -1,6 +1,42 @@
 # Testing Guidelines
 
-Guidance for selecting appropriate test and acceptance criteria based on code context. Every task in an implementation plan must include testing instructions.
+Guidance for selecting appropriate test and acceptance criteria based on code context and the source ADR's Quality Strategy. Every task in an implementation plan must include testing instructions.
+
+## Quality Strategy Checklist
+
+The nygard-agent ADR template includes a **Quality Strategy** section with checkboxes that signal which quality concerns apply to the decision. When generating task test criteria, read this section first:
+
+- **Checked items (`[x]`)** — the ADR author has flagged this as required. Include corresponding test criteria in relevant tasks.
+- **Struck-through items (`~~`)** — the ADR author has marked this as not applicable. Do not add these test types.
+- **Unchecked items (`[ ]`)** — ambiguous. Fall back to code context analysis (see below) to decide.
+
+### Mapping Quality Strategy to Test Criteria
+
+| Quality Strategy Item | What to Add |
+|---|---|
+| `[x] Fuzz testing` | Fuzz test criteria on tasks that handle user input or parsing |
+| `[x] Unit testing` | Unit test criteria on tasks that expand public surface area |
+| `[x] Load testing` | Load test criteria on tasks that introduce significant system load |
+| `[x] Performance testing` | Benchmark criteria on tasks involving hot paths or resource-heavy processes |
+| `[x] Backwards Compatible` | Compatibility verification criteria (API contracts, data migration) |
+| `[x] Integration tests` | Integration test criteria for external dependencies (see below) |
+| `[x] User documentation` | Documentation update criteria (README, CLI docs, code headers, usage guides) |
+| `[x] Introduces major semantic changes` | Version bump criteria, downstream compatibility checks |
+| `[x] Introduces minor semantic changes` | Regression test criteria verifying no unintended side effects |
+
+### Integration Tests
+
+When the ADR author checks `[x] Integration tests`, the decision involves a dependency external to the immediate system (e.g., databases, third-party APIs, message queues, file systems, external services).
+
+**When generating tasks:**
+
+1. **If integration tests already exist** for the relevant dependency — add criteria to keep them up to date with the changes introduced by this decision. Existing tests must be extended or modified to cover the new behavior.
+
+2. **If integration tests do not yet exist** — add a task to create them. If creating integration tests requires infrastructure or tooling decisions that are not yet made (e.g., choosing a test container strategy, setting up a mock service), recommend that the user schedule an ADR to address the integration testing gap rather than making ad-hoc tooling decisions in the implementation plan.
+
+### Additional Quality Concerns
+
+The ADR may also include free-text notes under `### Additional Quality Concerns`. Read these and translate them into specific test criteria for the relevant tasks. These often capture domain-specific quality requirements not covered by the standard checklist.
 
 ## Testing by Code Context
 

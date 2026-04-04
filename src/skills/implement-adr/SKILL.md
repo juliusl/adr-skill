@@ -70,6 +70,7 @@ User request
    - **Context** — understand the forces, constraints, and tensions.
    - **Decision** — identify the concrete commitments and design choices.
    - **Consequences** — note positive outcomes to preserve, negative outcomes to mitigate, and neutral observations.
+   - **Quality Strategy** — read the checklist to identify which quality concerns the author flagged. Checked items (`[x]`) indicate required testing or quality gates; struck-through items (`~~`) indicate not applicable. Carry these forward into task test criteria in Step 3.
 3. If the ADR links to other ADRs, read those too and include them in scope.
 
 ### Step 2 — Gap Detection
@@ -334,7 +335,29 @@ Read the [full cost estimation guide](references/cost-estimation.md) for calibra
 
 ## Testing Guidelines
 
-Every task must include appropriate test and acceptance criteria. The type of testing depends on the code context:
+Every task must include appropriate test and acceptance criteria. The type of testing depends on **two inputs**: the code context of the task, and the **Quality Strategy** section from the source ADR.
+
+### Quality Strategy Integration
+
+When the source ADR includes a Quality Strategy checklist (nygard-agent format), use it to drive test criteria:
+
+| ADR Checkbox | When Checked (`[x]`) | Effect on Plan Tasks |
+|---|---|---|
+| Introduces major semantic changes | Version bump or migration needed | Add acceptance criteria for version update and downstream compatibility |
+| Introduces minor semantic changes | Non-breaking behavioral change | Add acceptance criteria verifying no unintended side effects |
+| Fuzz testing | User input or parsing involved | Add fuzz testing criteria to relevant tasks |
+| Unit testing | Public surface or new problem class | Add unit test criteria to relevant tasks |
+| Load testing | Significant system load introduced | Add load test criteria to integration tasks |
+| Performance testing | Hot path or resource-heavy process | Add benchmark criteria to relevant tasks |
+| Backwards Compatible | Breaking change risk | Add backwards compatibility verification criteria |
+| Integration tests | External dependency involved | Add integration test criteria; if no integration tests exist, recommend an ADR to address the gap |
+| User documentation | User-facing changes | Add documentation update task or criteria |
+
+Items struck through (`~~`) in the ADR indicate "not applicable" — do not add those test types.
+
+Items left unchecked (`[ ]`) are ambiguous — use code context (table below) to decide whether to include them.
+
+### Testing by Code Context
 
 | Code Context | Required Testing |
 |--------------|-----------------|
