@@ -1,7 +1,7 @@
 # 20. Establish .adr directory as project-scoped convention
 
 Date: 2026-04-03
-Status: Proposed
+Status: Planned
 Last Updated: 2026-04-03
 Links:
 
