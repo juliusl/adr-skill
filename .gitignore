@@ -17,3 +17,4 @@ scripts/madr-tools/tests/tmp/
 __pycache__/
 *.pyc
 .venv/
+crates/target/
