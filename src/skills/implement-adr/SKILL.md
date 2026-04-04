@@ -428,6 +428,19 @@ If the Makefile targets are unavailable, list ADRs directly:
 ls docs/adr/*.md
 ```
 
+### Extracting Implementation Summaries
+
+```bash
+# Extract implementation summary as JSONL from a plan file
+make -f <skill-root>/Makefile extract-summary PLAN_FILE=docs/plans/NNNN.0.plan.md
+```
+
+Escape hatch (direct awk invocation):
+
+```bash
+awk -f <skill-root>/scripts/extract-summary.awk docs/plans/NNNN.0.plan.md
+```
+
 ## Deep References
 
 For detailed guidance beyond what is covered above, consult these references on-demand:

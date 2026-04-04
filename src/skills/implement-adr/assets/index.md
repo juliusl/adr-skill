@@ -8,6 +8,12 @@ Curated index of assets available to the implement-adr skill.
 |-------|------|---------|
 | **Plan Template** | `assets/templates/plan-template.md` | Ready-to-use `plan.md` template with all required sections |
 
+## Scripts
+
+| Script | Path | Purpose |
+|--------|------|---------|
+| **extract-summary.awk** | `scripts/extract-summary.awk` | Extract implementation summary from a plan file as JSONL to stdout |
+
 ## References (Load On-Demand)
 
 | Reference | Path | Purpose |
