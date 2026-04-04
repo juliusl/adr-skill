@@ -22,7 +22,9 @@ if [ -z "$title" ]; then
 fi
 
 # Resolve ADR directory
-if [ -f ".adr-dir" ]; then
+if [ -f ".adr/adr-dir" ]; then
+  adr_dir="$(cat .adr/adr-dir)"
+elif [ -f ".adr-dir" ]; then
   adr_dir="$(cat .adr-dir)"
 else
   adr_dir="docs/adr"

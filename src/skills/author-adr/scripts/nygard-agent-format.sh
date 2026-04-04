@@ -12,7 +12,9 @@ slugify() {
 }
 
 resolve_dir() {
-  if [ -f ".adr-dir" ]; then
+  if [ -f ".adr/adr-dir" ]; then
+    cat .adr/adr-dir
+  elif [ -f ".adr-dir" ]; then
     cat .adr-dir
   else
     echo "docs/adr"
