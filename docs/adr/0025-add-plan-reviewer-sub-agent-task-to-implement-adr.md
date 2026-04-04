@@ -1,7 +1,7 @@
 # 25. Add plan-reviewer sub-agent task to implement-adr
 
 Date: 2026-04-04
-Status: Proposed
+Status: Planned
 Last Updated: 2026-04-03
 Links:
 - Extends [ADR-0023](0023-add-prototype-adr-skill-for-structured-decision-validation.md) (exposed the plan quality gap — user docs checked but no README task generated)
