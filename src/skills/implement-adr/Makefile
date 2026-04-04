@@ -9,7 +9,7 @@
 SKILL_ROOT := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 ADR_DIR    ?= docs/adr
 
-.PHONY: help list-adrs list-plans show-template install-agents
+.PHONY: help list-adrs list-plans show-template install-agents extract-summary
 
 help: ## Show available targets
 	@echo "Implement-ADR Skill Makefile"
@@ -75,3 +75,10 @@ install-agents: ## Install custom agents to the agents/ directory (ADR_AGENTS_DI
 		echo "No .agent.md files found in assets/."; \
 	fi; \
 	echo "Done."
+
+extract-summary: ## Extract implementation summary as JSONL from a plan file (PLAN_FILE=path)
+	@if [ -z "$(PLAN_FILE)" ]; then \
+		echo "Usage: make extract-summary PLAN_FILE=docs/plans/NNNN.0.plan.md"; \
+		exit 1; \
+	fi
+	@awk -f "$(SKILL_ROOT)scripts/extract-summary.awk" "$(PLAN_FILE)"
