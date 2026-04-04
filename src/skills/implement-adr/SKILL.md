@@ -17,7 +17,7 @@ description: >-
   or sprint planning.
 license: CC-BY-4.0
 metadata:
-  version: "1.0"
+  version: "1.1"
 ---
 
 # Implement ADR — From Decisions to Plans
@@ -52,14 +52,19 @@ User request
 └─ "Show plan template" ────────► Go to: Template Reference
 ```
 
+**Planning workflow:**
+```
+Read ADR → Generate plan → Plan review (sub-agent) → [Iterate] → Execute plan
+```
+
 ### Step 0 — Locate ADRs
 
 1. Check for `docs/adr/` directory in the repository.
 2. **If missing:** Tell the user no ADRs were found. Recommend using the `author-adr` skill to create decision records before planning implementation. Stop here.
 3. **If present:** List ADRs using: ```bash ls docs/adr/*.md ```
 4. **Check for saved preferences:** Read the config file (see [Configuration](#configuration)) and look for `[implement].participation` and `[implement].auto_commit`.
-   - If set, store for use in Step 5 (applied silently, skip corresponding prompts).
-   - If absent, proceed silently — preferences will be established interactively in Step 5 and optionally saved.
+   - If set, store for use in Step 6 (applied silently, skip corresponding prompts).
+   - If absent, proceed silently — preferences will be established interactively in Step 6 and optionally saved.
 5. Ask the user which ADR(s) to implement. Accept one or more by number.
 
 ### Step 1 — Read and Analyze ADRs
@@ -180,7 +185,23 @@ End the plan with a summary table:
 **Total estimated cost:** X small, Y medium, Z heavy
 ```
 
-### Step 4 — Update ADR Statuses
+### Step 4 — Plan Review (Sub-Agent)
+
+After generating the plan (Step 3) and before presenting it to the user, spawn a plan-reviewer sub-agent to verify the plan faithfully covers the source ADR's requirements.
+
+Read the [Plan Review Protocol](references/plan-review.md) for the full reviewer prompt, checklist, and iteration protocol.
+
+**Workflow:**
+1. Construct the reviewer prompt using the template in `plan-review.md`, inserting the source ADR content and generated plan.
+2. Spawn a `general-purpose` agent with `mode="background"`.
+3. Wait for the reviewer's finding report.
+4. If **Plan Approved** — proceed to Step 5.
+5. If **Plan Needs Revision** — revise the plan to address findings and re-submit to the reviewer (max 3 cycles).
+6. After 3 rejection cycles — activate the **user escape hatch**: present remaining findings to the user with options to address, reject (with rationale), or defer each finding.
+
+The review runs regardless of participation mode. It is mandatory because the prototype validated that even simple plans miss items (~24% gap rate observed on 49 checks).
+
+### Step 5 — Update ADR Statuses
 
 After generating the plan, update each source ADR whose status is `Prototype` or `Proposed` to `Planned`. This signals that the decision has been analyzed, decomposed into tasks, and is ready for implementation.
 
@@ -191,7 +212,7 @@ After generating the plan, update each source ADR whose status is `Prototype` or
 
 The status update is performed by editing the ADR file's `## Status` section in-place, replacing `Prototype` or `Proposed` with `Planned`.
 
-### Step 5 — Participation Check
+### Step 6 — Participation Check
 
 After updating ADR statuses, determine how the user wants to participate during implementation.
 
@@ -316,7 +337,7 @@ When auto-commit is enabled and plan execution completes (all tasks including th
 awk -f <skill-root>/scripts/extract-summary.awk docs/plans/NNNN.0.plan.md
 ```
 
-### Step 6 — Review and Iterate
+### Step 7 — Review and Iterate
 
 1. Present the generated plan to the user.
 2. Ask if any stages or tasks need adjustment.
@@ -328,7 +349,7 @@ awk -f <skill-root>/scripts/extract-summary.awk docs/plans/NNNN.0.plan.md
 5. If the user requests changes to an existing plan: a. Increment the revision number. b. Create a new file (e.g., `0003-0004.1.plan.md`). c. Add a revision header linking to the previous revision: ```markdown **Revision:** 1 (previous: [0003-0004.0.plan.md](docs/plans/0003-0004.0.plan.md)) **Changes:** <summary of requested changes> ``` d. Preserve the previous revision file unchanged.
 6. **Planning-phase commit:** If auto-commit is enabled, create a commit after writing the plan file that captures the planning work as a single atomic commit:
    - `git add <plan-file>` — the newly written plan.
-   - `git add docs/adr/<updated-adrs>` — any ADR files whose status was changed to `Planned` in Step 4.
+   - `git add docs/adr/<updated-adrs>` — any ADR files whose status was changed to `Planned` in Step 5.
    - Commit with: ```docs(plan): generate implementation plan for ADR-NNNN Plan: <plan-file-path> ADR: <adr-references>```
    - This ensures the plan and its corresponding ADR status transitions are recorded together before task execution begins.
 
@@ -447,6 +468,7 @@ awk -f <skill-root>/scripts/extract-summary.awk docs/plans/NNNN.0.plan.md
 For detailed guidance beyond what is covered above, consult these references on-demand:
 
 - **[Planning Practices](references/planning-practices.md)** — Stage decomposition principles, gap detection heuristics, scoping rules.
+- **[Plan Review Protocol](references/plan-review.md)** — Plan-reviewer sub-agent checklist, iteration protocol, and prompt template.
 - **[Testing Guidelines](references/testing-guidelines.md)** — Full testing taxonomy with examples for each code context category.
 - **[Cost Estimation](references/cost-estimation.md)** — Calibration examples, edge cases, and guidance for mixed-size tasks.
 - **[Asset Index](assets/index.md)** — Curated index of all available assets and templates.
