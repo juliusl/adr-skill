@@ -6,25 +6,30 @@ Use this reference as a prompt for a general-purpose agent to perform the review
 
 ## Review Process
 
-### Step 1: Completeness Check (ecADR)
+### Step 1: Implementability Check
 
-Verify the core Definition of Done criteria:
+Verify 6 criteria that predict whether `implement-adr` can successfully plan from this ADR:
 
-1. **Evidence** — Is there confidence the design will work? (PoC, spike, peer validation)
-2. **Criteria** — Are ≥2 genuine alternatives identified and compared?
-3. **Documentation** — Is the decision captured in a template and shared?
+| # | Criterion | What to Check |
+|---|-----------|---------------|
+| 1 | **Criteria** | Are ≥2 genuine alternatives identified and compared? |
+| 2 | **Documentation** | Is the decision captured in the template and shared? |
+| 3 | **Experimentation Tolerance** | Does this decision need more data to support it, or would it benefit from prototyping? Assess on the spectrum below. Flag only when the ADR appears to need data it doesn't have and isn't framed as experimental. |
+| 4 | **Scope Clarity** | Are the boundaries of what's in and out of scope clear enough to decompose into tasks? Can the agent identify what files, components, or interfaces are affected? |
+| 5 | **Actionable Consequences** | Can test/acceptance criteria be derived from the stated consequences? Are consequences specific enough to verify, or are they vague aspirations? |
+| 6 | **Dependency Visibility** | Are links to related ADRs, external systems, or prerequisites explicit? Would `implement-adr` discover missing dependencies during planning? |
 
 Report which criteria are met and which are missing.
 
-**Extended checks (PR-submitted ADRs only):**
+#### Experimentation Tolerance Spectrum
 
-The following criteria apply when the ADR's status is `Proposed` — indicating it
-is ready for team review. When the ADR is in `Prototype` status — meaning it is
-driving immediate local prototyping — these checks are not applicable and should
-be skipped.
+Rather than a binary pass/fail, assess on a three-point spectrum:
 
-4. **Agreement** — Is there stakeholder consensus? Was involvement planned early?
-5. **Realization/Review** — Is implementation scheduled? Is there a revisit date?
+- **Well-supported** — data, PoC, or prior experience backs the decision. No concern.
+- **Needs validation** — the decision makes claims that could be tested but aren't. Recommend a prototype or spike before implementation.
+- **Deliberately experimental** — the decision explicitly acknowledges uncertainty and is designed to learn. Acceptable if the ADR frames it honestly (not a Fairy Tale anti-pattern).
+
+The key insight: "flying blind" is fine when it's *intentional* and *acknowledged*. It's a problem when the ADR presents unvalidated claims as fact.
 
 ### Step 2: Fallacy Scan
 
@@ -142,12 +147,13 @@ Structure the review as:
 ```markdown
 ## ADR Review: [title]
 
-### Completeness (ecADR)
-- Evidence: ...
+### Implementability
 - Criteria: ...
 - Documentation: ...
-- Agreement: ... (PR-submitted ADRs only)
-- Realization/Review: ... (PR-submitted ADRs only)
+- Experimentation Tolerance: ...
+- Scope Clarity: ...
+- Actionable Consequences: ...
+- Dependency Visibility: ...
 
 ### Fallacies Detected
 [list or "None detected"]
