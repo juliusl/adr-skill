@@ -54,7 +54,7 @@ User request
 
 **Planning workflow:**
 ```
-Read ADR → Generate plan → Plan review (sub-agent) → [Iterate] → Execute plan
+Read ADR → Generate plan → Plan review (sub-agent) → [Iterate] → QA plan (4b) → Execute plan
 ```
 
 ### Step 0 — Locate ADRs
@@ -201,6 +201,19 @@ Read the [Plan Review Protocol](references/plan-review.md) for the full reviewer
 
 The review runs regardless of participation mode. It is mandatory because the prototype validated that even simple plans miss items (~24% gap rate observed on 49 checks).
 
+### Step 4b — QA Plan Generation (Mandatory)
+
+After the plan-reviewer approves the plan (Step 4), spawn a **separate general-purpose agent** to generate the QA plan. The main executor must not write its own QA plan — this is the same separation principle that prevents developers from writing their own QA test plans.
+
+Read the [QA Planning Protocol](references/qa-planning.md) for the full QA planner prompt, procedural checklists (6 security + 7 UX items), test-gap analysis, and finding eligibility gate.
+
+**Workflow:**
+1. Construct the QA planner prompt using the template in `qa-planning.md`, inserting the approved plan and source ADR content.
+2. Spawn a `general-purpose` agent with `mode="background"`.
+3. The QA planner writes `docs/plans/<range>.<revision>.qa-plan.md`.
+
+QA plan generation is mandatory — it runs for every plan, regardless of participation mode. There is no opt-out.
+
 ### Step 5 — Update ADR Statuses
 
 After generating the plan, update each source ADR whose status is `Prototype` or `Proposed` to `Planned`. This signals that the decision has been analyzed, decomposed into tasks, and is ready for implementation.
@@ -346,7 +359,7 @@ awk -f <skill-root>/scripts/extract-summary.awk docs/plans/NNNN.0.plan.md
    - Create `docs/plans/` if it does not exist.
    - File name: `<adr-range>.0.plan.md` (initial plan).
    - Example: `docs/plans/0003-0004.0.plan.md`
-5. If the user requests changes to an existing plan: a. Increment the revision number. b. Create a new file (e.g., `0003-0004.1.plan.md`). c. Add a revision header linking to the previous revision: ```markdown **Revision:** 1 (previous: [0003-0004.0.plan.md](docs/plans/0003-0004.0.plan.md)) **Changes:** <summary of requested changes> ``` d. Preserve the previous revision file unchanged.
+5. If the user requests changes to an existing plan: a. Increment the revision number. b. Create a new file (e.g., `0003-0004.1.plan.md`). c. Add a revision header linking to the previous revision: ```markdown **Revision:** 1 (previous: [0003-0004.0.plan.md](docs/plans/0003-0004.0.plan.md)) **Changes:** <summary of requested changes> ``` d. Preserve the previous revision file unchanged. e. **Regenerate the QA plan** — a revised plan invalidates the existing QA plan. Re-run Step 4b to generate a new `qa-plan.md` against the revised plan.
 6. **Planning-phase commit:** If auto-commit is enabled, create a commit after writing the plan file that captures the planning work as a single atomic commit:
    - `git add <plan-file>` — the newly written plan.
    - `git add docs/adr/<updated-adrs>` — any ADR files whose status was changed to `Planned` in Step 5.
@@ -469,6 +482,7 @@ For detailed guidance beyond what is covered above, consult these references on-
 
 - **[Planning Practices](references/planning-practices.md)** — Stage decomposition principles, gap detection heuristics, scoping rules.
 - **[Plan Review Protocol](references/plan-review.md)** — Plan-reviewer sub-agent checklist, iteration protocol, and prompt template.
+- **[QA Planning Protocol](references/qa-planning.md)** — QA plan generation, procedural checklists (security + UX), test-gap analysis, finding eligibility gate, and agent prompt templates.
 - **[Testing Guidelines](references/testing-guidelines.md)** — Full testing taxonomy with examples for each code context category.
 - **[Cost Estimation](references/cost-estimation.md)** — Calibration examples, edge cases, and guidance for mixed-size tasks.
 - **[Asset Index](assets/index.md)** — Curated index of all available assets and templates.
