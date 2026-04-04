@@ -384,6 +384,7 @@ When the source ADR includes a Quality Strategy checklist (nygard-agent format),
 | Performance testing | Hot path or resource-heavy process | Add benchmark criteria to relevant tasks |
 | Backwards Compatible | Breaking change risk | Add backwards compatibility verification criteria |
 | Integration tests | External dependency involved | Add integration test criteria; if no integration tests exist, recommend an ADR to address the gap |
+| Tooling | Build/install/CI infrastructure affected | Add task to update Makefiles, install targets, CI configs, and validation pipelines to include new artifacts |
 | User documentation | User-facing changes | Add documentation update task or criteria |
 
 Items struck through (`~~`) in the ADR indicate "not applicable" — do not add those test types.

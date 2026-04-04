@@ -93,6 +93,7 @@ Links:
 - [ ] Performance testing
 - [ ] Backwards Compatible
 - [ ] Integration tests
+- [ ] Tooling
 - [ ] User documentation
 
 ### Additional Quality Concerns
@@ -191,6 +192,7 @@ see Nat Pryce's adr-tools.
 - ~~Performance testing~~
 - [x] Backwards Compatible
 - ~~Integration tests~~
+- ~~Tooling~~
 - ~~User documentation~~
 
 ### Additional Quality Concerns
