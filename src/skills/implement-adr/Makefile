@@ -9,7 +9,7 @@
 SKILL_ROOT := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 ADR_DIR    ?= docs/adr
 
-.PHONY: help list-adrs list-plans show-template install-agents extract-summary
+.PHONY: help list-adrs list-plans show-template install-agents extract-summary review-plan
 
 help: ## Show available targets
 	@echo "Implement-ADR Skill Makefile"
@@ -82,3 +82,6 @@ extract-summary: ## Extract implementation summary as JSONL from a plan file (PL
 		exit 1; \
 	fi
 	@awk -f "$(SKILL_ROOT)scripts/extract-summary.awk" "$(PLAN_FILE)"
+
+review-plan: ## Display the plan-review protocol reference
+	@cat "$(SKILL_ROOT)references/plan-review.md"

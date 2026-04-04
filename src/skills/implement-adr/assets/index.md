@@ -19,6 +19,7 @@ Curated index of assets available to the implement-adr skill.
 | Reference | Path | Purpose |
 |-----------|------|---------|
 | **Planning Practices** | `references/planning-practices.md` | Stage decomposition, task scoping, gap detection, ADR linkage |
+| **Plan Review Protocol** | `references/plan-review.md` | Plan-reviewer sub-agent checklist, iteration protocol, prompt template |
 | **Testing Guidelines** | `references/testing-guidelines.md` | Testing taxonomy by code context, coverage targets |
 | **Cost Estimation** | `references/cost-estimation.md` | T-shirt sizing calibration, edge cases, summary format |
 

@@ -24,6 +24,7 @@ Turn accepted ADRs into actionable implementation plans.
 | Capability | Details |
 |---|---|
 | **Plan** | Generate structured `plan.md` with staged tasks from ADRs |
+| **Plan review** | Verify plan-ADR alignment via sub-agent reviewer (per ADR-0025) |
 | **Decompose** | Break decisions into implementation stages and scoped tasks |
 | **Estimate** | Assign effort estimates (small / medium / heavy) per task |
 | **Test criteria** | Include test & acceptance criteria per code context |
@@ -133,11 +134,16 @@ After authoring, always run the review. The review catches reasoning fallacies, 
 │   │   ├── references/               # On-demand docs (create, solve, review, revise, manage)
 │   │   ├── assets/                   # Templates and static resources
 │   │   └── scripts/                  # Unified format-based scripts
-│   └── implement-adr/                # Skill: ADR → implementation plans
+│   ├── implement-adr/                # Skill: ADR → implementation plans
+│   │   ├── SKILL.md                  # Skill entry point
+│   │   ├── Makefile                  # Downstream agent interface
+│   │   ├── references/               # On-demand docs (planning, testing, cost, plan-review)
+│   │   └── assets/                   # Plan template, static resources
+│   └── prototype-adr/                # Skill: validate decisions via prototyping
 │       ├── SKILL.md                  # Skill entry point
 │       ├── Makefile                  # Downstream agent interface
-│       ├── references/               # On-demand docs (planning, testing, cost)
-│       └── assets/                   # Plan template, static resources
+│       ├── references/               # On-demand docs (profiles, isolation, observation)
+│       └── assets/                   # Default profile template
 ```
 
 ## Development
