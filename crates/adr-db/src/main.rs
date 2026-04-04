@@ -1,5 +1,8 @@
+use std::path::PathBuf;
+
 use clap::{Parser, Subcommand};
 
+mod init;
 mod models;
 mod schema;
 
@@ -14,19 +17,30 @@ struct Cli {
 #[derive(Subcommand)]
 enum Commands {
     /// Initialize the data store (create schema, ensure .adr/var/ exists)
-    Init,
+    Init {
+        /// Path to the SQLite database file
+        #[arg(long, default_value = ".adr/var/adr.db")]
+        db_path: PathBuf,
+    },
     /// Read JSONL from stdin and persist each record to the data store
-    Ingest,
+    Ingest {
+        /// Path to the SQLite database file
+        #[arg(long, default_value = ".adr/var/adr.db")]
+        db_path: PathBuf,
+    },
 }
 
 fn main() {
     let cli = Cli::parse();
 
     match cli.command {
-        Commands::Init => {
-            eprintln!("init: not yet implemented");
+        Commands::Init { db_path } => {
+            if let Err(e) = init::run_init(&db_path) {
+                eprintln!("error: {e}");
+                std::process::exit(1);
+            }
         }
-        Commands::Ingest => {
+        Commands::Ingest { db_path: _ } => {
             eprintln!("ingest: not yet implemented");
         }
     }
