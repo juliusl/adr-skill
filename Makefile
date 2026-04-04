@@ -8,7 +8,7 @@ PROTOTYPE_SKILL_DIR := $(CURDIR)/src/skills/prototype-adr
 # Legacy alias so existing references keep working
 SKILL_DIR := $(AUTHOR_SKILL_DIR)
 
-.PHONY: help test install-agents install-user-copilot validate-setup validate validate-all check-refs
+.PHONY: help test build-tools install-agents install-user-copilot validate-setup validate validate-all check-refs
 
 help: ## Show available targets
 	@echo "ADR Skill Development Makefile"
@@ -20,6 +20,9 @@ help: ## Show available targets
 test: ## Run all script tests (author-adr + implement-adr)
 	$(MAKE) -C $(SKILL_DIR)/scripts clean check
 	$(MAKE) -C $(IMPLEMENT_SKILL_DIR)/scripts clean check
+
+build-tools: ## Build Rust tooling (requires Rust toolchain)
+	cargo build --release --manifest-path $(CURDIR)/crates/Cargo.toml
 
 check-refs: ## Check for broken markdown references in all skills
 	@$(CURDIR)/scripts/check-refs $(AUTHOR_SKILL_DIR) $(IMPLEMENT_SKILL_DIR) $(PROTOTYPE_SKILL_DIR)
