@@ -5,6 +5,7 @@ use crate::schema::task_summaries;
 
 #[derive(Queryable, Selectable, Debug)]
 #[diesel(table_name = task_summaries)]
+#[allow(dead_code)]
 pub struct TaskSummary {
     pub id: i32,
     pub task_id: String,

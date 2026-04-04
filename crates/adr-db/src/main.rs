@@ -3,6 +3,7 @@ use std::path::PathBuf;
 use clap::{Parser, Subcommand};
 
 mod init;
+mod ingest;
 mod models;
 mod schema;
 
@@ -40,8 +41,11 @@ fn main() {
                 std::process::exit(1);
             }
         }
-        Commands::Ingest { db_path: _ } => {
-            eprintln!("ingest: not yet implemented");
+        Commands::Ingest { db_path } => {
+            if let Err(e) = ingest::run_ingest(&db_path) {
+                eprintln!("error: {e}");
+                std::process::exit(1);
+            }
         }
     }
 }
