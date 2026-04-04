@@ -35,6 +35,14 @@ This skill reads user-scoped preferences from a TOML configuration file at `~/.c
 
 **Create on first write:** When persisting a preference, create the directory with `mkdir -p` before writing. Never assume it already exists.
 
+### Project-Scoped Directory (`.adr/`)
+
+Per ADR-0020, projects can opt in to a `.adr/` directory at the project root for project-scoped data (telemetry, intermediate artifacts, project-level preferences). This is separate from `docs/adr/` (decision records) and `~/.config/adr-skills/` (user preferences).
+
+Bootstrap with: `make -f <skill-root>/Makefile init-data`
+
+This creates `.adr/`, `.adr/var/` (gitignored for transient data), and `.adr/.gitignore`. See [references/tooling.md](references/tooling.md) for details.
+
 ## Agent Workflow
 
 When this skill is activated, **always start with Format Detection** before proceeding to the relevant task.
@@ -177,6 +185,7 @@ This skill uses a unified script architecture via `ADR_AGENT_SKILL_FORMAT`:
 export ADR_AGENT_SKILL_FORMAT=nygard-agent
 
 make -f <skill-root>/Makefile init DIR=docs/adr     # bootstrap ADR directory
+make -f <skill-root>/Makefile init-data              # bootstrap .adr/ project-scoped directory
 make -f <skill-root>/Makefile new TITLE="Use PostgreSQL"
 make -f <skill-root>/Makefile rename NUM=2 TITLE="Use PostgreSQL"  # rename ADR file and heading
 make -f <skill-root>/Makefile list                   # list all ADRs
@@ -190,6 +199,7 @@ Only use direct scripts when the Makefile is unavailable. See [references/toolin
 ```bash
 export PATH="$PWD/scripts:$PATH"
 nygard-agent-format.sh init docs/adr
+nygard-agent-format.sh init-data
 new.sh nygard-agent "Use PostgreSQL"
 nygard-agent-format.sh rename 2 "Use PostgreSQL"
 nygard-agent-format.sh list
