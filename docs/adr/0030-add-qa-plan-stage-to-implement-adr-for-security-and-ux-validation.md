@@ -1,7 +1,7 @@
 # 30. Add QA plan stage to implement-adr for security and UX validation
 
 Date: 2026-04-04
-Status: Planned
+Status: Accepted
 Last Updated: 2026-04-04
 Links:
 - Extends [ADR-0025](0025-add-plan-reviewer-sub-agent-task-to-implement-adr.md) (plan-reviewer sub-agent pattern — QA plan follows the same sub-agent delegation model)
