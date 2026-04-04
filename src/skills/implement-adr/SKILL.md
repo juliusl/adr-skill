@@ -285,6 +285,12 @@ After the user approves a sentinel task, the skill continues with subsequent tas
 
 The skill supports an optional behavior: **create a git commit each time a task's acceptance criteria are all satisfied**. Opt-in, disabled by default.
 
+#### QA Validation at Stage Boundaries
+
+When a QA plan exists (`docs/plans/<range>.<revision>.qa-plan.md`), spawn a **separate general-purpose QA executor agent** after all tasks in a stage complete but before auto-commit. The agent that executed the tasks must not QA its own work. Read the [QA Planning Protocol](references/qa-planning.md#qa-execution) for the executor prompt. **Pass** → proceed to auto-commit. **Fail** → pause, report, remediate. If no QA plan exists, the hook is a no-op.
+
+#### Auto-Commit on Task Completion
+
 **When it triggers:** After all `- [ ]` checkboxes in a task's Test & Acceptance Criteria are marked `- [x]` (per the Task Execution Protocol).
 
 **Commit steps:**
