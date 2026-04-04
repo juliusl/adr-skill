@@ -124,7 +124,14 @@ After authoring, always run the review. The review catches reasoning fallacies, 
 
 ```
 ├── AGENTS.md                         # Contributor guide
-├── Makefile                          # Dev targets (test, validate)
+├── Makefile                          # Dev targets (test, validate, build-tools)
+├── crates/                           # Cargo workspace — Rust tooling
+│   ├── Cargo.toml                    # Workspace root
+│   └── adr-db/                       # Plumbing CLI: JSONL → SQLite persistence
+│       ├── Cargo.toml
+│       ├── diesel.toml               # Diesel schema output config
+│       ├── migrations/               # Diesel SQL migrations
+│       └── src/                      # Rust source (main, init, ingest, models, schema)
 ├── docs/adr/                         # Project-level ADRs
 ├── docs/plans/                       # Implementation plans generated from ADRs
 ├── src/skills/
@@ -152,6 +159,9 @@ After authoring, always run the review. The review catches reasoning fallacies, 
 # Run all tests (10 unified format tests)
 make test
 
+# Build Rust tooling (requires Rust toolchain)
+make build-tools
+
 # Validate skills against agentskills.io spec
 make validate-setup   # one-time
 make validate-all     # both skills
@@ -162,6 +172,30 @@ make install-agents
 # Local testing in Copilot CLI
 make dogfood-copilot      # installs both skills
 ```
+
+### adr-db (Rust CLI)
+
+The `crates/adr-db/` directory contains a Rust binary for ingesting JSONL data into a local SQLite database. It serves as plumbing between skill JSONL producers and downstream consumers.
+
+```bash
+# Initialize the database
+adr-db init
+
+# Ingest JSONL from a plan's implementation summary
+awk -f src/skills/implement-adr/scripts/extract-summary.awk docs/plans/0020.0.plan.md | adr-db ingest
+```
+
+**For contributors working on `adr-db`:**
+
+```bash
+# Install diesel_cli for migration authoring
+cargo install diesel_cli --no-default-features --features sqlite
+
+# Create a new migration
+cd crates/adr-db && DATABASE_URL="sqlite:///tmp/dev.db" diesel migration generate <name>
+```
+
+Contributors who only work on shell scripts do not need Rust or `diesel_cli` installed.
 
 ## License
 
