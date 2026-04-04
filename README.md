@@ -6,15 +6,16 @@ An [agentskills.io](https://agentskills.io)-compliant skill suite for AI coding 
 
 ### author-adr
 
-Create, review, and manage ADRs.
+Create, review, revise, and manage ADRs.
 
 | Capability | Details |
 |---|---|
-| **Create** ADRs | Draft decisions using Nygard, MADR, or Y-Statement templates |
-| **Review** ADRs | Evaluate existing records for quality and completeness |
-| **Manage** ADRs | Supersede, deprecate, link, and generate tables of contents |
-| **Tooling** | Bundled `adr-tools` (Nygard) and `madr-tools` (MADR) format scripts |
-| **Meta-ADRs** | Bootstrap `.meta/` directory for persistent behavioral policies |
+| **Solve** problems | Start from a problem, explore options with the agent, converge on a decision |
+| **Create** ADRs | Draft decisions using Nygard Agent, MADR, or Y-Statement templates |
+| **Review** ADRs | Evaluate existing records for quality, fallacies, and anti-patterns |
+| **Revise** ADRs | Interactively address review comments after a Revise verdict |
+| **Manage** ADRs | Supersede, deprecate, link, and track status transitions |
+| **Tooling** | Unified format-based scripts via `ADR_AGENT_SKILL_FORMAT` |
 
 ### implement-adr
 
@@ -36,36 +37,47 @@ Install the skill by adding it to your agent's skill configuration, then ask you
 
 > **Note:** Running sessions will need to be restarted for the skill to be picked up.
 
+### When you have a decision ready
+
 ```
 Create an ADR for choosing PostgreSQL as our primary database.
 ```
 
 The agent will select the appropriate template, scaffold the record, and guide you through filling in the decision context, options, and rationale.
 
-> For more explicit control if you are using copilot you can instead use,
-> 
+### When you have a problem but no solution yet
+
+```
+I need to figure out how to handle persistent event storage. Help me explore options.
+```
+
+The agent will create a TBD ADR, help you discover and evaluate options through dialogue, and converge on a decision — capturing the full exploration as architectural knowledge.
+
+> For more explicit control if you are using Copilot, you can use skill routing:
+>
 > ```sh
 > /author-adr Create an ADR for choosing PostgreSQL as our primary database.
+> /author-adr I have a problem to solve — we need a caching strategy.
 > ```
 
-This will generate a file w/ the format `NNNN-<title>.md`. The skill should ask if you'd like to review/revise the adr (recommended).
+The skill will generate a file with the format `NNNN-<title>.md`. After creation, the skill will offer to review and revise the ADR (recommended).
 
-After this step, you can use the `implement-adr` skill when you are ready to implement,
+When you are ready to implement:
 
 ```sh
-/implement-adr Implement adr 0002
+/implement-adr Implement ADR 0002
 
 # w/ options
 /implement-adr 0002, autonomously w/ auto-commits
 ```
 
-This will first write a plan under docs/plans in the format `<ADR-RANGE>.<REVISION>.plan.md`. If the plan is quite extensive, and the session is already saturated, you can easily create a new session and use the prompt.
+This writes a plan under `docs/plans/` in the format `<ADR-RANGE>.<REVISION>.plan.md`. If the plan is extensive and the session is already saturated, you can create a new session:
 
 ```
-/implement-adr Implement adr 0002 using plan 0002.0.plan.md
+/implement-adr Implement ADR 0002 using plan 0002.0.plan.md
 ```
 
-**Installing to copilot user-scoped skills**
+**Installing to Copilot user-scoped skills**
 
 ```sh
 # Clone the repo
@@ -75,21 +87,37 @@ git clone github.com/juliusl/adr-skills
 make install-user-copilot
 ```
 
-
 ## Usage Tips
 
-### Elaborate when describing the ADR you wish to write
+### Use solve mode for problems, create mode for decisions
 
-This skill is mainly used to drive development with an agent so it's important that during the author phase you capture important context needed for the adr. The author-adr skill can also review an ADR which will end up re-inforcing this, but it's better to be in the habit of writing good prompts.
-
-In the above example "Create an ADR for choosing PostgreSQL as our primary database" is missing important context, such as 
-alternatives considered, overall reasons for it, any historical detail. So a better prompt might be:
+If you know what you want to decide, use **create** and be specific:
 
 ```
-/author-adr Create an ADR for choosing PostgreSQL as our primary database. PostgreSQL shows significant performance over other alternatives (MySQL, Sqlite) which is important as our service is called in a hot-path. 
+/author-adr Create an ADR for choosing PostgreSQL as our primary database.
+PostgreSQL shows significant performance over other alternatives (MySQL, SQLite)
+which is important as our service is called in a hot-path.
 ```
 
-This gives the agent much more context when authoring the rest of the ADR.
+If you have a problem but haven't picked a solution, use **solve** instead:
+
+```
+/author-adr We need a database for our event storage service. The hot path
+requires sub-millisecond reads. Help me figure out the best approach.
+```
+
+The solve workflow guides you through option discovery, requirements refinement, and convergence — so you don't need to arrive with the answer already in hand.
+
+### Elaborate when describing context
+
+Whether creating or solving, more context produces better ADRs. Include:
+- **Constraints** — performance requirements, team expertise, existing tech stack
+- **Stakeholders** — who cares about this decision and why
+- **History** — what you've tried before, what didn't work
+
+### Review and revise every ADR
+
+After authoring, always run the review. The review catches reasoning fallacies, anti-patterns, and missing quality criteria that are easy to overlook during drafting. If the verdict is "Revise," the skill will walk you through each finding interactively.
 
 ## Project Structure
 
@@ -99,12 +127,12 @@ This gives the agent much more context when authoring the rest of the ADR.
 ├── docs/adr/                         # Project-level ADRs
 ├── docs/plans/                       # Implementation plans generated from ADRs
 ├── src/skills/
-│   ├── author-adr/                   # Skill: create, review, manage ADRs
+│   ├── author-adr/                   # Skill: create, review, solve, manage ADRs
 │   │   ├── SKILL.md                  # Skill entry point
 │   │   ├── Makefile                  # Downstream agent interface
-│   │   ├── references/               # On-demand docs (practices, templates, tooling)
-│   │   ├── assets/                   # Templates, practice notes, static resources
-│   │   └── scripts/                  # Bundled CLI scripts (adr-tools, madr-tools)
+│   │   ├── references/               # On-demand docs (create, solve, review, revise, manage)
+│   │   ├── assets/                   # Templates and static resources
+│   │   └── scripts/                  # Unified format-based scripts
 │   └── implement-adr/                # Skill: ADR → implementation plans
 │       ├── SKILL.md                  # Skill entry point
 │       ├── Makefile                  # Downstream agent interface
@@ -115,12 +143,8 @@ This gives the agent much more context when authoring the rest of the ADR.
 ## Development
 
 ```bash
-# Run all tests (22 adr-tools + 9 madr-tools)
+# Run all tests (10 unified format tests)
 make test
-
-# Run tests for a single format
-make test-nygard
-make test-madr
 
 # Validate skills against agentskills.io spec
 make validate-setup   # one-time

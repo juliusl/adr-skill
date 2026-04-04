@@ -7,16 +7,12 @@ description: >-
   interactively, solving architectural problems through guided exploration,
   choosing between ADR templates (Nygard, MADR, Y-Statement), setting up ADR
   tooling, or understanding ADR best practices. Activate when the user says
-  things like "create an ADR," "write an ADR," "new ADR," "draft a decision,"
-  "review this ADR," "revise this ADR," "address review comments," "I have a
-  problem to solve," "help me decide," "explore options," or "document this
+  things like "create an ADR," "new ADR," "draft a decision," "review this
+  ADR," "address review comments," "help me decide," or "document this
   decision." Also activate when the user wants to justify a technology
-  selection, record why an architecture was chosen over alternatives, capture
-  tradeoffs, or establish a decision log — even if they don't explicitly say
-  "ADR" or "architecture decision." Also use when the user asks about decision
-  rationale, design justification, or reversibility of technical choices. Do
-  not use for general code review, project management, or non-architectural
-  documentation.
+  selection, record why an architecture was chosen over alternatives, or
+  capture tradeoffs — even if they don't explicitly say "ADR." Do not use for
+  general code review, project management, or non-architectural documentation.
 license: CC-BY-4.0
 metadata:
   source: adr.github.io
