@@ -16,8 +16,9 @@ help: ## Show available targets
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
 		awk 'BEGIN {FS = ":.*?## "}; {printf "  %-15s %s\n", $$1, $$2}'
 
-test: ## Run unified script tests
+test: ## Run all script tests (author-adr + implement-adr)
 	$(MAKE) -C $(SKILL_DIR)/scripts clean check
+	$(MAKE) -C $(IMPLEMENT_SKILL_DIR)/scripts clean check
 
 check-refs: ## Check for broken markdown references in all skills
 	@$(CURDIR)/scripts/check-refs $(AUTHOR_SKILL_DIR) $(IMPLEMENT_SKILL_DIR)
