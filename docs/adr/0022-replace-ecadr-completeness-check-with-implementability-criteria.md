@@ -1,7 +1,7 @@
 # 22. Replace ecADR completeness check with implementability criteria
 
 Date: 2026-04-03
-Status: Planned
+Status: Accepted
 Last Updated: 2026-04-03
 Links: ADR-0004
 
