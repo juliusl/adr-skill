@@ -139,7 +139,7 @@ The solve process covers:
 
 ### Reviewing an ADR
 
-Read [references/review.md](references/review.md) for the full structured review process. Use it as a prompt for a general-purpose agent to perform the review.
+Read [references/review.md](references/review.md) for the full structured review process. Use it as a prompt for the configured review agent (see [Agent Dispatch](#agent-dispatch-authordispatch)). By default this is a general-purpose agent; a custom agent can be configured via `[author.dispatch].review`.
 
 The review process covers:
 

@@ -2,7 +2,7 @@
 
 Self-contained reference for the ADR review workflow. Read this file when the user asks to review, critique, validate, or give feedback on an ADR.
 
-Use this reference as a prompt for a general-purpose agent to perform the review. The review process is structured into six steps executed in order.
+Use this reference as a prompt for the configured review agent (per ADR-0031, `[author.dispatch].review`; defaults to general-purpose). Custom agents receive these same instructions — their persona shapes the judgment they bring to the review, not the task structure they follow. The review process is structured into six steps executed in order.
 
 ## Review Process
 
