@@ -1,7 +1,7 @@
 # 32. add draft worksheet to author-adr workflow
 
 Date: 2026-04-05
-Status: Proposed
+Status: Planned
 Last Updated: 2026-04-04
 Links:
 - Informed by [ADR-0031](0031-add-author-adr-dispatch-hooks-for-custom-agent-delegation.md) (dispatch hooks and editor persona experiment)
@@ -92,7 +92,7 @@ record content.
 # 32. [Title]
 
 Date: 2026-04-05
-Status: Proposed
+Status: Planned
 Last Updated: 2026-04-04
 Links:
 

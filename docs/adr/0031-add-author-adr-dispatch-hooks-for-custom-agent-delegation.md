@@ -1,7 +1,7 @@
 # 31. Add author-adr dispatch hooks for custom agent delegation
 
 Date: 2026-04-04
-Status: Proposed
+Status: Planned
 Last Updated: 2026-04-04
 Links:
 - Extends [ADR-0014](0014-define-author-and-implement-tables-in-toml-configuration.md) (defines `[author]` table schema)
