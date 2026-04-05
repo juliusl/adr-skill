@@ -153,7 +153,7 @@ The review process covers:
 
 ### Revising an ADR
 
-Read [references/revise.md](references/revise.md) for the full interactive revision workflow. Use this after a review produces a "Revise" verdict.
+Read [references/revise.md](references/revise.md) for the full interactive revision workflow. Use this after a review produces a "Revise" verdict. When `[author.dispatch].editor` is configured with an agent reference (not `"interactive"`), the configured editor agent stands in for the user during triage — see [Agent Dispatch](#agent-dispatch-authordispatch).
 
 The revision process covers:
 

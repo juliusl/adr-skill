@@ -50,7 +50,7 @@ For each revision item, starting with highest priority, present:
 
 ### Step 3: Collect User Response
 
-For each comment, offer the user three choices:
+For each comment, offer the user three choices (when `[author.dispatch].editor` is set to an agent reference, "the user" is the configured editor agent — see [Editor Dispatch](#editor-dispatch)):
 
 - **Address** — the user provides revised text, additional context, or agrees with the suggested wording. The agent notes the revision to apply.
   - If the user agrees with a suggested rewording, confirm and note it.
@@ -171,6 +171,8 @@ If substantive changes were made (any H or M priority items addressed), suggest:
 
 If only L priority items were addressed or all items were rejected, the re-review suggestion is optional.
 
+When the editor is delegated (see [Editor Dispatch](#editor-dispatch)), the editor agent decides whether to re-review instead of the user. The loop continues per the dispatch config until the review verdict is Accept or the cycle limit is reached.
+
 ## Guard Rails
 
 1. **Don't modify unaddressed sections** — only change ADR content that corresponds to a finding the user chose to address.
@@ -180,6 +182,22 @@ If only L priority items were addressed or all items were rejected, the re-revie
 5. **One finding at a time** — present findings individually to give each one proper attention. Do not batch multiple findings into a single prompt unless the user requests it.
 6. **Respect the semantic boundary** — the `---` separator above `## Comments` divides the immutable decision record (above) from the mutable revision worksheet (below). When appending Q&A entries, never modify content above the separator.
 7. **Preserve existing addendum entries** — in multi-round revisions, existing Q&A entries from prior rounds must not be modified or removed. New entries are appended below existing ones.
+
+## Editor Dispatch
+
+Per ADR-0031, the `editor` hook in `[author.dispatch]` controls who handles the interactive steps in the revision workflow. When `editor` is set to an agent reference (anything other than `"interactive"`), that agent stands in for the user during:
+
+- **Consequence validation** (review Step 4) — the editor agent confirms or flags consequences instead of the user.
+- **Finding triage** (revise Step 3) — the editor agent chooses Address, Reject, or Defer for each finding.
+- **Re-review decision** (revise Step 6) — the editor agent decides whether to re-review after revisions.
+
+The editor agent receives this reference (`revise.md`) as its prompt along with the review output and ADR content. The agent's persona shapes its Address/Reject/Defer decisions — which findings it prioritizes, how it weighs scope boundaries, what editorial judgment it brings — but the task structure remains identical.
+
+**Defer and the editor persona:** The Defer verb (ADR-0033) implements the v3 editor principle 1 IMPORTANT clause: "rejection ≠ ignoring — always note where the concern DOES belong." When the editor recognizes a scope-redirect pattern, it uses Defer to express "valid concern, wrong ADR" rather than approximating with Address or Reject.
+
+**Multi-round convergence:** When the editor is delegated, the review→revise→re-review loop runs per the dispatch config. The editor agent decides whether to trigger re-review (Step 6) on each cycle. The loop continues until the review verdict is Accept or the cycle limit is reached.
+
+**Default behavior:** When `editor = "interactive"` or the `[author.dispatch]` table is absent, all interactive steps prompt the user directly — identical to the current workflow. The guard rails above apply equally to human users and editor agents.
 
 ## Output Format
 
