@@ -135,9 +135,9 @@ The revision process covers:
 
 1. **Load review comments** — parse the structured review output into discrete revision items
 2. **Present each comment** — show findings one at a time with context
-3. **Collect user response** — for each comment, the user can address it or reject it
+3. **Collect user response** — for each comment, the user can address it, reject it, or defer it to another ADR
 4. **Apply revisions** — update the ADR with the user's approved changes
-5. **Produce revision summary** — document what was addressed vs. rejected
+5. **Produce revision summary** — document what was addressed, deferred, or rejected
 6. **Recommend re-review** — suggest re-review if substantive changes were made
 
 ### Managing ADRs
