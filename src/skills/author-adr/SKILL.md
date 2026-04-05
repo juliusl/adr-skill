@@ -43,6 +43,29 @@ Bootstrap with: `make -f <skill-root>/Makefile init-data`
 
 This creates `.adr/`, `.adr/var/` (gitignored for transient data), and `.adr/.gitignore`. See [references/tooling.md](references/tooling.md) for details.
 
+### Agent Dispatch (`[author.dispatch]`)
+
+Per ADR-0031, the review→revise workflow supports configurable agent dispatch. Each hook point can be set to a specific agent or left at its default.
+
+```toml
+[author.dispatch]
+review = "general-purpose"   # Agent for structured review (default)
+editor = "interactive"       # Agent for editorial decisions (default: user)
+```
+
+| Hook | Default | Role | Instructions |
+|------|---------|------|-------------|
+| `review` | `"general-purpose"` | Reviewer | Receives `review.md` as prompt |
+| `editor` | `"interactive"` | Editor | Receives `revise.md` as prompt |
+
+**Contract: same instructions, configurable executor.** Each hook dispatches the same reference instructions regardless of which agent is configured. The custom agent's persona shapes HOW it applies the instructions (which findings it prioritizes, how it weighs tradeoffs), not WHAT it checks.
+
+The `"interactive"` value is a reserved keyword meaning "prompt the user directly." Any other value is treated as an agent reference (e.g., a custom `.agent.md` persona).
+
+**Graceful fallback:** If a configured agent reference cannot be resolved at runtime, fall back to the default value for that hook and warn the user.
+
+**Default behavior preservation:** When no `[author.dispatch]` table exists in `preferences.toml`, behavior is identical to the current workflow (general-purpose review, interactive user prompts).
+
 ## Agent Workflow
 
 When this skill is activated, **always start with Format Detection** before proceeding to the relevant task.
@@ -54,6 +77,7 @@ Before any ADR operation, determine which ADR format to use:
 1. **Read the config file** — resolve the config path (see [Configuration](#configuration)) and read `[author].template` from `preferences.toml`.
    - If set (e.g., `"nygard-agent"`, `"nygard"`, or `"madr"`), use it directly.
    - If absent, default to `"nygard-agent"`.
+   - Also read `[author.dispatch]` keys (`review`, `editor`) if present. Store for use during review and revise workflows. If absent, use defaults (`review = "general-purpose"`, `editor = "interactive"`).
 2. **If `docs/adr/` does not exist** — bootstrap the decision log using the default nygard-agent format:
 
    ```bash make -f <skill-root>/Makefile init DIR=docs/adr ```
