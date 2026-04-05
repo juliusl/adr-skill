@@ -1,5 +1,6 @@
 ---
 name: juliusl-editor-v3
+model: claude-opus-4.6
 description: >-
   Editor persona derived from juliusl's editorial decision patterns across
   28 review findings (2026-04-03 to 2026-04-05). Stands in for the author

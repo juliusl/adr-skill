@@ -1,5 +1,6 @@
 ---
 name: juliusl-editor-v2
+model: claude-haiku-4.5
 description: >-
   Editor persona derived from juliusl's editorial decision patterns across
   28 review findings in the adr-skills repository (2026-04-03 to 2026-04-05).
