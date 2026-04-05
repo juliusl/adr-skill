@@ -50,7 +50,7 @@ For each revision item, starting with highest priority, present:
 
 ### Step 3: Collect User Response
 
-For each comment, offer the user two choices:
+For each comment, offer the user three choices:
 
 - **Address** — the user provides revised text, additional context, or agrees with the suggested wording. The agent notes the revision to apply.
   - If the user agrees with a suggested rewording, confirm and note it.
@@ -58,6 +58,18 @@ For each comment, offer the user two choices:
   - If the user provides context, draft revised wording and confirm with them.
 
 - **Reject** — the user marks the comment as considered but declined. The user may optionally provide a reason. Record the rejection with its reason.
+
+- **Defer** — the concern is valid but out of scope for this ADR. The user provides a redirect destination (e.g., "ADR-NNNN," "the implementing ADR," "a future decision about X"). Record the deferral with its redirect.
+
+#### Defer Mechanics
+
+When the user (or editor agent) selects Defer:
+
+1. **Acknowledge the concern** — confirm the finding surfaces something real.
+2. **State the scope boundary** — explain why it's out of scope for this ADR.
+3. **Provide redirect** — name where the concern belongs (specific ADR number, "the implementing ADR," "a future decision about X," etc.).
+
+A simple test distinguishes Reject from Defer: "Does the concern belong somewhere else?" If yes, Defer. If the concern is simply wrong or irrelevant, Reject.
 
 ### Step 4: Apply Revisions
 
