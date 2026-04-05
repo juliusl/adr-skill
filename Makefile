@@ -27,8 +27,29 @@ build-tools: ## Build Rust tooling (requires Rust toolchain)
 check-refs: ## Check for broken markdown references in all skills
 	@$(CURDIR)/scripts/check-refs $(AUTHOR_SKILL_DIR) $(IMPLEMENT_SKILL_DIR) $(PROTOTYPE_SKILL_DIR)
 
+AGENTS_SRC_DIR := $(CURDIR)/src/agents
+
 install-agents: ## Install custom agents (ADR_AGENTS_DIR overrides target)
-	$(MAKE) -C $(SKILL_DIR) install-agents $(if $(ADR_AGENTS_DIR),ADR_AGENTS_DIR=$(ADR_AGENTS_DIR))
+	@if [ -n "$(ADR_AGENTS_DIR)" ]; then \
+		target_dir="$(ADR_AGENTS_DIR)"; \
+	else \
+		target_dir="$(HOME)/.copilot/agents"; \
+	fi; \
+	mkdir -p "$$target_dir"; \
+	found=0; \
+	for agent_file in $(AGENTS_SRC_DIR)/*.agent.md; do \
+		if [ -f "$$agent_file" ]; then \
+			agent_basename=$$(basename "$$agent_file"); \
+			echo "Installing: $$agent_basename -> $$target_dir/$$agent_basename"; \
+			cp "$$agent_file" "$$target_dir/$$agent_basename"; \
+			found=1; \
+		fi; \
+	done; \
+	if [ "$$found" = "0" ]; then \
+		echo "No .agent.md files found in src/agents/."; \
+		exit 1; \
+	fi; \
+	echo "Done. Agents installed to $$target_dir/"
 
 install-user-copilot: ## Install all skills to ~/.copilot/skills
 	@echo 'Installing author-adr, implement-adr, and prototype-adr to ~/.copilot/skills'
