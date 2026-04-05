@@ -1,7 +1,7 @@
 # 33. Add defer verb to revise task triage
 
 Date: 2026-04-05
-Status: Planned
+Status: Accepted
 Last Updated: 2026-04-05
 Links:
 - Addresses measurement gap in [ADR-0031](0031-add-author-adr-dispatch-hooks-for-custom-agent-delegation.md) (prototype findings, lines 314–320)
