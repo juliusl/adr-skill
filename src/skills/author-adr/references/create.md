@@ -50,6 +50,17 @@ Don't decide too early (reduces flexibility) or too late (causes costly rework).
 
 ## Step 3: Draft the ADR
 
+### Draft Worksheet Integration
+
+Before drafting, check if a **Draft Worksheet** exists in the ADR's `## Comments` section (per ADR-0032). If present, use it to ground the drafting process:
+
+- **Framing** → seed the Context section. Use the author's stated direction as the starting point for the problem description.
+- **Tolerance** → calibrate option depth. Low risk/change tolerance suggests fewer, more conservative options. High tolerance opens the door to experimental approaches.
+- **Candidates** → pre-populate the Options section with the author's identified candidates, expanding each into a full option structure.
+- **Uncertainty** → inform which areas need more analysis in Context and which constraints are firm vs. tentative.
+
+If no worksheet exists, proceed with the standard drafting workflow below — the worksheet is optional.
+
 ### Good Practices
 
 1. **Select by priority and architectural significance** — use the ASR Test
