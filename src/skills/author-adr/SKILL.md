@@ -89,6 +89,7 @@ User request
 ├─ docs/adr/ exists? ────────────► Read config → set format
 ├─ docs/adr/ missing? ──────────► Bootstrap with nygard-agent → set format
 │
+├─ "Draft an ADR / start a draft" ► Go to: Drafting an ADR
 ├─ "Create an ADR" ──────────────► Go to: Creating an ADR
 ├─ "I have a problem to solve" ─► Go to: Solving a Problem
 ├─ "Review an ADR" ──────────────► Go to: Reviewing an ADR
@@ -99,6 +100,53 @@ User request
 ├─ "Explain ADRs / concepts" ────► Go to: Core Concepts
 └─ "Visualize / diagram" ────────► Go to: Visualization
 ```
+
+### Drafting an ADR
+
+Per ADR-0032, a draft worksheet captures the author's original intent and workflow calibration before the create/solve workflow runs. Draft mode is optional — users can skip it and go directly to Creating or Solving.
+
+**Activation triggers:** "draft an ADR," "start a draft," "I have an idea for a decision."
+
+**Workflow:**
+
+1. **Create the ADR file** — `make -f <skill-root>/Makefile new TITLE="tbd"` to create a placeholder ADR.
+
+2. **Fill the Draft Worksheet** — populate the following structure in the `## Comments` section (below the `---` semantic boundary):
+
+   ```markdown
+   ---
+
+   ## Comments
+
+   ### Draft Worksheet
+   <!-- Captures original intent and workflow calibration. -->
+
+   **Framing:**
+   <!-- What's the core idea? What triggered this? What direction are you leaning? -->
+
+   **Tolerance:**
+   - Risk: [Low | Medium | High] — appetite for experimental or unproven options
+   - Change: [Low | Medium | High] — acceptable departure from current state
+   - Improvisation: [Low | Medium | High] — creative divergence from this framing
+
+   **Uncertainty:**
+   <!-- What do you know for certain? What are you unsure about? -->
+
+   **Options:**
+   - Target count: [2-3 | 3-5 | open]
+   - [ ] Explore additional options beyond candidates listed below
+
+   **Candidates:**
+   <!-- Pre-identified option candidates with brief notes. Leave empty if starting from scratch. -->
+   ```
+
+3. **Fill mode** depends on the workflow:
+   - **Create workflow** (user arrives with direction) — fill the worksheet **before** populating Context/Options. The user provides the framing upfront.
+   - **Solve workflow** (user arrives with a problem) — fill the worksheet **after** the problem intake conversation. The agent drafts the worksheet from the conversation and the user confirms/adjusts.
+
+4. **Hand off** — after the worksheet is filled, proceed to [Creating an ADR](#creating-an-adr) or [Solving a Problem](#solving-a-problem). The create/solve workflows read the worksheet for grounding (see their respective references).
+
+**Comments area evolution:** The `## Comments` section (ADR-0016) now holds both the Draft Worksheet (pre-decision intent) and Revision Q&A entries (post-review dialogue). The Draft Worksheet always appears first, before any revision Q&A entries.
 
 ### Creating an ADR
 
