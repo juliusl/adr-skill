@@ -25,6 +25,15 @@ Problem intake → Option discovery → Requirements refinement
 
 The user describes the problem they need to solve. The agent's role is to capture the problem clearly, not to jump to solutions.
 
+### Draft Worksheet Integration
+
+If a **Draft Worksheet** exists in the ADR's `## Comments` section (per ADR-0032), use it to accelerate intake:
+
+- **Framing** → use as the initial problem statement instead of starting from scratch. The user has already articulated their core idea.
+- **Uncertainty** → distinguish what the user knows for certain from what they're unsure about. Focus probing questions on the uncertain areas.
+
+If no worksheet exists, proceed with the standard intake below.
+
 1. **Gather the problem statement** — ask the user to describe the problem in their own words. Probe for:
    - What system or component is affected?
    - What triggered this problem? (new requirement, pain point, tech debt)
@@ -51,6 +60,17 @@ The user describes the problem they need to solve. The agent's role is to captur
 ## Step 2: Option Discovery
 
 The agent and user collaborate to identify candidate solutions. This is the core exploration phase.
+
+### Draft Worksheet Integration
+
+If a **Draft Worksheet** exists, use it to scope discovery:
+
+- **Target count** → aim for this many options (e.g., "2-3" or "open").
+- **Explore additional** → if checked, discover options beyond the pre-identified Candidates. If unchecked, focus on evaluating the Candidates only.
+- **Candidates** → start with these as initial options instead of proposing from scratch.
+- **Improvisation tolerance** → controls how far the agent diverges from the author's Framing during option discovery. Low = stay close to the framing; High = challenge the framing and explore unconventional approaches.
+
+If no worksheet exists, proceed with the standard discovery below.
 
 1. **Agent proposes options** — based on the problem context and domain knowledge, propose 2–4 candidate solutions. For each option, provide:
    - A short title (noun phrase)
