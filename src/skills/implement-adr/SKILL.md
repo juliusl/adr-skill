@@ -68,6 +68,7 @@ All generated content (plans, QA plans, review findings, implementation summarie
 1. Check for `docs/adr/` directory in the repository.
 2. **If missing:** Tell the user no ADRs were found. Recommend using the `author-adr` skill to create decision records before planning implementation. Stop here.
 3. **If present:** List ADRs using: ```bash ls docs/adr/*.md ```
+4. **Read `AGENTS.md`** — if the project root has an `AGENTS.md`, read it. It contains project-specific conventions for building, testing, and contributing that apply during plan execution.
 4. **Check for saved preferences:** Read the config file (see [Configuration](#configuration)) and look for `[implement].participation` and `[implement].auto_commit`.
    - If set, store for use in Step 6 (applied silently, skip corresponding prompts).
    - If absent, proceed silently — preferences will be established interactively in Step 6 and optionally saved.

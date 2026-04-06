@@ -47,6 +47,7 @@ adr-skills/
 │   │   │   ├── templates.md     # Template selection guide (Nygard primary, MADR, Y-Statement)
 │   │   │   └── tooling.md       # Dual-format command reference + visualization guidance
 │   │   ├── assets/              # Static resources and templates
+│   │   │   ├── decisions/       # Bundled ADRs referenced by skill instructions
 │   │   │   └── templates/       # Ready-to-use ADR templates (Nygard, MADR, Y-Statement)
 │   │   └── scripts/
 │   │       ├── adr-tools-3.0.0/ # Nygard format (bundled, 22 tests)
@@ -59,6 +60,7 @@ adr-skills/
 │       │   ├── testing-guidelines.md  # Testing taxonomy by code context
 │       │   └── cost-estimation.md     # T-shirt sizing guide and calibration
 │       ├── assets/              # Static resources and templates
+│       │   ├── decisions/       # Bundled ADRs referenced by skill instructions
 │       │   └── templates/       # plan.md template
 │       └── scripts/             # Reserved for future tooling
 ```
@@ -213,3 +215,26 @@ should-not-trigger) for testing whether the skill's `description` field
 triggers reliably. See the
 [agentskills.io optimization guide](https://agentskills.io/skill-creation/optimizing-descriptions)
 for the evaluation workflow.
+
+## ADR References in Skills
+
+Skills are installed to `~/.copilot/skills/` and run in any repo. They do not
+have access to this repo's `docs/adr/` directory at runtime.
+
+**When a skill instruction references an ADR behaviorally** (the agent needs
+the ADR content to execute the step), the ADR must be bundled as an asset:
+
+1. Copy the ADR to `src/skills/<skill>/assets/decisions/`
+2. Add a row to the `## Assets` table in SKILL.md with the file path, ADR
+   number, what it defines, and which step IDs reference it
+3. In the instruction text, keep the ADR reference (e.g., "per ADR-0031") —
+   the agent resolves it via the asset table
+
+**When a reference is provenance only** (explains *why* a convention exists,
+but the agent does not need the ADR content to execute), inline the
+explanation and remove the ADR number. The agent cannot look up ADRs that
+are not bundled.
+
+**Rule of thumb:** If removing the ADR reference would leave the instruction
+ambiguous or incomplete, bundle it. If the instruction stands on its own,
+inline it.
