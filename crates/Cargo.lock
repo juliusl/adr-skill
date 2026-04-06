@@ -6,10 +6,10 @@ version = 4
 name = "adr-db"
 version = "0.1.0"
 dependencies = [
+ "adr-db-lib",
  "clap",
  "diesel",
  "diesel_migrations",
- "serde",
  "serde_json",
 ]
 

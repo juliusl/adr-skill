@@ -2,10 +2,7 @@ use std::path::PathBuf;
 
 use clap::{Parser, Subcommand};
 
-mod init;
 mod ingest;
-mod models;
-mod schema;
 mod view;
 
 #[derive(Parser)]
@@ -58,7 +55,7 @@ fn main() {
 
     match cli.command {
         Commands::Init { db_path } => {
-            if let Err(e) = init::run_init(&db_path) {
+            if let Err(e) = adr_db_lib::db::run_init(&db_path) {
                 eprintln!("error: {e}");
                 std::process::exit(1);
             }

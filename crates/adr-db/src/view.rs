@@ -5,8 +5,8 @@ use diesel::prelude::*;
 use diesel::sql_types::Text;
 use diesel::sqlite::SqliteConnection;
 
-use crate::models::TaskSummary;
-use crate::schema::task_summaries;
+use adr_db_lib::models::TaskSummary;
+use adr_db_lib::schema::task_summaries;
 
 #[derive(QueryableByName)]
 struct TableName {
@@ -132,14 +132,12 @@ fn view_task_summaries(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::models::NewTaskSummary;
-    use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
-
-    const MIGRATIONS: EmbeddedMigrations = embed_migrations!();
+    use adr_db_lib::models::NewTaskSummary;
+    use diesel_migrations::MigrationHarness;
 
     fn setup_conn() -> SqliteConnection {
         let mut conn = SqliteConnection::establish(":memory:").unwrap();
-        conn.run_pending_migrations(MIGRATIONS).unwrap();
+        conn.run_pending_migrations(adr_db_lib::db::MIGRATIONS).unwrap();
         conn
     }
 
@@ -237,7 +235,7 @@ mod tests {
 
     #[test]
     fn test_jsonl_round_trip() {
-        use crate::models::JsonlTaskRecord;
+        use adr_db_lib::models::JsonlTaskRecord;
 
         let mut conn = setup_conn();
         insert_sample(&mut conn);
@@ -264,7 +262,7 @@ mod tests {
 
     #[test]
     fn test_jsonl_backward_compat_no_source_plan() {
-        use crate::models::JsonlTaskRecord;
+        use adr_db_lib::models::JsonlTaskRecord;
         // JSONL without source_plan should deserialize with empty default
         let json = r#"{"task_id":"1.1","status":"done","cost":"small","commit":"abc","description":"test"}"#;
         let record: JsonlTaskRecord = serde_json::from_str(json).unwrap();
@@ -273,7 +271,7 @@ mod tests {
 
     #[test]
     fn test_jsonl_with_source_plan() {
-        use crate::models::JsonlTaskRecord;
+        use adr_db_lib::models::JsonlTaskRecord;
         let json = r#"{"task_id":"1.1","status":"done","cost":"small","commit":"abc","description":"test","source_plan":"0039.0.plan.md"}"#;
         let record: JsonlTaskRecord = serde_json::from_str(json).unwrap();
         assert_eq!(record.source_plan, "0039.0.plan.md");

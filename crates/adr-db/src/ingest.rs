@@ -1,16 +1,14 @@
 use std::io::{self, BufRead};
 use std::path::Path;
 
-use diesel::sqlite::SqliteConnection;
-use diesel::Connection;
 use diesel::RunQueryDsl;
 
-use crate::models::{JsonlTaskRecord, NewTaskSummary};
-use crate::schema::task_summaries;
+use adr_db_lib::db;
+use adr_db_lib::models::{JsonlTaskRecord, NewTaskSummary};
+use adr_db_lib::schema::task_summaries;
 
 pub fn run_ingest(db_path: &Path) -> Result<(), Box<dyn std::error::Error>> {
-    let db_url = db_path.to_string_lossy().to_string();
-    let mut conn = SqliteConnection::establish(&db_url)?;
+    let mut conn = db::establish_connection(db_path)?;
 
     let stdin = io::stdin();
     let mut errors = 0u64;
