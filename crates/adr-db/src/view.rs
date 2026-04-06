@@ -224,14 +224,15 @@ mod tests {
     fn test_tsv_output() {
         let mut conn = setup_conn();
         insert_sample(&mut conn);
-        // Verify TSV output format
         let results: Vec<TaskSummary> = task_summaries::table
             .select(TaskSummary::as_select())
             .load(&mut conn)
             .unwrap();
         assert_eq!(results.len(), 2);
         assert_eq!(results[0].task_id, "1.1");
+        assert_eq!(results[0].source_plan, "0029.0.plan.md");
         assert_eq!(results[1].task_id, "1.2");
+        assert_eq!(results[1].source_plan, "0029.0.plan.md");
     }
 
     #[test]
@@ -253,11 +254,29 @@ mod tests {
                 "cost": row.cost,
                 "commit": row.commit_sha,
                 "description": row.description,
+                "source_plan": row.source_plan,
             });
             let json_str = json.to_string();
-            // Verify it deserializes as JsonlTaskRecord (ingest-compatible)
-            let _record: JsonlTaskRecord = serde_json::from_str(&json_str).unwrap();
+            let record: JsonlTaskRecord = serde_json::from_str(&json_str).unwrap();
+            assert_eq!(record.source_plan, "0029.0.plan.md");
         }
+    }
+
+    #[test]
+    fn test_jsonl_backward_compat_no_source_plan() {
+        use crate::models::JsonlTaskRecord;
+        // JSONL without source_plan should deserialize with empty default
+        let json = r#"{"task_id":"1.1","status":"done","cost":"small","commit":"abc","description":"test"}"#;
+        let record: JsonlTaskRecord = serde_json::from_str(json).unwrap();
+        assert_eq!(record.source_plan, "");
+    }
+
+    #[test]
+    fn test_jsonl_with_source_plan() {
+        use crate::models::JsonlTaskRecord;
+        let json = r#"{"task_id":"1.1","status":"done","cost":"small","commit":"abc","description":"test","source_plan":"0039.0.plan.md"}"#;
+        let record: JsonlTaskRecord = serde_json::from_str(json).unwrap();
+        assert_eq!(record.source_plan, "0039.0.plan.md");
     }
 
     #[test]
