@@ -131,6 +131,15 @@ When the verdict is **Accept**, append a review cycle marker to the ADR's `## Co
 <!-- Review cycle 1 — [YYYY-MM-DD] — Verdict: Accept. No findings. -->
 ```
 
+### Accept-with-Suggestions Polish Pass
+
+When the verdict is **Accept** but includes minor suggestions (e.g., editorial improvements, phrasing refinements, additional context), those suggestions are recorded in the review cycle marker but not acted on by default. To prevent silently dropping feedback:
+
+1. **If an editor agent is configured** (`[author.dispatch].editor`): dispatch the editor agent with the Accept suggestions for a lightweight polish pass. The editor applies non-blocking improvements and logs what it changed. This is not a full revision cycle — no re-review is needed.
+2. **If no editor agent is configured** (`editor = "interactive"` or absent): present the suggestions to the user as optional improvements. Let the user decide whether to apply them.
+
+The polish pass is optional — Accept means the ADR is ready. But configured editor agents should apply minor feedback rather than drop it.
+
 ## Review Perspectives
 
 Apply three perspectives progressively:

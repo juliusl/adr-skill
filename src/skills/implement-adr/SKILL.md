@@ -179,10 +179,14 @@ The review is mandatory — a prototype found gaps in ~24% of checks (49 total).
 ### I-4b: QA Plan Generation
 After the plan-reviewer approves the plan (Step 4), spawn a **separate general-purpose agent** to generate the QA plan. The main executor must not write its own QA plan — this is the same separation principle that prevents developers from writing their own QA test plans.
 Read the [QA Planning Protocol](references/qa-planning.md) for the full QA planner prompt, procedural checklists (6 security + 7 UX items), test-gap analysis, and finding eligibility gate.
+
+**Sequencing constraint:** The QA planner must receive the **approved, post-revision plan** — not the pre-review draft. Do not dispatch the QA planner until I-4 plan review completes and all revisions are applied. Parallel dispatch of I-4 and I-4b is a workflow violation — the QA planner would validate a stale plan.
+
 **Workflow:**
-1. Construct the QA planner prompt using the template in `qa-planning.md`, inserting the approved plan and source ADR content.
-2. Spawn a `general-purpose` agent with `mode="background"`.
-3. The QA planner writes `docs/plans/<range>.<revision>.qa-plan.md`.
+1. Confirm I-4 is complete — the plan is approved (or revised and re-approved).
+2. Construct the QA planner prompt using the template in `qa-planning.md`, inserting the approved plan and source ADR content.
+3. Spawn a `general-purpose` agent with `mode="background"`.
+4. The QA planner writes `docs/plans/<range>.<revision>.qa-plan.md`.
 QA plan generation is mandatory — it runs for every plan, regardless of participation mode. There is no opt-out.
 ### I-5: Update ADR Status
 After generating the plan, update each source ADR whose status is `Prototype` or `Proposed` to `Planned`. This signals that the decision has been analyzed, decomposed into tasks, and is ready for implementation.
@@ -239,10 +243,18 @@ When all tasks in a stage are complete, run QA validation:
    - **Fail** — pause execution, report findings to the main executor, remediate before continuing.
    - If no QA plan exists, skip this step.
 2. **Stage-boundary report** — report what was completed in the stage per the participation mode behavior.
+
+**Enforcement:** QA execution is mandatory regardless of participation mode — including autonomous mode. Skipping QA execution is a workflow violation. If skipped, log the justification inline before proceeding. Generating a QA plan but never executing it defeats its purpose — the QA plan exists to catch issues the executor didn't think of.
 This sequence is **mandatory regardless of participation mode**. Even in autonomous mode with auto-commit, the QA executor must run between the last task completing and the stage being marked done.
 > **Note on auto-commit interaction:** When auto-commit is enabled, individual tasks are committed as they complete (see below). The QA executor reviews the cumulative stage diff (all task commits in the stage). If QA fails and remediation changes are needed, those changes get their own commit.
 #### Auto-Commit Mechanics
 **When it triggers:** After all `- [ ]` checkboxes in a task's Test & Acceptance Criteria are marked `- [x]` (per the Task Execution Protocol).
+
+**Enforcement logging:** When auto-commit is enabled, log the commit outcome at each task boundary. After completing each task, report one of:
+- `Auto-commit: <short-sha> — <task-id> <task-title>` (commit succeeded)
+- `Auto-commit skipped: <task-id> — <reason>` (commit was not made — state the reason)
+
+This logging is mandatory. Silent skips are how auto-commit failures go undetected.
 **Commit steps:**
 1. **Stage the plan file** — `git add <plan-file>`.
 2. **Stage implementation files** — `git add` any files the agent created, edited, or deleted during the task's execution.
@@ -264,6 +276,14 @@ This sequence is **mandatory regardless of participation mode**. Even in autonom
 | **Autonomous** | Yes | Commit after each completed task; commit only task-related files without prompting when unrelated changes exist; still pause on hook failures |
 | **Weighted** | Yes | Commit after each completed task (autonomous or sentinel); same autonomous fallback for `[small]` tasks |
 ### I-8: Finalize
+#### Auto-Commit Finalization Guard
+When auto-commit is enabled, verify that commits were actually made before finalizing. If `auto_commit = true` was loaded from preferences but no commits were created during execution, this indicates the auto-commit mechanics were silently skipped — a workflow violation.
+
+**Check:** After all stages complete, count the commits made during the session. If zero commits exist and auto-commit was enabled:
+1. Log a warning: `⚠️ Auto-commit was enabled but no commits were made during execution.`
+2. List the tasks that should have produced commits.
+3. Do not silently proceed — the user expects committed work.
+
 #### Implementation Summary (Auto-Commit Only)
 When auto-commit is enabled and plan execution completes (all tasks including the Finalize stage), append an awk-friendly implementation summary block to the end of the plan file. This provides persistent traceability between the plan and the commits produced during autonomous execution (per ADR-0021).
 **When to append:** After all tasks complete, only when auto-commit mode is active. In manual-commit mode, the user has direct oversight — do not append.

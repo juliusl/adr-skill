@@ -114,3 +114,17 @@ Each task should cite the specific ADR section that drives it:
 ```
 
 This maintains traceability from implementation back to the decision that motivated it.
+
+## Acceptance Criteria Categories
+
+Every acceptance criterion that mentions manual verification must be classified into one of two categories. This prevents agents from treating unimplemented features as verification-only items.
+
+| Category | Marker | Meaning | Agent Action |
+|----------|--------|---------|--------------|
+| Implement + verify manually | `[implement, verify-manual]` | The feature does not exist yet. Build it, then verify by hand. | Write the code, then note manual verification is needed. |
+| Verify manually only | `[verify-manual]` | The feature is already implemented. It cannot be tested automatically. | Skip implementation — only note that manual verification is needed. |
+
+**Why this matters:** A criterion like "Ctrl+C cancels the current line" looks like a verification item, but if no signal handling code exists, it's actually an implementation gap. Without the category marker, agents treat it as "already done, just needs testing" and move on.
+
+**Rule:** When writing acceptance criteria, default to `[implement, verify-manual]`. Only use `[verify-manual]` when the code already exists and only needs human confirmation (e.g., visual layout checks, UX feel).
+

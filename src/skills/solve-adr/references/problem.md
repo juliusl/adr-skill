@@ -56,7 +56,17 @@ If no worksheet exists:
    ```
    In guided mode, confirm with the user. In autonomous mode, proceed.
 
-3. **Confirm the problem statement** — "Does this capture the problem accurately?"
+3. **Scale check** — before proceeding, evaluate whether the ADR overhead is proportionate to the problem:
+
+   | Project Scale | Heuristic | Recommendation |
+   |---------------|-----------|----------------|
+   | < 500 LOC expected | ADR+plan overhead likely exceeds code volume | Use fewer ADRs (combine related decisions) or lighter templates (Y-Statement, MADR Minimal) |
+   | 500–2000 LOC | Proportionate | Standard workflow |
+   | > 2000 LOC | ADR overhead amortizes well | Full workflow with detailed Quality Strategy |
+
+   The scale check is advisory — it recommends adjustments, not hard limits. In autonomous mode, apply the recommendation. In guided mode, present it and let the user decide.
+
+4. **Confirm the problem statement** — "Does this capture the problem accurately?"
 
 ## Step 2: Author (Batch Delegation)
 
