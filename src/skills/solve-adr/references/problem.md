@@ -11,30 +11,29 @@ Self-contained reference for solving a problem. Read this file when the user has
 ## Lifecycle
 
 ```
-1. Intake — capture problem, constraints, stakeholders
+1. Intake — capture problem, constraints, stakeholders, enumerate decisions needed
    ↓
-2. Decision loop — for each decision the problem requires:
-   │  ├─ /author-adr — create ADR (worksheet → options → convergence)
-   │  ├─ /prototype-adr — if Evaluation Checkpoint needs validation
-   │  └─ /author-adr — review → revise cycle
-   │  (repeat if the problem requires additional decisions)
+2. Author — batch-delegate all decisions to /author-adr in a single invocation
    ↓
-3. Implement — group the produced ADRs, delegate to /implement-adr
+3. Triage — review returned ADRs, route evaluation-checkpoint-paused ones to /prototype-adr
    ↓
-4. Report — summarize what was implemented, what remains
+4. Implement — group accepted ADRs, delegate to /implement-adr
+   ↓
+5. Report — summarize what was implemented, what remains
 ```
 
 **On resume:** The agent evaluates the problem's current state and enters the lifecycle at the right point:
 - No ADRs exist → start at step 1 (intake)
-- ADRs exist but some are still Proposed (not reviewed) → enter step 2 (decision loop) for unfinished ADRs
-- All ADRs are Proposed/reviewed but unimplemented → enter step 3 (implement)
-- Some ADRs are Accepted, others remain → enter step 3 for the remaining ones
+- ADRs exist but some are still TBD (not converged) → enter step 2 with remaining decisions
+- ADRs exist but some paused at Evaluation Checkpoint → enter step 3 (triage)
+- All ADRs are Proposed/reviewed but unimplemented → enter step 4 (implement)
+- Some ADRs are Accepted, others remain → enter step 4 for the remaining ones
 
 ---
 
 ## Step 1: Problem Intake
 
-Capture the problem clearly. Do not jump to solutions.
+Capture the problem clearly. Do not jump to solutions. **Enumerate all decisions the problem requires** — this list drives the batch handoff in step 2.
 
 **Draft Worksheet Integration:** If a Draft Worksheet already exists in an ADR's `## Comments` section (per ADR-0032), use it to accelerate intake:
 - **Framing** → use as the initial problem statement
@@ -48,48 +47,92 @@ If no worksheet exists:
    - What constraints are already known?
    - Who are the stakeholders?
 
-2. **Confirm the problem statement** — "Does this capture the problem accurately?"
+2. **Enumerate decisions** — identify all the distinct architectural decisions the problem requires. Each decision becomes one ADR. Present the list:
+   ```
+   This problem requires decisions on:
+   1. [aspect] — [one-sentence scope]
+   2. [aspect] — [one-sentence scope]
+   3. [aspect] — [one-sentence scope]
+   ```
+   In guided mode, confirm with the user. In autonomous mode, proceed.
 
-## Step 2: Decision Loop
+3. **Confirm the problem statement** — "Does this capture the problem accurately?"
 
-A single problem may require multiple decisions. Each iteration produces one reviewed ADR. The loop repeats until all decisions needed to address the problem are captured.
+## Step 2: Author (Batch Delegation)
 
-### Per-decision iteration:
+Delegate all decisions to `/author-adr` in a single invocation. Author-adr handles the full A-0 → A-5 lifecycle for each ADR — solve-adr's role is handoff, not per-decision orchestration.
 
-**1. Invoke `/author-adr`** to create the ADR end-to-end.
+### What to provide
 
-What to provide:
+Pass everything `/author-adr` needs in one invocation:
 - The problem statement, constraints, and stakeholders from step 1
-- The user's candidates and thought process (these seed the Draft Worksheet)
-- Direction: "create an ADR to address [specific aspect of the problem]"
+- The full list of decisions to create (from step 1's enumeration)
+- The user's candidates and thought process for each (these seed Draft Worksheets)
+- Any limits (e.g., "max 5 ADRs")
 
-What `/author-adr` does: Runs its full A-0 → A-1 → A-2 → A-3 procedure:
+**Example prompt to author-adr:**
+
+> Create ADRs for these decisions. Problem context: [statement]. Constraints: [list]. Stakeholders: [list].
+>
+> Decisions needed:
+> 1. [title] — [scope and direction]
+> 2. [title] — [scope and direction]
+> 3. [title] — [scope and direction]
+>
+> For each: run the full workflow (A-0 through A-5). Use the problem context to populate the Draft Worksheet framing for each ADR.
+
+### What `/author-adr` does
+
+For each decision in the list, author-adr runs its full procedure:
 1. Creates a TBD ADR with draft worksheet populated from the problem context
 2. Explores options using the worksheet's candidates and tolerance settings
 3. Refines requirements as options are evaluated
-4. Runs the Evaluation Checkpoint — if "Pause for validation," solve-adr invokes `/prototype-adr`
+4. Runs the Evaluation Checkpoint — marks ADRs that need validation
 5. Converges on a decision, drafts Decision + Consequences, renames the ADR, transitions to Proposed
 6. Reviews and revises the ADR (A-3 → A-4 → A-5)
 
-**2. If Evaluation Checkpoint says "Pause for validation"** — invoke `/prototype-adr` with the validation needs, then return to `/author-adr` to complete convergence.
+Author-adr may process these sequentially or batch internally — that's its concern, not solve-adr's.
 
-**3. After review completes** — check: does the problem require additional decisions?
+### After author-adr returns
 
-Signals that another decision is needed:
-- The ADR's Consequences mention a deferred decision ("addressed in a separate ADR")
-- The problem has aspects not covered by the current ADR's scope
-- The user identifies additional decisions during the exploration
+Author-adr returns control with a set of ADRs in various states. Proceed to step 3 (triage).
 
-If yes → start a new iteration with the next decision's scope.
-If no → proceed to step 3.
+## Step 3: Triage
 
-**Tracking:** Keep a running list of all ADRs produced:
+After author-adr returns, classify each ADR's state and take action:
+
+| ADR State | Action |
+|-----------|--------|
+| Proposed (reviewed, accepted) | Ready for implementation → step 4 |
+| Proposed (reviewed, needs revision) | Author-adr should have handled this — if not, re-invoke to complete A-4/A-5 |
+| Paused at Evaluation Checkpoint | Invoke `/prototype-adr` with the ADR's validation needs |
+| TBD (incomplete) | Re-invoke `/author-adr` to complete remaining decisions |
+
+### Prototype routing
+
+For ADRs paused at the Evaluation Checkpoint ("Pause for validation"):
+
+1. **Invoke `/prototype-adr`** with:
+   - The ADR file path
+   - The specific validation needs from the Evaluation Checkpoint
+   - Success/failure criteria
+
+2. **After prototype returns** — re-invoke `/author-adr` to complete convergence on the validated ADR. Provide the prototype results so author-adr can incorporate evidence into the decision.
+
+3. **Continue triage** for remaining ADRs.
+
+### Tracking
+
+Keep a running list of all ADRs and their post-triage status:
 ```
-[ADR ref]: [first decision title] (Proposed, reviewed)
-[ADR ref]: [second decision title] (Proposed, reviewed)
+[ADR ref]: [title] — Proposed, ready for implementation
+[ADR ref]: [title] — Proposed, ready for implementation
+[ADR ref]: [title] — Paused, prototype needed for [validation need]
 ```
 
-## Step 3: Implement
+Once all ADRs are either Proposed (ready) or blocked, proceed to step 4 with the ready ones.
+
+## Step 4: Implement
 
 After all decisions are made (or on resume when decisions already exist), implement them.
 
@@ -144,11 +187,11 @@ For each group in order:
 
 **Mandatory safeguards:** Plan review and QA are mandatory within `/implement-adr`. Solve-adr must not bypass them by running implementation directly.
 
-**Single-ADR case:** If only one ADR remains, step 3 simplifies to a single `/implement-adr` invocation.
+**Single-ADR case:** If only one ADR remains, step 4 simplifies to a single `/implement-adr` invocation.
 
 **Session boundaries:** When nearing limits, stop at the current group boundary. Report progress — the user resumes in a new session.
 
-## Step 4: Report
+## Step 5: Report
 
 After all groups complete (or execution stops):
 

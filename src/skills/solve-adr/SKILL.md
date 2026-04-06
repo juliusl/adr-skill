@@ -98,25 +98,24 @@ Read [references/problem.md](references/problem.md) for the full workflow detail
 **Lifecycle:**
 
 ```
-1. Intake — capture problem, constraints, stakeholders
+1. Intake — capture problem, constraints, stakeholders, enumerate decisions needed
    ↓
-2. Decision loop — for each decision the problem requires:
-   │  ├─ /author-adr — create ADR (worksheet → options → convergence)
-   │  ├─ /prototype-adr — if Evaluation Checkpoint needs validation
-   │  └─ /author-adr — review → revise cycle
-   │  (repeat if the problem requires additional decisions)
+2. Author — batch-delegate all decisions to /author-adr in a single invocation
    ↓
-3. Implement — group the produced ADRs, delegate to /implement-adr
+3. Triage — review returned ADRs, route evaluation-checkpoint-paused ones to /prototype-adr
    ↓
-4. Report — summarize what was implemented, what remains
+4. Implement — group accepted ADRs, delegate to /implement-adr
+   ↓
+5. Report — summarize what was implemented, what remains
 ```
 
-**On resume:** The agent evaluates the problem's current state and enters the lifecycle at the right point. No ADRs → step 1. ADRs exist but unreviewed → step 2. All ADRs reviewed but unimplemented → step 3. Some Accepted, others remain → step 3 for remaining.
+**On resume:** The agent evaluates the problem's current state and enters the lifecycle at the right point. No ADRs → step 1. ADRs exist but unreviewed → step 2. All ADRs reviewed but unimplemented → step 4. Some Accepted, others remain → step 4 for remaining.
 
 **Cross-skill delegation points:**
-- **Step 2** — invoke `/author-adr` to create each ADR (worksheet → options → decision → review)
-- **Step 2** — invoke `/prototype-adr` if an Evaluation Checkpoint says "Pause for validation"
-- **Step 3** — invoke `/implement-adr` for each group (multi-ADR batch)
+- **Step 2** — invoke `/author-adr` once with the full list of decisions and problem context
+- **Step 3** — invoke `/prototype-adr` for any ADR that paused at its Evaluation Checkpoint
+- **Step 3** — re-invoke `/author-adr` to complete convergence on validated ADRs
+- **Step 4** — invoke `/implement-adr` for each group (multi-ADR batch)
 
 ## Cross-Skill Invocation
 
@@ -130,7 +129,7 @@ skill: "implement-adr"  — when an accepted decision needs execution
 
 Each invocation loads the target skill's SKILL.md into the conversation context. The target skill runs its full procedure — this is intentionally thorough. When the target skill completes, control returns to solve-adr.
 
-**Callback pattern:** When solve-adr delegates to `/implement-adr` and more work remains (additional groups in S-1.3 or S-2.3), instruct `/implement-adr` to invoke `/solve-adr` on completion to continue. This creates the continuation chain: solve → implement → solve → implement. Each skill invocation carries its full safeguard overhead (plan review, QA) — this is the intended cost.
+**Callback pattern:** When solve-adr delegates to `/implement-adr` and more work remains (additional groups in S-1.4), instruct `/implement-adr` to invoke `/solve-adr` on completion to continue. This creates the continuation chain: solve → implement → solve → implement. Each skill invocation carries its full safeguard overhead (plan review, QA) — this is the intended cost.
 
 The platform constraint "do not invoke a skill that is already running" permits this pattern: solve-adr and the target skill are different skills. The agent's orchestration state (scenario step, problem context, ADRs created) is maintained in the conversation — not in skill-scoped storage.
 
@@ -145,4 +144,4 @@ The solve-adr skill's primary output is a set of reviewed, accepted decisions �
 
 ## Deep References
 
-- **[references/problem.md](references/problem.md)** — Full Problem workflow: intake, decision loop, implementation delegation, resume protocol, progress tracking.
+- **[references/problem.md](references/problem.md)** — Full Problem workflow: intake, batch authoring, triage, implementation delegation, resume protocol, progress tracking.
