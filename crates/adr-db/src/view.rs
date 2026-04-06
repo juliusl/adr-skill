@@ -102,18 +102,20 @@ fn view_task_summaries(
                     "cost": row.cost,
                     "commit": row.commit_sha,
                     "description": row.description,
+                    "source_plan": row.source_plan,
                 });
                 writeln!(out, "{}", json)?;
             }
         }
         OutputFormat::Tsv => {
             if !no_header {
-                writeln!(out, "task_id\tstatus\tcost\tcommit_sha\tdescription")?;
+                writeln!(out, "source_plan\ttask_id\tstatus\tcost\tcommit_sha\tdescription")?;
             }
             for row in &results {
                 writeln!(
                     out,
-                    "{}\t{}\t{}\t{}\t{}",
+                    "{}\t{}\t{}\t{}\t{}\t{}",
+                    sanitize_tsv_field(&row.source_plan),
                     sanitize_tsv_field(&row.task_id),
                     sanitize_tsv_field(&row.status),
                     sanitize_tsv_field(&row.cost),
