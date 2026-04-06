@@ -1,7 +1,7 @@
 # 43. Replace vendor prefix with remote in wi-nygard-agent naming
 
 Date: 2026-04-06
-Status: Proposed
+Status: Planned
 Last Updated: 2026-04-06
 Links:
 - [ADR-0034: Adopt work-item-referenced naming](0034-adopt-work-item-referenced-naming-for-adr-files.md)

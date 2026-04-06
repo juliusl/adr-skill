@@ -91,27 +91,22 @@ Read [references/solve.md](references/solve.md) for the full S-1 workflow detail
 ```
 S-1.1: Problem intake — capture problem, constraints, stakeholders
   ↓
-S-1.2: /author-adr — create TBD ADR with draft worksheet, populate Context
+S-1.2: /author-adr — create ADR (draft worksheet → options → convergence)
   ↓
-S-1.3: Option discovery — explore solutions respecting constraints
+S-1.3: /prototype-adr — if Evaluation Checkpoint needs validation
   ↓
-S-1.4: Requirements refinement — fold emergent requirements into Context
+S-1.4: /author-adr — review → revise cycle
   ↓
-S-1.5: Evaluation checkpoint — assess readiness, /prototype-adr if needed
-  ↓
-S-1.6: Convergence — user selects option, /author-adr drafts Decision
-  ↓
-S-1.7: /author-adr review → revise cycle
-  ↓
-S-1.8: Handoff — offer /implement-adr for execution
+S-1.5: Handoff — /implement-adr for execution (if auto_delegate or user agrees)
 ```
 
+**How it works:** Solve-adr owns the problem intake (S-1.1) and orchestration (S-1.3–S-1.5). The option discovery, requirements refinement, and convergence happen within `/author-adr`'s create workflow (S-1.2) — author-adr's A-1 (draft worksheet) and A-2 (create) procedure handles these steps internally using the problem context from S-1.1.
+
 **Cross-skill delegation points:**
-- **S-1.2** — invoke `/author-adr` to create the ADR and fill the draft worksheet
-- **S-1.5** — invoke `/prototype-adr` if the Evaluation Checkpoint says "Pause for validation"
-- **S-1.6** — invoke `/author-adr` to draft the Decision and Consequences sections
-- **S-1.7** — invoke `/author-adr` to run the review → revise cycle
-- **S-1.8** — invoke `/implement-adr` if the user wants to proceed to execution
+- **S-1.2** — invoke `/author-adr` with the problem context to create the ADR end-to-end (worksheet → options → decision)
+- **S-1.3** — invoke `/prototype-adr` if the Evaluation Checkpoint says "Pause for validation"
+- **S-1.4** — invoke `/author-adr` to run the review → revise cycle
+- **S-1.5** — invoke `/implement-adr` if auto_delegate is enabled or the user agrees
 
 ## Cross-Skill Invocation
 
