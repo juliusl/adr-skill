@@ -1,7 +1,7 @@
 # 38. Enable work-item-driven ADR lifecycle orchestration
 
 Date: 2026-04-05
-Status: Proposed
+Status: Accepted
 Last Updated: 2026-04-05
 Links:
 - [ADR-0034: Work-item-referenced naming](0034-adopt-work-item-referenced-naming-for-adr-files.md)

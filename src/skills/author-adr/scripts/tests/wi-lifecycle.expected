@@ -1,0 +1,28 @@
+docs/adr/0001-record-architecture-decisions.md
+docs/adr/gh-42-use-postgresql.md
+=== interactive (no --auto) ===
+ADR: gh-42-use-postgresql.md
+  ADR status:       Prototype
+  Work item state:  resolved
+  Expected status:  Accepted
+  → Recommended: Transition to Accepted (implement-adr eligible)
+  Run with --auto to execute this transition.
+=== auto execute ===
+ADR: gh-42-use-postgresql.md
+  ADR status:       Prototype
+  Work item state:  resolved
+  Expected status:  Accepted
+  → Recommended: Transition to Accepted (implement-adr eligible)
+  → Executing: Prototype → Accepted
+  → Updated: gh-42-use-postgresql.md → Accepted
+  → Logged to .adr/var/lifecycle.jsonl
+=== after transition ===
+Accepted
+=== in sync ===
+ADR: gh-42-use-postgresql.md
+  ADR status:       Accepted
+  Work item state:  resolved
+  Expected status:  Accepted
+  → In sync. No action needed.
+=== lifecycle log ===
+Prototype → Accepted

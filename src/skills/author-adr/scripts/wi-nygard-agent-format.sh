@@ -4,7 +4,7 @@ set -euo pipefail
 # wi-nygard-agent-format.sh — Work-item-referenced ADR format script
 # Naming: {remote}-{id}-{slug}.md (ADR-0034)
 # Template body reuses nygard-agent template (ADR-0017)
-# Subcommands: new, init, list, rename, status
+# Subcommands: new, init, list, rename, status, lifecycle
 
 # --- Helpers ---
 
@@ -451,16 +451,143 @@ cmd_status() {
   fi
 }
 
+# --- Lifecycle (ADR-0038) ---
+
+wi_state_to_adr_status() {
+  case "$1" in
+    open)     echo "Prototype" ;;
+    active)   echo "Proposed" ;;
+    resolved) echo "Accepted" ;;
+    closed)   echo "Delivered" ;;
+    *)        echo "unknown" ;;
+  esac
+}
+
+log_lifecycle() {
+  local remote="$1" id="$2" from="$3" to="$4" action="$5" trigger="$6"
+  local log_file=".adr/var/lifecycle.jsonl"
+  mkdir -p "$(dirname "$log_file")"
+  local now
+  now="${ADR_CACHE_TS:-$(date -u +%Y-%m-%dT%H:%M:%SZ 2>/dev/null || date +%Y-%m-%dT%H:%M:%SZ)}"
+  if command -v jq &>/dev/null; then
+    jq -n -c \
+      --arg remote "$remote" --arg id "$id" --arg from "$from" \
+      --arg to "$to" --arg action "$action" --arg trigger "$trigger" --arg ts "$now" \
+      '{remote:$remote,id:$id,from_status:$from,to_status:$to,action:$action,trigger:$trigger,timestamp:$ts}' \
+      >> "$log_file"
+  fi
+}
+
+cmd_lifecycle() {
+  local auto=0 sync=0
+
+  if [ $# -lt 2 ]; then
+    echo "Usage: wi-nygard-agent-format.sh lifecycle <remote> <id> [--auto] [--sync]" >&2
+    exit 1
+  fi
+
+  local remote="$1" id="$2"
+  shift 2
+
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      --auto) auto=1 ;;
+      --sync) sync=1 ;;
+      *) echo "ERROR: unknown flag '$1'" >&2; exit 1 ;;
+    esac
+    shift
+  done
+
+  validate_remote "$remote"
+  validate_id "$id"
+
+  local dir
+  dir=$(resolve_dir)
+
+  local adr_file=""
+  for f in "$dir"/${remote}-${id}-*.md; do
+    [ -f "$f" ] && adr_file="$f" && break
+  done
+
+  if [ -z "$adr_file" ]; then
+    echo "ERROR: ADR ${remote}-${id} not found in $dir" >&2
+    exit 1
+  fi
+
+  # Source adapters for cache lookup
+  local script_dir
+  script_dir="$(cd "$(dirname "$0")" && pwd)"
+  # shellcheck disable=SC1091
+  source "$script_dir/work-item-adapters.sh"
+
+  local adr_status
+  adr_status=$(parse_status "$adr_file")
+
+  local cached_wi
+  cached_wi=$(lookup_work_item "$remote" "$id" 2>/dev/null || true)
+
+  if [ -z "$cached_wi" ]; then
+    echo "No cached work item for ${remote}-${id}."
+    echo "Current ADR status: $adr_status"
+    return 0
+  fi
+
+  local wi_state expected_adr_status
+  wi_state=$(echo "$cached_wi" | jq -r '.state')
+  expected_adr_status=$(wi_state_to_adr_status "$wi_state")
+
+  echo "ADR: $(basename "$adr_file")"
+  echo "  ADR status:       $adr_status"
+  echo "  Work item state:  $wi_state"
+  echo "  Expected status:  $expected_adr_status"
+
+  if [ "$adr_status" = "$expected_adr_status" ]; then
+    echo "  → In sync. No action needed."
+    return 0
+  fi
+
+  local action=""
+  case "$expected_adr_status" in
+    Accepted)  action="Transition to Accepted (implement-adr eligible)" ;;
+    Delivered) action="Transition to Delivered (verify Deliverables checklist)" ;;
+    *)         action="Transition to $expected_adr_status" ;;
+  esac
+
+  echo "  → Recommended: $action"
+
+  if [ "$auto" -eq 0 ]; then
+    echo "  Run with --auto to execute this transition."
+    return 0
+  fi
+
+  echo "  → Executing: $adr_status → $expected_adr_status"
+
+  if grep -q '^Status:' "$adr_file"; then
+    awk -v status="$expected_adr_status" '{
+      if ($0 ~ /^Status:/) { print "Status: " status }
+      else { print }
+    }' "$adr_file" > "${adr_file}.tmp" && mv "${adr_file}.tmp" "$adr_file"
+  fi
+
+  local trigger="lifecycle --auto"
+  [ "$sync" -eq 1 ] && trigger="$trigger --sync"
+  log_lifecycle "$remote" "$id" "$adr_status" "$expected_adr_status" "$action" "$trigger"
+
+  echo "  → Updated: $(basename "$adr_file") → $expected_adr_status"
+  echo "  → Logged to .adr/var/lifecycle.jsonl"
+}
+
 # --- Dispatch ---
 
 case "${1:-help}" in
-  new)    shift; cmd_new "$@" ;;
-  init)   shift; cmd_init "$@" ;;
-  list)   shift; cmd_list "$@" ;;
-  rename) shift; cmd_rename "$@" ;;
-  status) shift; cmd_status "$@" ;;
+  new)       shift; cmd_new "$@" ;;
+  init)      shift; cmd_init "$@" ;;
+  list)      shift; cmd_list "$@" ;;
+  rename)    shift; cmd_rename "$@" ;;
+  status)    shift; cmd_status "$@" ;;
+  lifecycle) shift; cmd_lifecycle "$@" ;;
   *)
-    echo "Usage: wi-nygard-agent-format.sh {new|init|list|rename|status}" >&2
+    echo "Usage: wi-nygard-agent-format.sh {new|init|list|rename|status|lifecycle}" >&2
     echo "" >&2
     echo "Subcommands:" >&2
     echo "  new <remote> <id> <title> <dir>      Generate ADR with work-item-referenced naming" >&2
@@ -468,6 +595,7 @@ case "${1:-help}" in
     echo "  list                                  List ADRs with title and status" >&2
     echo "  rename <remote> <id> <new-title>      Rename an ADR file and update heading" >&2
     echo "  status [remote] [id] [new-status]     Show or update ADR status" >&2
+    echo "  lifecycle <remote> <id> [--auto]      Check/execute lifecycle transition" >&2
     exit 1
     ;;
 esac
