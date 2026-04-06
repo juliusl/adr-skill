@@ -14,6 +14,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "adr-db-lib"
+version = "0.1.0"
+dependencies = [
+ "diesel",
+ "diesel_migrations",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "anstream"
 version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
