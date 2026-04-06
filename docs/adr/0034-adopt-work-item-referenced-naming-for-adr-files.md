@@ -22,7 +22,7 @@ The current ADR tooling uses sequential numbering for file naming: `NNNN-title.m
 
 - **Collision-free naming** — multiple developers must be able to create ADRs concurrently without numbering conflicts
 - **Work item traceability** — the relationship between an ADR and its motivating work item must be structural, not just a manual link
-- **Multi-vendor support** — must work with GitHub Issues, Azure DevOps work items, and local/offline workflows
+- **Multi-remote support** — must work with GitHub Issues, Azure DevOps work items, and local/offline workflows
 - **Format extensibility** — must fit the existing format dispatch architecture (ADR-0018)
 - **Backward compatibility** — existing sequentially-numbered ADRs must continue to work alongside the new format
 
@@ -44,21 +44,21 @@ Add a `Work-Item:` field to the nygard-agent template's inline metadata block (e
 
 ### Option 2: Work-item-prefixed naming (wi-nygard-agent format)
 
-Introduce a new format `wi-nygard-agent` that replaces the sequential `NNNN-` prefix with a vendor-qualified work item identifier: `{vendor}-{id}-{slug}.md`. Examples:
+Introduce a new format `wi-nygard-agent` that replaces the sequential `NNNN-` prefix with a remote-qualified work item identifier: `{remote}-{id}-{slug}.md`. Examples:
 
 - `gh-42-use-postgresql.md` — GitHub Issue #42
 - `ado-1234-use-postgresql.md` — Azure DevOps work item #1234
 - `local-a1b2c3-use-postgresql.md` — locally generated ID (short hash)
 
-The template content remains the nygard-agent template (ADR-0017). What changes is the naming scheme and the heading format: `# {vendor}-{id}. {title}` instead of `# N. {title}`.
+The template content remains the nygard-agent template (ADR-0017). What changes is the naming scheme and the heading format: `# {remote}-{id}. {title}` instead of `# N. {title}`.
 
 The format script (`wi-nygard-agent-format.sh`) handles:
-- Vendor-qualified file naming (no sequential scan needed)
-- Heading generation with vendor-id prefix
-- Listing that handles both legacy `[0-9]*` and `{vendor}-*` patterns
+- Remote-qualified file naming (no sequential scan needed)
+- Heading generation with remote-id prefix
+- Listing that handles both legacy `[0-9]*` and `{remote}-*` patterns
 - A `Work-Item:` metadata field populated automatically from the naming arguments
 
-A `local` vendor provides offline capability: when no external work item system is available, the developer generates a local ID (e.g., short UUID or timestamp hash). This can later be re-linked when the work item is created externally.
+A `local` remote provides offline capability: when no external work item system is available, the developer generates a local ID (e.g., short UUID or timestamp hash). This can later be re-linked when the work item is created externally.
 
 **Strengths:**
 - Eliminates numbering collisions — IDs come from external systems or local generation, not sequential scan
@@ -71,7 +71,7 @@ A `local` vendor provides offline capability: when no external work item system 
 - Requires a work item to exist (or a local ID to be generated) before creating an ADR
 - Loses chronological ordering in filename sort — must rely on `Date:` metadata for ordering
 - Cross-references change: `ADR-0034` becomes `ADR-gh-42` — existing convention broken
-- Vendor prefix is a new concept that developers must learn
+- Remote prefix is a new concept that developers must learn
 - `new.sh` orchestrator needs a small change: skip sequential number computation when format handles its own naming
 
 ### Option 3: UUID-based naming with work item metadata
@@ -103,21 +103,21 @@ Use UUIDs for filenames: `{uuid8}-{slug}.md` (e.g., `a1b2c3d4-use-postgresql.md`
 
 ## Decision
 
-In the context of **enabling team-scale ADR authoring with work item traceability**, facing **sequential numbering collisions and the absence of structural work item references**, we decided for **a new `wi-nygard-agent` format that replaces sequential numbering with vendor-qualified work item identifiers in filenames** (Option 2), and neglected **metadata-only work item links (Option 1, doesn't solve collisions) and UUID naming (Option 3, unreadable and no traceability)**, to achieve **collision-free concurrent authoring and structural traceability from ADR to work item**, accepting that **chronological ordering moves from filename to metadata, cross-references adopt a new `ADR-{vendor}-{id}` convention, and a work item (or local ID) must exist before ADR creation**.
+In the context of **enabling team-scale ADR authoring with work item traceability**, facing **sequential numbering collisions and the absence of structural work item references**, we decided for **a new `wi-nygard-agent` format that replaces sequential numbering with remote-qualified work item identifiers in filenames** (Option 2), and neglected **metadata-only work item links (Option 1, doesn't solve collisions) and UUID naming (Option 3, unreadable and no traceability)**, to achieve **collision-free concurrent authoring and structural traceability from ADR to work item**, accepting that **chronological ordering moves from filename to metadata, cross-references adopt a new `ADR-{remote}-{id}` convention, and a work item (or local ID) must exist before ADR creation**.
 
 ### Naming Convention
 
 ```
-{vendor}-{id}-{slug}.md
+{remote}-{id}-{slug}.md
 ```
 
-| Vendor | ID Source | Example Filename |
+| Remote | ID Source | Example Filename |
 |--------|----------|-----------------|
 | `gh` | GitHub Issue number | `gh-42-use-postgresql.md` |
 | `ado` | ADO work item ID | `ado-1234-use-postgresql.md` |
 | `local` | Short hash (8 chars) | `local-a1b2c3d4-use-postgresql.md` |
 
-Heading format: `# {vendor}-{id}. {title}` (e.g., `# gh-42. Use PostgreSQL`).
+Heading format: `# {remote}-{id}. {title}` (e.g., `# gh-42. Use PostgreSQL`).
 
 If two developers reference the same work item, the resulting filename collision is intentional — it surfaces a genuine decision conflict (two competing decisions for the same problem), caught during PR review.
 
@@ -127,15 +127,15 @@ A new `wi-nygard-agent-format.sh` added to `scripts/`, following the format disp
 
 | Subcommand | Behavior |
 |-----------|----------|
-| `new <vendor> <id> <title> <dir>` | Generate ADR with vendor-qualified filename and heading |
+| `new <remote> <id> <title> <dir>` | Generate ADR with remote-qualified filename and heading |
 | `init [dir]` | Bootstrap ADR directory (same as nygard-agent) |
-| `list` | List ADRs, handling both `[0-9]*` and `{vendor}-*` patterns |
-| `rename <vendor> <id> <new-title>` | Rename ADR file and update heading |
-| `status [vendor-id] [new-status]` | Show or update status |
+| `list` | List ADRs, handling both `[0-9]*` and `{remote}-*` patterns |
+| `rename <remote> <id> <new-title>` | Rename ADR file and update heading |
+| `status [remote-id] [new-status]` | Show or update status |
 
 ### Orchestrator Change
 
-`new.sh` receives a format-level signal that the format handles its own naming. When `format=wi-nygard-agent`, the orchestrator passes vendor and ID instead of a sequential number. The interface change is minimal: the format script's `new` subcommand accepts `<vendor> <id>` instead of `<number>`.
+`new.sh` receives a format-level signal that the format handles its own naming. When `format=wi-nygard-agent`, the orchestrator passes remote and ID instead of a sequential number. The interface change is minimal: the format script's `new` subcommand accepts `<remote> <id>` instead of `<number>`.
 
 ### Cross-Reference Convention
 
@@ -157,15 +157,15 @@ Chronological ordering is by `Date:` metadata, not filename. The `list` subcomma
 - Mixed decision logs work: `list` handles both sequential and work-item-prefixed files, so teams can adopt incrementally.
 
 **Negative:**
-- A work item must exist before an ADR can be created. The `local` vendor mitigates this for offline/early-stage work, but adds a concept developers must learn.
+- A work item must exist before an ADR can be created. The `local` remote mitigates this for offline/early-stage work, but adds a concept developers must learn.
 - Filename-based chronological ordering is lost. Teams accustomed to `ls docs/adr/` showing ADRs in creation order must use the `list` command (which sorts by date) instead.
-- Cross-references change from `ADR-NNNN` to `ADR-{vendor}-{id}`. Both conventions coexist indefinitely — existing `ADR-NNNN` references are not migrated. If the cost of dual conventions becomes a problem, a bulk migration tool would be addressed in a separate ADR.
+- Cross-references change from `ADR-NNNN` to `ADR-{remote}-{id}`. Both conventions coexist indefinitely — existing `ADR-NNNN` references are not migrated. If the cost of dual conventions becomes a problem, a bulk migration tool would be addressed in a separate ADR.
 - The `new.sh` orchestrator requires a change to its interface for non-sequential formats. This is a minor but real modification to shared infrastructure.
 
 **Neutral:**
 - The nygard-agent template content is unchanged — only the naming and heading layer changes. Quality Strategy, checkpoints, and Comments sections work identically.
 - This ADR defines the naming convention and format script architecture. The normalized work item data model and caching strategy are deferred to companion ADRs.
-- The `local` vendor serves as both an offline escape hatch and a testing facility — ADRs can be created without any external system configured.
+- The `local` remote serves as both an offline escape hatch and a testing facility — ADRs can be created without any external system configured.
 
 ## Quality Strategy
 
@@ -182,7 +182,7 @@ Chronological ordering is by `Date:` metadata, not filename. The `list` subcomma
 
 ### Additional Quality Concerns
 
-The format script needs tests for: new (with each vendor), list (mixed formats), rename, and status. The orchestrator change needs a test for format-controlled naming. User documentation in SKILL.md must cover the new format option and the cross-reference convention.
+The format script needs tests for: new (with each remote), list (mixed formats), rename, and status. The orchestrator change needs a test for format-controlled naming. User documentation in SKILL.md must cover the new format option and the cross-reference convention.
 
 ## Conclusion Checkpoint (Optional)
 <!-- Gate: Quality Strategy → Review. Verify before requesting review. -->
@@ -206,7 +206,7 @@ This is the first of three companion ADRs. ADR-35 (normalized work item data mod
 <!-- Captures original intent and workflow calibration. -->
 
 **Framing:**
-Traditional ADR sequential numbering doesn't work for teams (no directory locks in git) and prevents structural work item references. A "wi-nygard-agent" format replaces sequential numbers with vendor-qualified work item IDs, enabling collision-free team authoring and traceability to GitHub Issues, ADO work items, and local trackers.
+Traditional ADR sequential numbering doesn't work for teams (no directory locks in git) and prevents structural work item references. A "wi-nygard-agent" format replaces sequential numbers with remote-qualified work item IDs, enabling collision-free team authoring and traceability to GitHub Issues, ADO work items, and local trackers.
 
 **Tolerance:**
 - Risk: Medium — new naming convention is a significant change to developer workflow
@@ -215,14 +215,14 @@ Traditional ADR sequential numbering doesn't work for teams (no directory locks 
 
 **Uncertainty:**
 - Certain: sequential numbering causes team collisions; format dispatch architecture supports new formats
-- Uncertain: exact vendor prefix scheme; how `new.sh` orchestrator adapts; cross-reference migration path
+- Uncertain: exact remote prefix scheme; how `new.sh` orchestrator adapts; cross-reference migration path
 
 **Options:**
 - Target count: 3
 - [x] Explore additional options beyond candidates listed below
 
 **Candidates:**
-- Work-item-prefixed naming (`{vendor}-{id}-{slug}.md`)
+- Work-item-prefixed naming (`{remote}-{id}-{slug}.md`)
 - Metadata-only work item links (keep sequential naming)
 - UUID-based naming
 
@@ -232,7 +232,7 @@ Traditional ADR sequential numbering doesn't work for teams (no directory locks 
 
 **Addressed** — Revised positive consequence 3 from "no architectural changes" to "one new format script and a small interface extension to the orchestrator." The original wording contradicted both the Decision section (which describes the orchestrator receiving a format-level signal) and negative consequence 4 (which acknowledges the interface modification).
 
-### Q: Is the long-term strategy for cross-reference coexistence (`ADR-NNNN` vs `ADR-{vendor}-{id}`) explicit?
+### Q: Is the long-term strategy for cross-reference coexistence (`ADR-NNNN` vs `ADR-{remote}-{id}`) explicit?
 
 **Addressed** — Revised the cross-reference negative consequence to state that both conventions coexist indefinitely and existing `ADR-NNNN` references are not migrated. A bulk migration tool is explicitly deferred to a separate ADR if the cost of dual conventions warrants it. The Draft Worksheet had already flagged "cross-reference migration path" as uncertain — this revision makes the current position explicit rather than implicit.
 
