@@ -44,6 +44,17 @@ Read ADR → Generate plan → Plan review (sub-agent) → [Iterate] → QA plan
 ```
 Execute tasks → QA executor (sub-agent) → [Remediate if fail] → Stage done
 ```
+
+### Mandatory Steps — No Exceptions
+
+The following steps run for **every** plan regardless of size, complexity, or participation mode. Autonomous clearance means more rigor, not less — these safeguards exist because no human is watching.
+
+1. **Plan review (Step 4)** — every plan is reviewed by a sub-agent. No size exemption.
+2. **QA plan generation (Step 4b)** — every plan gets a QA plan. No opt-out.
+3. **QA executor at stage boundaries (Step 7b)** — every completed stage is validated. No skip.
+4. **Dispatch config** — use the configured agents from `preferences.toml`. Do not substitute `general-purpose` when a custom agent is configured.
+
+Skipping any of these steps is a workflow violation.
 ### Step 0 — Locate ADRs
 1. Check for `docs/adr/` directory in the repository.
 2. **If missing:** Tell the user no ADRs were found. Recommend using the `author-adr` skill to create decision records before planning implementation. Stop here.

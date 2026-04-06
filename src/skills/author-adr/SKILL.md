@@ -43,6 +43,8 @@ editor = "interactive"       # Agent for editorial decisions (default: user)
 The `"interactive"` value is a reserved keyword meaning "prompt the user directly." Any other value is treated as an agent reference (e.g., a custom `.agent.md` persona).
 **Graceful fallback:** If a configured agent reference cannot be resolved at runtime, fall back to the default value for that hook and warn the user.
 **Default behavior preservation:** When no `[author.dispatch]` table exists in `preferences.toml`, behavior is identical to the current workflow (general-purpose review, interactive user prompts).
+
+**Mandatory dispatch compliance:** When `[author.dispatch]` keys are configured, always use the configured agent — do not substitute `general-purpose` or skip dispatch. The user configured these agents for a reason. This applies in all modes, including autonomous workflows triggered by other skills (e.g., implement-adr invoking author-adr for ADR creation).
 ## Agent Workflow
 When this skill is activated, **always start with Format Detection** before proceeding to the relevant task.
 ### Format Detection
