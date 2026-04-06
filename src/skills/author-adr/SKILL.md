@@ -4,7 +4,7 @@ description: "Use this skill when the user needs to create, review, revise, or m
 license: CC-BY-4.0
 metadata:
   source: adr.github.io
-  version: "1.1"
+  version: "1.2"
 ---
 # Architectural Decision Records (ADRs)
 You are an expert on Architectural Decision Records. Use this skill whenever a user needs to create, review, or manage ADRs, choose an ADR template, select tooling, or understand best practices for architectural decision making.
@@ -92,7 +92,7 @@ The `"interactive"` value is a reserved keyword meaning "prompt the user directl
 ### A-0: Format Detection
 Before any ADR operation, determine which ADR format to use:
 1. **Read the config file** — resolve the config path (see [Configuration](#configuration)) and read `[author].template` from `preferences.toml`.
-   - If set (e.g., `"nygard-agent"`, `"nygard"`, or `"madr"`), use it directly.
+   - If set (e.g., `"nygard-agent"`, `"wi-nygard-agent"`, `"nygard"`, or `"madr"`), use it directly.
    - If absent, default to `"nygard-agent"`.
    - Also read `[author.dispatch]` keys (`review`, `editor`) if present. Store for use during review and revise workflows. If absent, use defaults (`review = "general-purpose"`, `editor = "interactive"`).
 2. **If `docs/adr/` does not exist** — bootstrap the decision log using the default nygard-agent format:
@@ -186,6 +186,16 @@ This skill uses a unified script architecture via `ADR_AGENT_SKILL_FORMAT`:
 | Format | Template | When to Use |
 |--------|----------|-------------|
 | `nygard-agent` (default) | Nygard Agent | Agent-developer workflows, quality-aware decisions |
+| `wi-nygard-agent` | Nygard Agent (work-item) | Team workflows with work item traceability (ADR-0034) |
+
+### Cross-Reference Convention
+
+| Format | Reference Pattern | Example |
+|--------|------------------|---------|
+| `nygard-agent` | `ADR-NNNN` | `ADR-0034` |
+| `wi-nygard-agent` | `ADR-{remote}-{id}` | `ADR-gh-42`, `ADR-ado-1234`, `ADR-local-a1b2c3d4` |
+
+Both conventions coexist in mixed decision logs. Existing `ADR-NNNN` references are not migrated.
 ### Makefile Targets (Required)
 **Always use Makefile targets.** Only fall back to direct script usage if the Makefile is genuinely unavailable (e.g., not on `PATH`, broken environment).
 ```bash
@@ -198,6 +208,13 @@ make -f <skill-root>/Makefile new TITLE="Use PostgreSQL"
 make -f <skill-root>/Makefile rename NUM=2 TITLE="Use PostgreSQL"  # rename ADR file and heading
 make -f <skill-root>/Makefile list                   # list all ADRs
 make -f <skill-root>/Makefile status NUM=2 STATUS=Proposed  # update status
+
+# Work-item-referenced naming (wi-nygard-agent format):
+export ADR_AGENT_SKILL_FORMAT=wi-nygard-agent
+
+make -f <skill-root>/Makefile new REMOTE=gh ID=42 TITLE="Use PostgreSQL"
+make -f <skill-root>/Makefile rename REMOTE=gh ID=42 TITLE="Use PostgreSQL"
+make -f <skill-root>/Makefile status REMOTE=gh ID=42 STATUS=Proposed
 ```
 ### Escape Hatch: Direct Script Usage
 Only use direct scripts when the Makefile is unavailable. See [references/tooling.md](references/tooling.md) for full command docs:
@@ -208,6 +225,12 @@ new.sh nygard-agent "Use PostgreSQL"
 nygard-agent-format.sh rename 2 "Use PostgreSQL"
 nygard-agent-format.sh list
 nygard-agent-format.sh status 2 Proposed
+
+# Work-item-referenced (wi-nygard-agent):
+new.sh wi-nygard-agent gh 42 "Use PostgreSQL"
+wi-nygard-agent-format.sh rename gh 42 "Use PostgreSQL"
+wi-nygard-agent-format.sh list
+wi-nygard-agent-format.sh status gh 42 Proposed
 ```
 ### Visualization
 Use **Mermaid** for all diagrams. Diagrams are valuable when complex relationships between processes or entities benefit from visual compression, but overuse can overload context — use sparingly. When comparing options, prefer **markdown tables** over diagrams. See [references/tooling.md](references/tooling.md) for guidelines and syntax patterns.
