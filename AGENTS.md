@@ -16,6 +16,17 @@ All policies are listed here with identifiers. Detailed descriptions follow in t
 | P-4a | Conventional Commits | Use `type(scope): summary` format for commit messages |
 | P-5 | Formatting Convention | Use flat tables with classification columns for review artifacts |
 | P-6 | ADR References in Skills | Bundle behavioral ADR refs as assets; inline provenance-only refs |
+| P-7 | Before Making Changes | Run test suite and validate skills before starting work |
+| P-8 | After Making Changes | Re-run tests, re-validate, check refs, verify line counts |
+| P-9 | Spec Constraints | agentskills.io field constraints for SKILL.md |
+| P-10 | Modifying References | Keep references self-contained; one file per workflow task |
+| P-11 | Modifying Templates | Place in `assets/templates/`, add entry in `references/templates.md` |
+| P-12 | Modifying Scripts | Diff-based test validation for adr-tools and madr-tools |
+| P-12a | adr-tools (Nygard format) | Bundled third-party scripts, `make test-nygard` |
+| P-12b | madr-tools (MADR format) | Custom scripts, `make test-madr` |
+| P-13 | Rust Tooling | Cargo workspace in `crates/`, `make build-tools` |
+| P-13a | Working on adr-db | Prerequisites, migrations, tests |
+| P-14 | Evaluating Skill Description | Use `eval_queries.json` to validate trigger reliability |
 
 ---
 
@@ -197,7 +208,7 @@ adr-skills/
 │       └── eval_queries.json    # Trigger evaluation queries for solve-adr
 ```
 
-## Before Making Changes
+## P-7: Before Making Changes
 
 1. **Run the test suite** to establish a clean baseline:
 
@@ -216,7 +227,7 @@ adr-skills/
    make validate-all      # validate both
    ```
 
-## After Making Changes
+## P-8: After Making Changes
 
 1. **Re-run tests** to confirm nothing is broken:
 
@@ -245,7 +256,7 @@ adr-skills/
    wc -l src/skills/author-adr/SKILL.md src/skills/implement-adr/SKILL.md
    ```
 
-## Spec Constraints
+## P-9: Spec Constraints
 
 From the [agentskills.io specification](https://agentskills.io/specification):
 
@@ -256,7 +267,7 @@ From the [agentskills.io specification](https://agentskills.io/specification):
 | `SKILL.md` body | Recommended < 500 lines |
 | File references | Relative paths from skill root, keep one level deep |
 
-## Adding or Modifying References
+## P-10: Adding or Modifying References
 
 Task-specific references live in `references/` (one file per workflow task):
 
@@ -267,16 +278,16 @@ Task-specific references live in `references/` (one file per workflow task):
 When modifying a reference file, keep it self-contained — each reference should
 be usable on its own without reading the others.
 
-## Adding or Modifying Templates
+## P-11: Adding or Modifying Templates
 
 Templates live in `assets/templates/`. When adding a new template:
 
 1. Place the template file in `assets/templates/`
 2. Add an entry in `references/templates.md`
 
-## Modifying Scripts
+## P-12: Modifying Scripts
 
-### adr-tools (Nygard format)
+### P-12a: adr-tools (Nygard format)
 
 Bundled third-party scripts at `src/skills/author-adr/scripts/adr-tools-3.0.0/`. Tests use
 diff-based validation: `tests/*.sh` (commands) vs `tests/*.expected` (output).
@@ -285,7 +296,7 @@ diff-based validation: `tests/*.sh` (commands) vs `tests/*.expected` (output).
 make test-nygard
 ```
 
-### madr-tools (MADR format)
+### P-12b: madr-tools (MADR format)
 
 Custom scripts at `src/skills/author-adr/scripts/madr-tools/`. Same test pattern.
 
@@ -299,7 +310,7 @@ To add a new test:
 make test-madr
 ```
 
-## Rust Tooling (crates/)
+## P-13: Rust Tooling (crates/)
 
 The `crates/` directory contains a Cargo workspace with Rust tooling. Currently
 this includes `adr-db`, a plumbing CLI for ingesting JSONL data into SQLite.
@@ -313,7 +324,7 @@ make build-tools    # cargo build --release in crates/
 The `build-tools` target is independent of `make test` — contributors who only
 work on shell scripts do not need Rust installed.
 
-### Working on adr-db
+### P-13a: Working on adr-db
 
 **Prerequisites:**
 - Rust toolchain (`rustup`)
@@ -340,7 +351,7 @@ cd crates && cargo test
 building the binary. The generated `schema.rs` is committed to version control
 so `cargo build` works without `diesel_cli`.
 
-## Evaluating Skill Description
+## P-14: Evaluating Skill Description
 
 The `eval_queries.json` file contains 20 queries (11 should-trigger, 9
 should-not-trigger) for testing whether the skill's `description` field
