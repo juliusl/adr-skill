@@ -49,57 +49,78 @@ If no worksheet exists, proceed with the standard intake below.
 
 2. **Confirm the problem statement** — present your understanding back to the user: "Does this capture the problem accurately?"
 
-## S-1.2: Create ADR via /author-adr
+## S-1.2: Decision Loop
 
-Invoke `/author-adr` to create the ADR end-to-end. Author-adr's create workflow handles option discovery, requirements refinement, evaluation checkpoint, and convergence internally — solve-adr does not need to manage these steps individually.
+A single problem may require multiple decisions. Each iteration through this loop produces one reviewed ADR. The loop repeats until all decisions needed to address the problem are captured.
+
+### Per-decision iteration:
+
+**1. Invoke `/author-adr`** to create the ADR end-to-end. Author-adr's create workflow handles option discovery, requirements refinement, evaluation checkpoint, and convergence internally.
 
 **What to provide /author-adr:**
 - The problem statement, constraints, and stakeholders from S-1.1
 - The user's candidates and thought process (these seed the Draft Worksheet)
-- Direction: "create an ADR to address this problem" — author-adr's A-1 (worksheet) + A-2 (create) handles the rest
+- Direction: "create an ADR to address [specific aspect of the problem]"
 
-**What /author-adr does:** Runs its full A-0 → A-1 → A-2 procedure:
+**What /author-adr does:** Runs its full A-0 → A-1 → A-2 → A-3 procedure:
 1. Creates a TBD ADR with draft worksheet populated from the problem context
 2. Explores options using the worksheet's candidates and tolerance settings
 3. Refines requirements as options are evaluated
-4. Runs the Evaluation Checkpoint — if it says "Pause for validation," solve-adr resumes at S-1.3
+4. Runs the Evaluation Checkpoint — if "Pause for validation," solve-adr invokes `/prototype-adr`
 5. Converges on a decision, drafts Decision + Consequences, renames the ADR, transitions to Proposed
+6. Reviews and revises the ADR (A-3 → A-4 → A-5)
 
-**After /author-adr returns:** Note the ADR number. Check the Evaluation Checkpoint — if "Pause for validation," proceed to S-1.3. Otherwise, skip to S-1.4.
+**2. If Evaluation Checkpoint says "Pause for validation"** — invoke `/prototype-adr` with the validation needs, then return to `/author-adr` to complete convergence.
 
-## S-1.3: Validate via /prototype-adr (conditional)
+**3. After review completes** — check: does the problem require additional decisions?
 
-If the Evaluation Checkpoint says "Pause for validation," invoke `/prototype-adr` with the validation needs from the checkpoint.
+Signals that another decision is needed:
+- The ADR's Consequences mention a deferred decision ("addressed in a separate ADR")
+- The problem has aspects not covered by the current ADR's scope
+- The user identifies additional decisions during the exploration
 
-**After /prototype-adr returns:** Findings are recorded in the ADR. Return to `/author-adr` to update the checkpoint to "Proceed" and complete convergence if needed.
+If yes → start a new iteration with the next decision's scope.
+If no → proceed to S-1.3.
 
-## S-1.4: Review via /author-adr
+**Tracking:** Keep a running list of all ADRs produced during the loop:
+```
+[ADR ref]: [first decision title] (Proposed, reviewed)
+[ADR ref]: [second decision title] (Proposed, reviewed)
+[ADR ref]: [third decision title] (Proposed, reviewed)
+```
 
-## S-1.4: Review via /author-adr
+The ADR reference format depends on the active format — `/author-adr` determines the correct naming convention.
 
-Invoke `/author-adr` to run the structured review → revise cycle on the completed ADR. The review checks for completeness, reasoning fallacies, and anti-patterns.
+## S-1.3: Implement
 
-**What happens:** /author-adr runs its A-3 (Review) → A-4 (Revise) → A-5 (Re-review) procedure using the configured review and editor agents.
+After all decisions are made, implement them in dependency order.
 
-**After review completes:** The ADR is `Proposed` and reviewed. Resume at S-1.5.
+1. **Analyze dependencies** — from each ADR's Links section and Context references, determine which ADRs depend on which. Order them so dependencies are implemented before dependents.
 
-## S-1.5: Handoff
-
-The solve scenario produces a `Proposed`, reviewed ADR.
-
-1. **Present the completed ADR** — summarize the decision and its key tradeoffs.
-
-2. **Offer implementation** — if `auto_delegate` is true (from preferences), invoke `/implement-adr` automatically. Otherwise, ask:
-
-   > This ADR is reviewed and `Proposed`. Would you like to implement it?
-
-   If the user agrees, invoke `/implement-adr` with the ADR number.
-
-3. **Full lifecycle:**
-
+2. **Present implementation plan** — show the ordered chain:
    ```
-   solve (S-1) → author (create + review) → implement → accept
+   Implementation order:
+   1. [ADR ref] (foundation) — no dependencies
+   2. [ADR ref] (builds on #1) — depends on #1
+   3. [ADR ref] (builds on #2) — depends on #2
    ```
+   In autonomous mode, proceed without confirmation. In guided mode, confirm with the user.
+
+3. **Delegate to `/implement-adr`** for each ADR in order. After each completes:
+   - If status is `Accepted` → success, continue to next
+   - If implementation failed → stop, report progress
+   - If a gap is discovered → invoke `/author-adr` for the new decision, add to chain, resume
+
+4. **Report progress** after each implementation and at the end:
+   ```
+   ✅ [ADR ref]: Accepted
+   ✅ [ADR ref]: Accepted
+   🔄 [ADR ref]: Implementing...
+   ```
+
+**Single-ADR case:** If the decision loop produced only one ADR, S-1.3 simplifies to a single `/implement-adr` invocation (no dependency analysis needed).
+
+**Session boundaries:** If the session is nearing its limits, stop at the current ADR boundary. Report what was completed and what remains — the user can resume with `/solve-adr continue` in a new session.
 
 ## Multi-Turn Session Management
 
