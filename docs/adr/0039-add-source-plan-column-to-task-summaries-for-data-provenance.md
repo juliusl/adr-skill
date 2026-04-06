@@ -1,7 +1,7 @@
 # 39. Add source plan column to task summaries for data provenance
 
 Date: 2026-04-06
-Status: Planned
+Status: Accepted
 Last Updated: 2026-04-06
 Links:
 - Extends [ADR-0026](0026-add-rust-cli-for-data-plumbing.md) (adds provenance tracking to the plumbing data model)
