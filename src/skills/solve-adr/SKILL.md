@@ -1,9 +1,9 @@
 ---
 name: solve-adr
-description: "Use this skill when the user wants to solve a problem through structured exploration — analyzing constraints, discovering options, making decisions, and driving implementation across the ADR skill ecosystem. Activate when the user says things like \"solve this problem,\" \"help me figure out,\" \"explore options for,\" \"I need to decide how to handle,\" or \"what's the best approach for.\" Also activate for multi-ADR orchestration: \"implement these ADRs,\" \"continue solving,\" \"drive this roadmap,\" or \"implement milestones X to Y.\" The skill orchestrates across /author-adr (decisions), /prototype-adr (experiments), and /implement-adr (execution). Do not use for creating a single ADR when the user already has a decision — use author-adr. Do not use for implementing an existing ADR — use implement-adr. Do not use for running a standalone experiment — use prototype-adr."
+description: "Use this skill when the user wants to solve a problem through structured exploration — analyzing constraints, discovering options, making decisions, and driving implementation across the ADR skill ecosystem. Activate when the user says things like \"solve this problem,\" \"help me figure out,\" \"explore options for,\" \"I need to decide how to handle,\" or \"what's the best approach for.\" Also activate for multi-ADR orchestration: \"implement these ADRs,\" \"continue solving,\" \"solve remaining ADRs,\" or \"implement milestones X to Y.\" The skill orchestrates across /author-adr (decisions), /prototype-adr (experiments), and /implement-adr (execution). Do not use for creating a single ADR when the user already has a decision — use author-adr. Do not use for implementing an existing ADR — use implement-adr. Do not use for running a standalone experiment — use prototype-adr."
 license: CC-BY-4.0
 metadata:
-  version: "0.1"
+  version: "0.2"
 ---
 # Solve ADR — Scenario-Driven Problem Solving
 
@@ -14,10 +14,11 @@ Orchestrate problem-solving end-to-end by delegating to companion skills: `/auth
 | ID | Scenario | Mandatory | Description |
 |----|----------|-----------|-------------|
 | S-0 | Startup | Yes | Load preferences, check automation config, recommend missing settings |
-| S-1 | Problem Exploration | Conditional | User provides problem + constraints → explore options → converge on decision |
-| S-2 | Roadmap Execution | Conditional | Implement a chain of ADRs in dependency order |
+| S-1 | Problem | Conditional | Solve a problem — explore options, produce ADRs, implement them |
 
-**Routing:** Exactly one scenario runs per invocation. The agent selects the scenario based on the user's request. If the request doesn't match any scenario, explain what was requested and which scenario would handle it.
+**Resume protocol:** Every solvable thing is resumable. When invoked on a problem that already has ADRs, the agent picks up where it left off — skipping completed steps, implementing remaining ADRs. Resume is not a separate scenario; it's how solve works across sessions.
+
+**Routing:** The agent selects the scenario based on the user's request. If the request doesn't match any scenario, explain what was requested and which scenario would handle it.
 
 **If a mandatory step is skipped, log the justification inline before proceeding.** Skipping without justification is a workflow violation.
 
@@ -27,15 +28,14 @@ User request
 ├─ docs/adr/ missing? ──────────► Recommend: run `/author-adr` to bootstrap first
 │
 │  Scenario routing:
-├─ "Solve this problem" ────────► S-0 → S-1: Problem Exploration
-├─ "Help me figure out X" ──────► S-0 → S-1: Problem Exploration
-├─ "Explore options for Y" ─────► S-0 → S-1: Problem Exploration
-├─ "What's the best approach" ──► S-0 → S-1: Problem Exploration
-│
-├─ "Implement these ADRs" ──────► S-0 → S-2: Roadmap Execution
-├─ "Continue solving all ADRs" ─► S-0 → S-2: Roadmap Execution
-├─ "Drive this roadmap" ────────► S-0 → S-2: Roadmap Execution
-└─ "Implement milestones X to Y" ► S-0 → S-2: Roadmap Execution
+├─ "Solve this problem" ────────► S-0 → S-1: Problem
+├─ "Help me figure out X" ──────► S-0 → S-1: Problem
+├─ "Explore options for Y" ─────► S-0 → S-1: Problem
+├─ "What's the best approach" ──► S-0 → S-1: Problem
+├─ "Implement these ADRs" ──────► S-0 → S-1: Problem (resume)
+├─ "Continue solving" ──────────► S-0 → S-1: Problem (resume)
+├─ "Solve remaining ADRs" ──────► S-0 → S-1: Problem (resume)
+└─ "Resume solving [topic]" ────► S-0 → S-1: Problem (resume)
 ```
 
 ## Configuration
@@ -89,67 +89,34 @@ Run this before every scenario.
    > Save these defaults?
 4. **Load dispatch config** — read `[author.dispatch]` keys (`review`, `editor`) for downstream `/author-adr` calls. These control which agents handle review and revision cycles.
 
-### S-1: Problem Exploration
+### S-1: Problem
 
-The user provides a problem, background context, current thought process, and constraints. The agent explores the problem space, produces one or more ADRs via `/author-adr`, and drives implementation via `/implement-adr`. A single problem may require multiple decisions — each gets its own ADR.
+Solve a problem — whether new (explore) or partially solved (resume). A problem produces one or more ADRs (one-to-many).
 
-Read [references/solve.md](references/solve.md) for the full S-1 workflow detail.
+Read [references/problem.md](references/problem.md) for the full workflow detail.
 
-**Workflow summary:**
+**Lifecycle:**
 
 ```
-S-1.1: Problem intake — capture problem, constraints, stakeholders
-  ↓
-S-1.2: Decision loop — for each decision the problem requires:
-  │  ├─ /author-adr — create ADR (worksheet → options → convergence)
-  │  ├─ /prototype-adr — if Evaluation Checkpoint needs validation
-  │  └─ /author-adr — review → revise cycle
-  │  (repeat if the problem requires additional decisions)
-  ↓
-S-1.3: Implement — dependency-order the produced ADRs, /implement-adr for each
+1. Intake — capture problem, constraints, stakeholders
+   ↓
+2. Decision loop — for each decision the problem requires:
+   │  ├─ /author-adr — create ADR (worksheet → options → convergence)
+   │  ├─ /prototype-adr — if Evaluation Checkpoint needs validation
+   │  └─ /author-adr — review → revise cycle
+   │  (repeat if the problem requires additional decisions)
+   ↓
+3. Implement — group the produced ADRs, delegate to /implement-adr
+   ↓
+4. Report — summarize what was implemented, what remains
 ```
 
-**How it works:** Solve-adr owns the problem intake (S-1.1), decision orchestration (S-1.2), and implementation sequencing (S-1.3). Each individual ADR is created and reviewed by `/author-adr`. Implementation of each ADR is delegated to `/implement-adr`.
-
-**S-1.2 decision loop:** A single problem may decompose into multiple decisions. The agent identifies when the current ADR's scope leaves gaps that need separate decisions (e.g., "the naming convention is one decision, but the data model is another"). Each iteration through the loop produces one reviewed ADR.
-
-**S-1.3 implementation:** After all decisions are made, the agent:
-1. Analyzes dependencies between the produced ADRs
-2. Orders them for implementation (dependencies first)
-3. Presents the implementation plan to the user (or proceeds in autonomous mode)
-4. Delegates to `/implement-adr` for each ADR in order
-5. Reports progress after each implementation completes
-
-If a gap is discovered during implementation that requires a new decision, the agent pauses implementation, invokes `/author-adr` to create the new ADR, and resumes.
+**On resume:** The agent evaluates the problem's current state and enters the lifecycle at the right point. No ADRs → step 1. ADRs exist but unreviewed → step 2. All ADRs reviewed but unimplemented → step 3. Some Accepted, others remain → step 3 for remaining.
 
 **Cross-skill delegation points:**
-- **S-1.2** — invoke `/author-adr` to create each ADR (worksheet → options → decision → review)
-- **S-1.2** — invoke `/prototype-adr` if an Evaluation Checkpoint says "Pause for validation"
-- **S-1.3** — invoke `/implement-adr` for each ADR in dependency order
-
-### S-2: Roadmap Execution
-
-The user has existing Proposed ADRs that need implementation. No exploration phase — the decisions are already made.
-
-Read [references/roadmap.md](references/roadmap.md) for the full S-2 workflow detail.
-
-**Workflow summary:**
-
-```
-S-2.1: Survey — identify which ADRs are in scope, read their status
-  ↓
-S-2.2: Dependency analysis — determine implementation order
-  ↓
-S-2.3: Execute — /implement-adr for each ADR in order
-  ↓
-S-2.4: Progress report — summarize what was implemented, what remains
-```
-
-**How it works:** Solve-adr owns the survey, ordering, and progress tracking. Implementation of each ADR is delegated to `/implement-adr`. If a gap is discovered during implementation that requires a new decision, the agent invokes `/author-adr`, adds the new ADR to the chain, and resumes.
-
-**Cross-skill delegation points:**
-- **S-2.3** — invoke `/implement-adr` for each ADR in the chain
-- **S-2.3** — invoke `/author-adr` if a gap needs a new decision
+- **Step 2** — invoke `/author-adr` to create each ADR (worksheet → options → decision → review)
+- **Step 2** — invoke `/prototype-adr` if an Evaluation Checkpoint says "Pause for validation"
+- **Step 3** — invoke `/implement-adr` for each group (multi-ADR batch)
 
 ## Cross-Skill Invocation
 
@@ -161,7 +128,9 @@ skill: "prototype-adr"  — when an assumption needs experimental validation
 skill: "implement-adr"  — when an accepted decision needs execution
 ```
 
-Each invocation loads the target skill's SKILL.md into the conversation context. The target skill runs its full procedure. When the target skill completes, the solve-adr agent resumes its scenario from the conversation history.
+Each invocation loads the target skill's SKILL.md into the conversation context. The target skill runs its full procedure — this is intentionally thorough. When the target skill completes, control returns to solve-adr.
+
+**Callback pattern:** When solve-adr delegates to `/implement-adr` and more work remains (additional groups in S-1.3 or S-2.3), instruct `/implement-adr` to invoke `/solve-adr` on completion to continue. This creates the continuation chain: solve → implement → solve → implement. Each skill invocation carries its full safeguard overhead (plan review, QA) — this is the intended cost.
 
 The platform constraint "do not invoke a skill that is already running" permits this pattern: solve-adr and the target skill are different skills. The agent's orchestration state (scenario step, problem context, ADRs created) is maintained in the conversation — not in skill-scoped storage.
 
@@ -176,5 +145,4 @@ The solve-adr skill's primary output is a set of reviewed, accepted decisions �
 
 ## Deep References
 
-- **[references/solve.md](references/solve.md)** — Full S-1 Problem Exploration workflow: problem intake, option discovery, requirements refinement, evaluation checkpoint, convergence, and handoff.
-- **[references/roadmap.md](references/roadmap.md)** — Full S-2 Roadmap Execution workflow: survey, dependency analysis, sequential implementation delegation, progress tracking.
+- **[references/problem.md](references/problem.md)** — Full Problem workflow: intake, decision loop, implementation delegation, resume protocol, progress tracking.
