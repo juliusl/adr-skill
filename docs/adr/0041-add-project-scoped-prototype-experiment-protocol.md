@@ -1,7 +1,7 @@
 # 41. Add project-scoped prototype experiment protocol for persona testing
 
 Date: 2026-04-06
-Status: Planned
+Status: Accepted
 Last Updated: 2026-04-06
 Links:
 - Extends [ADR-0020](0020-establish-adr-directory-as-project-scoped-convention.md) (`.adr/` directory for project-scoped configuration)

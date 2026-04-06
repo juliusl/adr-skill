@@ -1,7 +1,7 @@
 # 42. Add project-scoped preferences to prototype-adr
 
 Date: 2026-04-06
-Status: Planned
+Status: Accepted
 Last Updated: 2026-04-06
 Links:
 - Extends [ADR-0020](0020-establish-adr-directory-as-project-scoped-convention.md) (`.adr/` as project-scoped directory)
