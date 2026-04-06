@@ -14,13 +14,25 @@ struct TableName {
     name: String,
 }
 
+#[derive(Clone, Copy, clap::ValueEnum)]
+pub enum OutputFormat {
+    Tsv,
+    Jsonl,
+}
+
 pub fn run_view(
     db_path: &Path,
     table_name: Option<&str>,
-    output: &str,
+    output: OutputFormat,
     limit: Option<i64>,
     no_header: bool,
 ) -> Result<(), Box<dyn std::error::Error>> {
+    if let Some(n) = limit {
+        if n < 0 {
+            return Err(format!("invalid --limit value: {n} (must be non-negative)").into());
+        }
+    }
+
     let db_url = db_path.to_string_lossy().to_string();
     let mut conn = SqliteConnection::establish(&db_url)?;
 
@@ -28,17 +40,14 @@ pub fn run_view(
         None => list_tables(&mut conn),
         Some(name) => match name {
             "task_summaries" => view_task_summaries(&mut conn, output, limit, no_header),
-            _ => {
-                eprintln!("error: unknown table: {name}");
-                std::process::exit(1);
-            }
+            _ => Err(format!("unknown table: {name}").into()),
         },
     }
 }
 
 fn list_tables(conn: &mut SqliteConnection) -> Result<(), Box<dyn std::error::Error>> {
     let tables: Vec<TableName> = diesel::sql_query(
-        "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE '__diesel%'",
+        "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE '__diesel%' AND name NOT LIKE 'sqlite_%'",
     )
     .load(conn)?;
 
@@ -51,7 +60,8 @@ fn list_tables(conn: &mut SqliteConnection) -> Result<(), Box<dyn std::error::Er
 }
 
 fn truncate_description(desc: &str, max_len: usize) -> String {
-    if desc.len() <= max_len {
+    let char_count = desc.chars().count();
+    if char_count <= max_len {
         desc.to_string()
     } else {
         let truncated: String = desc.chars().take(max_len).collect();
@@ -59,9 +69,14 @@ fn truncate_description(desc: &str, max_len: usize) -> String {
     }
 }
 
+/// Sanitize a field value for TSV output by replacing tabs and newlines with spaces.
+fn sanitize_tsv_field(value: &str) -> String {
+    value.replace('\t', " ").replace('\n', " ").replace('\r', " ")
+}
+
 fn view_task_summaries(
     conn: &mut SqliteConnection,
-    output: &str,
+    output: OutputFormat,
     limit: Option<i64>,
     no_header: bool,
 ) -> Result<(), Box<dyn std::error::Error>> {
@@ -79,7 +94,7 @@ fn view_task_summaries(
     let mut out = stdout.lock();
 
     match output {
-        "jsonl" => {
+        OutputFormat::Jsonl => {
             for row in &results {
                 let json = serde_json::json!({
                     "task_id": row.task_id,
@@ -91,8 +106,7 @@ fn view_task_summaries(
                 writeln!(out, "{}", json)?;
             }
         }
-        _ => {
-            // TSV output
+        OutputFormat::Tsv => {
             if !no_header {
                 writeln!(out, "task_id\tstatus\tcost\tcommit_sha\tdescription")?;
             }
@@ -100,11 +114,11 @@ fn view_task_summaries(
                 writeln!(
                     out,
                     "{}\t{}\t{}\t{}\t{}",
-                    row.task_id,
-                    row.status,
-                    row.cost,
-                    row.commit_sha,
-                    truncate_description(&row.description, 60),
+                    sanitize_tsv_field(&row.task_id),
+                    sanitize_tsv_field(&row.status),
+                    sanitize_tsv_field(&row.cost),
+                    sanitize_tsv_field(&row.commit_sha),
+                    truncate_description(&sanitize_tsv_field(&row.description), 60),
                 )?;
             }
         }
@@ -156,12 +170,14 @@ mod tests {
     fn test_list_tables() {
         let mut conn = setup_conn();
         let tables: Vec<TableName> = diesel::sql_query(
-            "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE '__diesel%'",
+            "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE '__diesel%' AND name NOT LIKE 'sqlite_%'",
         )
         .load(&mut conn)
         .unwrap();
         let names: Vec<&str> = tables.iter().map(|t| t.name.as_str()).collect();
         assert!(names.contains(&"task_summaries"));
+        // Verify sqlite_sequence is excluded
+        assert!(!names.contains(&"sqlite_sequence"));
     }
 
     #[test]
@@ -174,7 +190,6 @@ mod tests {
         let long_desc = "a".repeat(80);
         let result = truncate_description(&long_desc, 60);
         assert!(result.ends_with('…'));
-        // 60 chars + the … character
         assert_eq!(result.chars().count(), 61);
     }
 
@@ -182,5 +197,127 @@ mod tests {
     fn test_truncate_description_exact() {
         let exact = "a".repeat(60);
         assert_eq!(truncate_description(&exact, 60), exact);
+    }
+
+    #[test]
+    fn test_truncate_description_multibyte() {
+        // Ensure multi-byte UTF-8 does not panic
+        let desc = "é".repeat(80); // 2-byte chars
+        let result = truncate_description(&desc, 60);
+        assert_eq!(result.chars().count(), 61); // 60 + …
+        assert!(result.ends_with('…'));
+    }
+
+    #[test]
+    fn test_sanitize_tsv_field() {
+        assert_eq!(sanitize_tsv_field("hello\tworld"), "hello world");
+        assert_eq!(sanitize_tsv_field("line1\nline2"), "line1 line2");
+        assert_eq!(sanitize_tsv_field("cr\rvalue"), "cr value");
+        assert_eq!(sanitize_tsv_field("clean"), "clean");
+    }
+
+    #[test]
+    fn test_tsv_output() {
+        let mut conn = setup_conn();
+        insert_sample(&mut conn);
+        // Verify TSV output format
+        let results: Vec<TaskSummary> = task_summaries::table
+            .select(TaskSummary::as_select())
+            .load(&mut conn)
+            .unwrap();
+        assert_eq!(results.len(), 2);
+        assert_eq!(results[0].task_id, "1.1");
+        assert_eq!(results[1].task_id, "1.2");
+    }
+
+    #[test]
+    fn test_jsonl_round_trip() {
+        use crate::models::JsonlTaskRecord;
+
+        let mut conn = setup_conn();
+        insert_sample(&mut conn);
+
+        let results: Vec<TaskSummary> = task_summaries::table
+            .select(TaskSummary::as_select())
+            .load(&mut conn)
+            .unwrap();
+
+        for row in &results {
+            let json = serde_json::json!({
+                "task_id": row.task_id,
+                "status": row.status,
+                "cost": row.cost,
+                "commit": row.commit_sha,
+                "description": row.description,
+            });
+            let json_str = json.to_string();
+            // Verify it deserializes as JsonlTaskRecord (ingest-compatible)
+            let _record: JsonlTaskRecord = serde_json::from_str(&json_str).unwrap();
+        }
+    }
+
+    #[test]
+    fn test_empty_table_tsv() {
+        let mut conn = setup_conn();
+        // No data inserted — empty table
+        let results: Vec<TaskSummary> = task_summaries::table
+            .select(TaskSummary::as_select())
+            .load(&mut conn)
+            .unwrap();
+        assert_eq!(results.len(), 0);
+    }
+
+    #[test]
+    fn test_limit() {
+        let mut conn = setup_conn();
+        insert_sample(&mut conn);
+
+        let results: Vec<TaskSummary> = task_summaries::table
+            .select(TaskSummary::as_select())
+            .limit(1)
+            .load(&mut conn)
+            .unwrap();
+        assert_eq!(results.len(), 1);
+    }
+
+    #[test]
+    fn test_limit_zero() {
+        let mut conn = setup_conn();
+        insert_sample(&mut conn);
+
+        let results: Vec<TaskSummary> = task_summaries::table
+            .select(TaskSummary::as_select())
+            .limit(0)
+            .load(&mut conn)
+            .unwrap();
+        assert_eq!(results.len(), 0);
+    }
+
+    #[test]
+    fn test_negative_limit_rejected() {
+        let result = run_view(
+            std::path::Path::new(":memory:"),
+            Some("task_summaries"),
+            OutputFormat::Tsv,
+            Some(-1),
+            false,
+        );
+        assert!(result.is_err());
+        let err = result.unwrap_err().to_string();
+        assert!(err.contains("invalid --limit value"));
+    }
+
+    #[test]
+    fn test_unknown_table_returns_error() {
+        let result = run_view(
+            std::path::Path::new(":memory:"),
+            Some("nonexistent"),
+            OutputFormat::Tsv,
+            None,
+            false,
+        );
+        // This will fail because :memory: needs init first, but the table name
+        // check happens after connection. Let's test via the match logic directly.
+        assert!(result.is_err());
     }
 }

@@ -40,7 +40,7 @@ enum Commands {
         table_name: Option<String>,
         /// Output format: tsv (default) or jsonl
         #[arg(long, default_value = "tsv")]
-        output: String,
+        output: view::OutputFormat,
         /// Limit number of output rows
         #[arg(long)]
         limit: Option<i64>,
@@ -79,7 +79,7 @@ fn main() {
             if let Err(e) = view::run_view(
                 &db_path,
                 table_name.as_deref(),
-                &output,
+                output,
                 limit,
                 no_header,
             ) {
