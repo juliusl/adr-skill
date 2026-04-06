@@ -1,0 +1,60 @@
+docs/adr/0001-record-architecture-decisions.md
+docs/adr/local-a1b2c3d4-use-postgresql-for-persistence.md
+---
+# local-a1b2c3d4. Use PostgreSQL for persistence
+
+Date: 2026-01-15
+Status: Prototype
+Last Updated: 2026-01-15
+Work-Item: local#a1b2c3d4
+Links:
+
+## Context
+
+## Options
+
+## Evaluation Checkpoint (Optional)
+<!-- Gate: Options → Decision. Agent assesses and recommends. -->
+
+**Assessment:** [Proceed | Pause for validation | Skipped — <rationale>]
+
+- [ ] All options evaluated at comparable depth
+- [ ] Decision drivers are defined and referenced in option analysis
+- [ ] No unacknowledged experimentation gaps (ADR-0022 tolerance check)
+
+**Validation needs:**
+
+## Decision
+
+## Consequences
+
+## Quality Strategy
+
+- [ ] Introduces major semantic changes
+- [ ] Introduces minor semantic changes
+- [ ] Fuzz testing
+- [ ] Unit testing
+- [ ] Load testing
+- [ ] Performance testing
+- [ ] Backwards Compatible
+- [ ] Integration tests
+- [ ] Tooling
+- [ ] User documentation
+
+### Additional Quality Concerns
+
+## Conclusion Checkpoint (Optional)
+<!-- Gate: Quality Strategy → Review. Verify before requesting review. -->
+
+**Assessment:** [Ready for review | Needs work | Skipped — <rationale>]
+
+- [ ] Decision justified (Y-statement or equivalent)
+- [ ] Consequences include positive, negative, and neutral outcomes
+- [ ] Quality Strategy reviewed — relevant items checked, irrelevant struck through
+- [ ] Links to related ADRs populated
+
+**Pre-review notes:**
+
+---
+
+## Comments

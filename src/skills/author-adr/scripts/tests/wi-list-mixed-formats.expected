@@ -1,0 +1,7 @@
+docs/adr/0001-record-architecture-decisions.md
+docs/adr/0002-sequential-record.md
+docs/adr/gh-42-work-item-record.md
+---
+1. Record architecture decisions	[Accepted]
+2. Sequential record	[Prototype]
+gh-42. Work item record	[Prototype]
