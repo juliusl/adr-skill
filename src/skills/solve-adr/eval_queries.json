@@ -1,0 +1,17 @@
+[
+  { "query": "I need to figure out the best approach for handling authentication in our microservices", "should_trigger": true },
+  { "query": "Help me solve this: we're running into scaling issues with our message queue", "should_trigger": true },
+  { "query": "Explore options for migrating our database from MySQL to something more scalable", "should_trigger": true },
+  { "query": "What's the best approach for handling distributed transactions across our services?", "should_trigger": true },
+  { "query": "I have a problem — our deployment pipeline takes 45 minutes and we need it under 10", "should_trigger": true },
+  { "query": "Help me decide between event sourcing and traditional CRUD for our order system", "should_trigger": true },
+  { "query": "We need to figure out how to handle multi-tenancy, what are our options?", "should_trigger": true },
+  { "query": "Create an ADR for our decision to use PostgreSQL", "should_trigger": false },
+  { "query": "Review this architecture decision record", "should_trigger": false },
+  { "query": "Implement ADR 0013", "should_trigger": false },
+  { "query": "Set up ADR tooling in this repo", "should_trigger": false },
+  { "query": "Fix the CSS on our landing page", "should_trigger": false },
+  { "query": "Write a fibonacci function in Python", "should_trigger": false },
+  { "query": "Run an experiment to validate this prototype", "should_trigger": false },
+  { "query": "Revise this ADR based on review comments", "should_trigger": false }
+]

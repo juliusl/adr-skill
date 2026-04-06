@@ -86,17 +86,23 @@ adr-skills/
 │   │   └── scripts/
 │   │       ├── adr-tools-3.0.0/ # Nygard format (bundled, 22 tests)
 │   │       └── madr-tools/      # MADR format (custom, 9 tests)
-│   └── implement-adr/           # Skill: turn ADRs into implementation plans
-│       ├── SKILL.md             # Skill entry point (spec-compliant frontmatter + instructions)
-│       ├── Makefile             # Downstream agent interface (list-adrs, show-template)
+│   ├── implement-adr/           # Skill: turn ADRs into implementation plans
+│   │   ├── SKILL.md             # Skill entry point (spec-compliant frontmatter + instructions)
+│   │   ├── Makefile             # Downstream agent interface (list-adrs, show-template)
+│   │   ├── references/          # On-demand documentation loaded by the agent
+│   │   │   ├── planning-practices.md  # Stage decomposition, task scoping, gap detection
+│   │   │   ├── testing-guidelines.md  # Testing taxonomy by code context
+│   │   │   └── cost-estimation.md     # T-shirt sizing guide and calibration
+│   │   ├── assets/              # Static resources and templates
+│   │   │   ├── decisions/       # Bundled ADRs referenced by skill instructions
+│   │   │   └── templates/       # plan.md template
+│   │   └── scripts/             # Reserved for future tooling
+│   └── solve-adr/               # Skill: scenario-driven problem solving orchestrator
+│       ├── SKILL.md             # Skill entry point (scenario-based procedures)
+│       ├── Makefile             # Minimal — orchestrator has no scripts
 │       ├── references/          # On-demand documentation loaded by the agent
-│       │   ├── planning-practices.md  # Stage decomposition, task scoping, gap detection
-│       │   ├── testing-guidelines.md  # Testing taxonomy by code context
-│       │   └── cost-estimation.md     # T-shirt sizing guide and calibration
-│       ├── assets/              # Static resources and templates
-│       │   ├── decisions/       # Bundled ADRs referenced by skill instructions
-│       │   └── templates/       # plan.md template
-│       └── scripts/             # Reserved for future tooling
+│       │   └── solve.md         # S-1 Problem Exploration workflow detail
+│       └── eval_queries.json    # Trigger evaluation queries for solve-adr
 ```
 
 ## Before Making Changes

@@ -4,6 +4,7 @@
 AUTHOR_SKILL_DIR    := $(CURDIR)/src/skills/author-adr
 IMPLEMENT_SKILL_DIR := $(CURDIR)/src/skills/implement-adr
 PROTOTYPE_SKILL_DIR := $(CURDIR)/src/skills/prototype-adr
+SOLVE_SKILL_DIR     := $(CURDIR)/src/skills/solve-adr
 
 # Legacy alias so existing references keep working
 SKILL_DIR := $(AUTHOR_SKILL_DIR)
@@ -25,7 +26,7 @@ build-tools: ## Build Rust tooling (requires Rust toolchain)
 	cargo build --release --manifest-path $(CURDIR)/crates/Cargo.toml
 
 check-refs: ## Check for broken markdown references in all skills
-	@$(CURDIR)/scripts/check-refs $(AUTHOR_SKILL_DIR) $(IMPLEMENT_SKILL_DIR) $(PROTOTYPE_SKILL_DIR)
+	@$(CURDIR)/scripts/check-refs $(AUTHOR_SKILL_DIR) $(IMPLEMENT_SKILL_DIR) $(PROTOTYPE_SKILL_DIR) $(SOLVE_SKILL_DIR)
 
 AGENTS_SRC_DIR := $(CURDIR)/src/agents
 
@@ -52,7 +53,7 @@ install-agents: ## Install custom agents (ADR_AGENTS_DIR overrides target)
 	echo "Done. Agents installed to $$target_dir/"
 
 install-user-copilot: ## Install all skills to ~/.copilot/skills
-	@echo 'Installing author-adr, implement-adr, and prototype-adr to ~/.copilot/skills'
+	@echo 'Installing author-adr, implement-adr, prototype-adr, and solve-adr to ~/.copilot/skills'
 	@mkdir -p $(HOME)/.copilot/skills
 	@rm -rf $(HOME)/.copilot/skills/author-adr
 	cp -r $(AUTHOR_SKILL_DIR) $(HOME)/.copilot/skills/author-adr
@@ -63,6 +64,9 @@ install-user-copilot: ## Install all skills to ~/.copilot/skills
 	@rm -rf $(HOME)/.copilot/skills/prototype-adr
 	cp -r $(PROTOTYPE_SKILL_DIR) $(HOME)/.copilot/skills/prototype-adr
 	@echo "Installed to ~/.copilot/skills/prototype-adr"
+	@rm -rf $(HOME)/.copilot/skills/solve-adr
+	cp -r $(SOLVE_SKILL_DIR) $(HOME)/.copilot/skills/solve-adr
+	@echo "Installed to ~/.copilot/skills/solve-adr"
 
 SKILLS_REF_DIR := /tmp/agentskills/skills-ref
 SKILLS_REF := $(SKILLS_REF_DIR)/.venv/bin/skills-ref
@@ -100,4 +104,11 @@ validate-prototype: ## Validate prototype-adr skill against agentskills.io spec
 	fi
 	$(SKILLS_REF) validate $(PROTOTYPE_SKILL_DIR)
 
-validate-all: validate validate-implement validate-prototype ## Validate all skills
+validate-solve: ## Validate solve-adr skill against agentskills.io spec
+	@if [ ! -x "$(SKILLS_REF)" ]; then \
+		echo "skills-ref not found. Run 'make validate-setup' first."; \
+		exit 1; \
+	fi
+	$(SKILLS_REF) validate $(SOLVE_SKILL_DIR)
+
+validate-all: validate validate-implement validate-prototype validate-solve ## Validate all skills

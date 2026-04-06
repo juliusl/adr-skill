@@ -10,12 +10,22 @@ Create, review, revise, and manage ADRs.
 
 | Capability | Details |
 |---|---|
-| **Solve** problems | Start from a problem, explore options with the agent, converge on a decision |
 | **Create** ADRs | Draft decisions using Nygard Agent, MADR, or Y-Statement templates |
 | **Review** ADRs | Evaluate existing records for quality, fallacies, and anti-patterns |
 | **Revise** ADRs | Interactively address review comments after a Revise verdict |
 | **Manage** ADRs | Supersede, deprecate, link, and track status transitions |
 | **Tooling** | Unified format-based scripts via `ADR_AGENT_SKILL_FORMAT` |
+
+### solve-adr
+
+Scenario-driven problem solving orchestrator. Delegates to `/author-adr`, `/prototype-adr`, and `/implement-adr`.
+
+| Capability | Details |
+|---|---|
+| **Problem exploration** | Start from a problem, explore options, converge on a decision |
+| **Cross-skill orchestration** | Invoke companion skills for decisions, experiments, and implementation |
+| **Defensive logging** | Every decision recorded via `/author-adr` for auditability |
+| **Preference management** | User and project-scoped automation preferences |
 
 ### implement-adr
 
@@ -58,7 +68,7 @@ The agent will create a TBD ADR, help you discover and evaluate options through 
 >
 > ```sh
 > /author-adr Create an ADR for choosing PostgreSQL as our primary database.
-> /author-adr I have a problem to solve — we need a caching strategy.
+> /solve-adr I have a problem to solve — we need a caching strategy.
 > ```
 
 The skill will generate a file with the format `NNNN-<title>.md`. After creation, the skill will offer to review and revise the ADR (recommended).
@@ -90,9 +100,9 @@ make install-user-copilot
 
 ## Usage Tips
 
-### Use solve mode for problems, create mode for decisions
+### Use solve-adr for problems, author-adr for decisions
 
-If you know what you want to decide, use **create** and be specific:
+If you know what you want to decide, use **author-adr** and be specific:
 
 ```
 /author-adr Create an ADR for choosing PostgreSQL as our primary database.
@@ -100,14 +110,14 @@ PostgreSQL shows significant performance over other alternatives (MySQL, SQLite)
 which is important as our service is called in a hot-path.
 ```
 
-If you have a problem but haven't picked a solution, use **solve** instead:
+If you have a problem but haven't picked a solution, use **solve-adr** instead:
 
 ```
-/author-adr We need a database for our event storage service. The hot path
+/solve-adr We need a database for our event storage service. The hot path
 requires sub-millisecond reads. Help me figure out the best approach.
 ```
 
-The solve workflow guides you through option discovery, requirements refinement, and convergence — so you don't need to arrive with the answer already in hand.
+The solve workflow guides you through option discovery, requirements refinement, and convergence — delegating to `/author-adr` for decisions, `/prototype-adr` for experiments, and `/implement-adr` for execution.
 
 ### Elaborate when describing context
 
@@ -135,12 +145,16 @@ After authoring, always run the review. The review catches reasoning fallacies, 
 ├── docs/adr/                         # Project-level ADRs
 ├── docs/plans/                       # Implementation plans generated from ADRs
 ├── src/skills/
-│   ├── author-adr/                   # Skill: create, review, solve, manage ADRs
+│   ├── author-adr/                   # Skill: create, review, manage ADRs
 │   │   ├── SKILL.md                  # Skill entry point
 │   │   ├── Makefile                  # Downstream agent interface
-│   │   ├── references/               # On-demand docs (create, solve, review, revise, manage)
+│   │   ├── references/               # On-demand docs (create, review, revise, manage)
 │   │   ├── assets/                   # Templates and static resources
 │   │   └── scripts/                  # Unified format-based scripts
+│   ├── solve-adr/                    # Skill: scenario-driven problem solving orchestrator
+│   │   ├── SKILL.md                  # Skill entry point (scenario-based procedures)
+│   │   ├── Makefile                  # Minimal — orchestrator has no scripts
+│   │   └── references/               # On-demand docs (S-1 Problem Exploration)
 │   ├── implement-adr/                # Skill: ADR → implementation plans
 │   │   ├── SKILL.md                  # Skill entry point
 │   │   ├── Makefile                  # Downstream agent interface
