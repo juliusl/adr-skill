@@ -34,7 +34,7 @@ init: ## Initialize ADR directory (DIR=path)
 
 init-data: ## Bootstrap .adr/ project-scoped directory
 	@mkdir -p .adr/var
-	@if [ ! -f .adr/.gitignore ]; then echo "var/" > .adr/.gitignore; fi
+	@if [ ! -f .adr/.gitignore ]; then printf "var/\nusr/\n" > .adr/.gitignore; fi
 	@echo "Initialized .adr/ project-scoped directory"
 
 new: ## Create a new ADR (TITLE="..." or REMOTE=local TITLE="..." or REMOTE=gh ID=42 TITLE="...")

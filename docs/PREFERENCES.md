@@ -66,7 +66,7 @@ If neither file exists, skills use built-in defaults and never fail.
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| `[prototype].isolation` | string | `"worktree"` | Isolation backend: `worktree`, `container`, `acp-sandbox` — see [prototype-adr SKILL.md](../src/skills/prototype-adr/SKILL.md#p-1-select-isolation-backend) |
+| `[prototype].isolation` | string | `"worktree"` | Isolation backend: `worktree`, `container`, `acp-sandbox` — see [prototype-adr SKILL.md](../src/skills/prototype-adr/SKILL.md#p-1-select-isolation) |
 | `[prototype].runtime` | string | `""` | Set to `"acp"` for ACP sandbox support — see [prototype-adr SKILL.md](../src/skills/prototype-adr/SKILL.md#configuration) |
 | `[prototype].teardown` | string | `"automatic"` | Teardown behavior: `automatic`, `manual` — see [prototype-adr SKILL.md](../src/skills/prototype-adr/SKILL.md#configuration) |
 
