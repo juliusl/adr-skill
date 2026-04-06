@@ -1,7 +1,7 @@
 # 45. Add Gitea remote adapter for work item integration
 
 Date: 2026-04-06
-Status: Proposed
+Status: Accepted
 Last Updated: 2026-04-05
 Links:
 - [ADR-0034: Work-item-referenced naming](0034-adopt-work-item-referenced-naming-for-adr-files.md)

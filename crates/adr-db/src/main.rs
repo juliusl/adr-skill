@@ -2,6 +2,7 @@ use std::path::PathBuf;
 
 use clap::{Parser, Subcommand};
 
+mod fetch;
 mod ingest;
 mod view;
 
@@ -48,6 +49,13 @@ enum Commands {
         #[arg(long, default_value = ".adr/var/adr.db")]
         db_path: PathBuf,
     },
+    /// Fetch a work item from a remote and output normalized JSONL
+    Fetch {
+        /// Remote type (e.g., gitea)
+        remote: String,
+        /// Work item ID
+        id: String,
+    },
 }
 
 fn main() {
@@ -80,6 +88,12 @@ fn main() {
                 limit,
                 no_header,
             ) {
+                eprintln!("error: {e}");
+                std::process::exit(1);
+            }
+        }
+        Commands::Fetch { remote, id } => {
+            if let Err(e) = fetch::run_fetch(&remote, &id) {
                 eprintln!("error: {e}");
                 std::process::exit(1);
             }

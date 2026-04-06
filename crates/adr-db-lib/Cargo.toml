@@ -8,6 +8,7 @@ description = "Shared database schema, models, and migration helpers for adr-db 
 diesel = { version = "2", features = ["sqlite"] }
 diesel_migrations = "2"
 serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+ureq = { version = "2", features = ["json"] }
 
 [dev-dependencies]
-serde_json = "1"

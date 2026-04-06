@@ -30,9 +30,9 @@ adr_date() {
 validate_remote() {
   local remote="$1"
   case "$remote" in
-    gh|ado|local) return 0 ;;
+    gh|ado|gitea|local) return 0 ;;
     *)
-      echo "ERROR: unknown remote '$remote'. Allowed: gh, ado, local" >&2
+      echo "ERROR: unknown remote '$remote'. Allowed: gh, ado, gitea, local" >&2
       exit 1
       ;;
   esac
