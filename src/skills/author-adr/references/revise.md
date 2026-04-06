@@ -2,6 +2,8 @@
 
 Self-contained reference for the ADR revision workflow. Read this file when the user wants to address review comments after a review with a "Revise" verdict.
 
+**All steps must be executed in order. If a step is skipped, log the justification inline before proceeding.** Skipping without justification is a workflow violation.
+
 ## When to Use
 
 Activate this workflow when:
@@ -9,7 +11,53 @@ Activate this workflow when:
 - The user asks to "address review comments," "revise this ADR," or "go through the revision"
 - Review findings exist that need author response
 
-## Revision Process
+## Guard Rails
+
+1. **Don't modify unaddressed sections** — only change ADR content that corresponds to a finding the user chose to address.
+2. **Preserve author voice** — when the user provides custom wording, use it verbatim. Do not editorialize or "improve" the user's text.
+3. **Record rejections honestly** — a rejected finding is a valid outcome. Do not pressure the user to address findings they chose to reject.
+4. **Respect priority ordering** — present high-priority items first so the user can focus on what matters most. If the user wants to skip remaining low-priority items, allow it.
+5. **One finding at a time** — present findings individually to give each one proper attention. Do not batch multiple findings into a single prompt unless the user requests it.
+6. **Respect the semantic boundary** — the `---` separator above `## Comments` divides the immutable decision record (above) from the mutable revision worksheet (below). When appending Q&A entries, never modify content above the separator.
+7. **Preserve existing addendum entries** — in multi-round revisions, existing Q&A entries from prior rounds must not be modified or removed. New entries are appended below existing ones.
+
+---
+
+## Procedure
+
+| ID | Description |
+|----|-------------|
+| Step 1 | Load Review Comments — parse review output and extract revision items |
+| Step 2 | Present Each Comment Interactively — show each finding with context |
+| Step 3 | Collect User Response — get Address, Reject, or Defer for each finding |
+| Step 3a | Defer Mechanics — acknowledge, scope, and redirect deferred concerns |
+| Step 4 | Apply Revisions — edit the ADR file with accumulated changes |
+| Step 5 | Produce a Revision Summary — output summary table of all actions |
+| Step 5b | Append Q&A Addendum to ADR — write revision dialogue to Comments section |
+| Step 5c | Record Review Cycle — append audit trail marker to Comments |
+| Step 6 | Recommend Re-Review — suggest re-review if substantive changes were made |
+
+```
+Step 1 — Load review comments
+  ↓
+Step 2 — Present each comment
+  ↓
+Step 3 — Collect user response (Address / Reject / Defer)
+  ↓
+Step 4 — Apply revisions to ADR
+  ↓
+Step 5 — Produce revision summary
+  ↓
+Step 5b — Append Q&A addendum
+  ↓
+Step 5c — Record review cycle
+  ↓
+Step 6 — Recommend re-review (conditional)
+```
+
+**Conditional steps:** Step 6 is conditional on substantive changes. If no H/M items were addressed, log the reason and skip the re-review recommendation.
+
+---
 
 ### Step 1: Load Review Comments
 
@@ -63,7 +111,7 @@ For each comment, offer the user three choices (when `[author.dispatch].editor` 
 
 - **Defer** — the concern is valid but out of scope for this ADR. The user provides a redirect destination (e.g., "ADR-NNNN," "the implementing ADR," "a future decision about X"). Record the deferral with its redirect.
 
-#### Defer Mechanics
+#### Step 3a: Defer Mechanics
 
 When the user (or editor agent) selects Defer:
 
@@ -179,16 +227,6 @@ If substantive changes were made (any H or M priority items addressed), suggest:
 If only L priority items were addressed or all items were rejected, the re-review suggestion is optional.
 
 When the editor is delegated (see [Editor Dispatch](#editor-dispatch)), the editor agent decides whether to re-review instead of the user. The loop continues per the dispatch config until the review verdict is Accept or the cycle limit is reached.
-
-## Guard Rails
-
-1. **Don't modify unaddressed sections** — only change ADR content that corresponds to a finding the user chose to address.
-2. **Preserve author voice** — when the user provides custom wording, use it verbatim. Do not editorialize or "improve" the user's text.
-3. **Record rejections honestly** — a rejected finding is a valid outcome. Do not pressure the user to address findings they chose to reject.
-4. **Respect priority ordering** — present high-priority items first so the user can focus on what matters most. If the user wants to skip remaining low-priority items, allow it.
-5. **One finding at a time** — present findings individually to give each one proper attention. Do not batch multiple findings into a single prompt unless the user requests it.
-6. **Respect the semantic boundary** — the `---` separator above `## Comments` divides the immutable decision record (above) from the mutable revision worksheet (below). When appending Q&A entries, never modify content above the separator.
-7. **Preserve existing addendum entries** — in multi-round revisions, existing Q&A entries from prior rounds must not be modified or removed. New entries are appended below existing ones.
 
 ## Editor Dispatch
 

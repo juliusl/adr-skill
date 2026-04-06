@@ -4,9 +4,34 @@ Self-contained reference for the ADR review workflow. Read this file when the us
 
 Use this as the review prompt for the configured review agent (per ADR-0031, `[author.dispatch].review`; defaults to general-purpose). Custom agents get the same checks — their persona shapes judgment, not task structure. The review process is structured into six steps executed in order.
 
-## Review Process
-
 **All six steps must be executed in order. If a step is skipped, log the justification inline before proceeding.** Skipping without justification is a workflow violation.
+
+## Review Perspectives
+
+Apply three perspectives progressively:
+
+1. **Friendly peer/coach** — early feedback for improvement
+2. **Official stakeholder** — adequacy confirmation and agreement
+3. **Formal design authority** — approval and enforcement
+
+> Prioritize comments by urgency (H/M/L), provide concrete
+> finding-recommendation pairs, and lead with questions rather than demands.
+
+## Review Anti-Patterns (Self-Check)
+
+Do NOT fall into these reviewer anti-patterns:
+
+1. **Pass Through** — few/shallow comments, rubber-stamping
+2. **Copy Edit** — commenting on grammar/formatting instead of substance
+3. **Siding** — switching topics to reviewer's pet concerns
+4. **Self Promotion** — conflict of interest, pushing own solutions
+5. **Power Game** — using hierarchy to override technical merit
+6. **Offended Reaction** — defensive response to critique
+7. **Groundhog Day** — repeating previously resolved feedback
+
+> Lead with questions rather than demands. Review like you want to be reviewed.
+
+## Procedure
 
 | ID | Description |
 |----|-------------|
@@ -19,6 +44,22 @@ Use this as the review prompt for the configured review agent (per ADR-0031, `[a
 | Step 5 | Review Checklist — answer 7 questions about the ADR |
 | Step 6 | Verdict — Accept, Revise, or Rethink |
 | Step 6a | Accept-with-Suggestions Polish Pass — dispatch editor for minor feedback |
+
+```
+Step 1 — Implementability Check
+  ↓
+Step 2 — Fallacy Scan
+  ↓
+Step 3 — Anti-Pattern Check
+  ↓
+Step 4 — Consequence Validation
+  ↓
+Step 5 — Review Checklist
+  ↓
+Step 6 — Verdict
+```
+
+**Conditional steps:** Step 1a is conditional on the ADR using the checkpoint template format. Step 6a is conditional on an Accept verdict with minor suggestions.
 
 ### Step 1: Implementability Check
 
@@ -155,31 +196,6 @@ When the verdict is **Accept** but includes minor suggestions (e.g., editorial i
 2. **If no editor agent is configured** (`editor = "interactive"` or absent): present the suggestions to the user as optional improvements. Let the user decide whether to apply them.
 
 The polish pass is optional — Accept means the ADR is ready. But configured editor agents should apply minor feedback rather than drop it.
-
-## Review Perspectives
-
-Apply three perspectives progressively:
-
-1. **Friendly peer/coach** — early feedback for improvement
-2. **Official stakeholder** — adequacy confirmation and agreement
-3. **Formal design authority** — approval and enforcement
-
-> Prioritize comments by urgency (H/M/L), provide concrete
-> finding-recommendation pairs, and lead with questions rather than demands.
-
-## Review Anti-Patterns (Self-Check)
-
-Do NOT fall into these reviewer anti-patterns:
-
-1. **Pass Through** — few/shallow comments, rubber-stamping
-2. **Copy Edit** — commenting on grammar/formatting instead of substance
-3. **Siding** — switching topics to reviewer's pet concerns
-4. **Self Promotion** — conflict of interest, pushing own solutions
-5. **Power Game** — using hierarchy to override technical merit
-6. **Offended Reaction** — defensive response to critique
-7. **Groundhog Day** — repeating previously resolved feedback
-
-> Lead with questions rather than demands. Review like you want to be reviewed.
 
 ## Output Format
 

@@ -4,6 +4,8 @@ Detailed guidance for decomposing ADRs into staged implementation plans.
 
 **All sections in this reference must be consulted during plan generation. If a section is skipped, log the justification inline before proceeding.** Skipping without justification is a workflow violation.
 
+## Procedure
+
 | ID | Description |
 |----|-------------|
 | PP-1 | Stage Decomposition — group tasks into ordered execution stages |
@@ -20,6 +22,16 @@ Detailed guidance for decomposing ADRs into staged implementation plans.
 | PP-4 | ADR Linkage — connect plan tasks to source ADR sections |
 | PP-4a | Referencing ADRs in Plans — plan-level ADR references |
 | PP-4b | Per-Task ADR References — task-level ADR section references |
+
+```
+PP-1 — Stage Decomposition
+  ↓
+PP-2 — Task Scoping
+  ↓
+PP-3 — Gap Detection
+  ↓
+PP-4 — ADR Linkage
+```
 
 ## PP-1: Stage Decomposition
 

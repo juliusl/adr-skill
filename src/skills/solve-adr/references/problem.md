@@ -33,7 +33,7 @@ Every decision gets an ADR — even mid-execution discoveries.
 
 ---
 
-## Lifecycle
+## Procedure
 
 ```
 1. Intake — capture problem, constraints, stakeholders, enumerate decisions needed
@@ -56,10 +56,6 @@ Every decision gets an ADR — even mid-execution discoveries.
 - All ADRs are Proposed/reviewed but unimplemented → enter step 4 (implement)
 - Some ADRs are Accepted, others remain → enter step 4 for the remaining ones
 - On resume, check for an existing `solve/<slug>` branch — if found and unmerged, checkout it before continuing
-
----
-
-## Step Summary
 
 | ID | Description |
 |----|-------------|

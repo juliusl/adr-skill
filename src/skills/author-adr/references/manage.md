@@ -22,6 +22,8 @@ Prototype ──► Proposed ──► Accepted ──► Deprecated
 
 **Workflow note:** In the local agent-developer workflow, new ADRs start as `Prototype`. The author promotes to `Proposed` when the decision is ready for team review (e.g., before opening a PR). ADRs may also go directly from `Prototype` to `Planned` via the `implement-adr` skill if the author chooses to skip team review and proceed straight to implementation.
 
+## Procedure
+
 | ID | Description |
 |----|-------------|
 | M-1 | Transitioning Status — update an ADR's status with guards and timestamp |
@@ -35,6 +37,16 @@ Prototype ──► Proposed ──► Accepted ──► Deprecated
 | M-4 | Splitting Mega-ADRs — decompose oversized decisions |
 | M-4a | Signs of a Mega-ADR — detection criteria |
 | M-4b | Splitting Process — step-by-step decomposition |
+
+```
+User request
+├─ "Update status" ────────► M-1: Transitioning Status
+├─ "Supersede an ADR" ────► M-2: Superseding Decisions
+├─ "Link ADRs" ────────────► M-3: Linking Related ADRs
+└─ "Split this ADR" ───────► M-4: Splitting Mega-ADRs
+```
+
+---
 
 ## M-1: Transitioning Status
 

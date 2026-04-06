@@ -8,7 +8,7 @@ After `implement-adr` generates an implementation plan (Step 3), spawn a general
 
 The review is mandatory for every plan. The ~3 minute cost per cycle is small compared with missed requirements.
 
-## Review Checklist
+## Procedure
 
 The reviewer evaluates the plan against 6 checks:
 
@@ -24,6 +24,24 @@ The reviewer evaluates the plan against 6 checks:
 | Check 6 | Project Integration — verify build/install/test infrastructure is updated |
 | Review 7 | Iteration Protocol — cycle limit, revision process, user escape hatch |
 | Review 7a | User Escape Hatch — present remaining findings after 3 cycles |
+
+```
+Check 1 — Quality Strategy Coverage
+  ↓
+Check 2 — Consequence Traceability
+  ↓
+Check 3 — AQC Coverage
+  ↓
+Check 4 — Evaluation Checkpoint Coverage
+  ↓
+Check 5 — Scope Completeness
+  ↓
+Check 6 — Project Integration
+  ↓
+Verdict
+  ↓
+Review 7 — Iteration Protocol
+```
 
 ### 1. Quality Strategy Coverage
 

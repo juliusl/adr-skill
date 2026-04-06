@@ -104,7 +104,7 @@ A roadmap follows this structure:
 
 ---
 
-## Lifecycle
+## Procedure
 
 ```
 1. Load — read and parse the roadmap document
@@ -125,10 +125,6 @@ A roadmap follows this structure:
 - Some milestones marked complete → enter step 3 (select next)
 - A milestone is in-progress with existing ADRs → enter step 4 (solve, resume)
 - All milestones complete → report final status
-
----
-
-## Step Summary
 
 | ID | Description |
 |----|-------------|

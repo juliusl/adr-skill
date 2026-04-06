@@ -78,7 +78,7 @@ Watch for these fallacies when drafting and use the countermeasures:
 
 > AD making is a team sport — group decisions mitigate fallacy risk.
 
-## Step Summary
+## Procedure
 
 | ID | Description |
 |----|-------------|
@@ -93,6 +93,22 @@ Watch for these fallacies when drafting and use the countermeasures:
 | Step 5 | Conclusion Checkpoint — verify before requesting review |
 | Step 5a | Quick self-test |
 | Step 6 | Rename ADR file — transition from TBD to titled |
+
+```
+Step 1 — Assess architectural significance
+  ↓
+Step 2 — Evaluate decision readiness
+  ↓
+Step 3 — Evaluation Checkpoint (conditional: Proceed / Pause / Skip)
+  ↓
+Step 4 — Convergence
+  ↓
+Step 5 — Conclusion Checkpoint (conditional: Ready / Needs work / Skip)
+  ↓
+Step 6 — Rename ADR file
+```
+
+**Conditional steps:** Step 3 and Step 5 are checkpoints with three possible assessments. If the assessment is "Skipped", record the rationale and proceed to the next step.
 
 ## Step 1: Assess Architectural Significance (ASR Test)
 

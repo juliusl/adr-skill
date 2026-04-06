@@ -1,7 +1,7 @@
 # 50. Codify Procedural Organization for Skill Reference Files
 
 Date: 2026-04-06
-Status: Planned
+Status: Accepted
 Last Updated: 2026-04-06
 Links: ADR-0049 (roadmap scenario — session where violations were discovered)
 
