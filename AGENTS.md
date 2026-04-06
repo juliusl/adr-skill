@@ -36,6 +36,10 @@ NEVER:
 
 - When giving a recommendation, do not preface the recommendation with this guideline, ADHD users do not need to be reminded that they have ADHD
 
+## Broken Test Policy
+
+ALWAYS, when encountering a broken test, STOP and fix the test before proceeding. A broken test is always in scope and ignoring it creates technical debt.
+
 ## Git Policy
 
 Agents **must not** commit or push changes. Stage your work and let the
