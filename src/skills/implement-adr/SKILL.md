@@ -36,25 +36,25 @@ User request
 ├─ "Explain plan structure" ────► Go to: Plan Structure
 └─ "Show plan template" ────────► Go to: Template Reference
 ```
-**Planning workflow:**
-```
-Read ADR → Generate plan → Plan review (sub-agent) → [Iterate] → QA plan (4b) → Execute plan
-```
-**Execution loop (per stage):**
-```
-Execute tasks → QA executor (sub-agent) → [Remediate if fail] → Stage done
-```
+### Procedure
 
-### Mandatory Steps — No Exceptions
+| ID | Step | Mandatory | Description |
+|----|------|-----------|-------------|
+| I-0 | Locate ADRs | Yes | Find ADRs, load preferences, stop if none exist |
+| I-1 | Read and Analyze | Yes | Extract status, decision, consequences, quality strategy |
+| I-2 | Gap Detection | Yes | Check for missing decisions that block planning |
+| I-3 | Generate Plan | Yes | Build plan.md with stages, tasks, criteria |
+| I-4 | Plan Review | Yes | Sub-agent reviews plan against ADR requirements |
+| I-4b | QA Plan Generation | Yes | Separate sub-agent generates qa-plan.md |
+| I-5 | Update ADR Status | Yes | Transition source ADRs to Planned |
+| I-6 | Participation Check | Yes | Load or prompt for participation mode and auto-commit |
+| I-7 | Execute Plan | Yes | Run tasks per participation mode |
+| I-7b | QA Validation (per stage) | Yes | Sub-agent validates each completed stage against QA plan |
+| I-8 | Finalize | Yes | Update ADR status to Accepted, append implementation summary |
 
-The following steps run for **every** plan regardless of size, complexity, or participation mode. Autonomous clearance means more rigor, not less — these safeguards exist because no human is watching.
+**If a mandatory step is skipped, log the justification inline before proceeding.** Skipping without justification is a workflow violation.
 
-1. **Plan review (Step 4)** — every plan is reviewed by a sub-agent. No size exemption.
-2. **QA plan generation (Step 4b)** — every plan gets a QA plan. No opt-out.
-3. **QA executor at stage boundaries (Step 7b)** — every completed stage is validated. No skip.
-4. **Dispatch config** — use the configured agents from `preferences.toml`. Do not substitute `general-purpose` when a custom agent is configured.
-
-Skipping any of these steps is a workflow violation.
+**Dispatch config:** Use configured agents from `preferences.toml`. Do not substitute `general-purpose` when a custom agent is configured.
 ### Step 0 — Locate ADRs
 1. Check for `docs/adr/` directory in the repository.
 2. **If missing:** Tell the user no ADRs were found. Recommend using the `author-adr` skill to create decision records before planning implementation. Stop here.

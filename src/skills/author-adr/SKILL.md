@@ -46,7 +46,22 @@ The `"interactive"` value is a reserved keyword meaning "prompt the user directl
 
 **Mandatory dispatch compliance:** When `[author.dispatch]` keys are configured, always use the configured agent — do not substitute `general-purpose` or skip dispatch. The user configured these agents for a reason. This applies in all modes, including autonomous workflows triggered by other skills (e.g., implement-adr invoking author-adr for ADR creation).
 ## Agent Workflow
-When this skill is activated, **always start with Format Detection** before proceeding to the relevant task.
+
+### Procedure
+
+| ID | Step | Mandatory | Description |
+|----|------|-----------|-------------|
+| A-0 | Format Detection | Yes | Read config, detect template format, bootstrap docs/adr/ if missing |
+| A-1 | Draft Worksheet | No | Capture intent in a draft worksheet before create/solve |
+| A-2 | Create or Solve | Yes | Run the create or solve workflow to produce the ADR |
+| A-3 | Review | Yes | Run structured review using the configured review agent |
+| A-4 | Revise | Conditional | Run if review verdict is "Revise"; use configured editor agent |
+| A-5 | Re-review | Conditional | Run if revisions were substantive; max 3 cycles |
+| A-6 | Manage | No | Status transitions, supersede, link, split — on request |
+
+**If a mandatory step is skipped, log the justification inline before proceeding.** Skipping without justification is a workflow violation.
+
+Follow the procedure table above. Always start at A-0.
 ### Format Detection
 Before any ADR operation, determine which ADR format to use:
 1. **Read the config file** — resolve the config path (see [Configuration](#configuration)) and read `[author].template` from `preferences.toml`.

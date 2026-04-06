@@ -40,6 +40,21 @@ When testing persona accuracy (e.g., validating editor agents against ground tru
 4. The agent triages findings based only on persona judgment and the embedded content.
 **When `embed_source` is absent or false:** Default behavior — provide file paths normally. Correct for non-persona experiments (benchmarks, spikes, PoCs).
 ## Agent Workflow
+
+### Procedure
+
+| ID | Step | Mandatory | Description |
+|----|------|-----------|-------------|
+| P-0 | Locate ADRs | Yes | Find ADRs, extract prototype objectives from Evaluation Checkpoint |
+| P-1 | Select Isolation | Yes | Choose experiment backend from config or profile |
+| P-2 | Environment Setup | Yes | Set up isolated experiment environment |
+| P-3 | Run Experiments | Yes | Execute each objective, record observations as JSONL |
+| P-4 | Report Findings | Yes | Summarize results, assess confidence, propose ADR updates |
+| P-5 | Teardown | Yes | Clean up experiment environment |
+| P-6 | Feed Back | Yes | Update ADR status/checkpoints with findings |
+
+**If a mandatory step is skipped, log the justification inline before proceeding.** Skipping without justification is a workflow violation.
+
 ```
 User request
 ├─ ADR specified? ──────────────► Read ADR → extract prototype objectives
