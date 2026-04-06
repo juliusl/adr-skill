@@ -126,6 +126,25 @@ During plan execution, after all tasks in a stage complete but before auto-commi
 3. **If all checks pass** — mark them `[x]` in the QA plan, proceed to auto-commit.
 4. **If any check fails** — pause execution, report findings to the main executor, and request remediation before committing.
 
+### Documenting Accepted Findings
+
+When QA findings are accepted without remediation (e.g., low-risk gaps deemed
+acceptable for the current scope), the main executor **must** document the
+acceptance rationale in the QA plan file. Undocumented acceptances are silent
+gaps — a future reader cannot distinguish "we evaluated this and decided not
+to fix it" from "we missed this."
+
+For each accepted finding:
+
+1. Update the finding's status in the summary table from `⚠️ Open` to
+   `⚠️ Accepted`.
+2. Add an entry under the **Accepted findings — rationale** section explaining
+   why the finding was accepted. Include:
+   - Why the risk is low enough to accept
+   - What existing mechanisms mitigate the gap (e.g., shared error handling,
+     consistent patterns across the codebase)
+   - Under what conditions the finding should be revisited
+
 ### Backwards Compatibility
 
 If no QA plan exists (plans generated before this feature), the stage boundary hook is a no-op — execution proceeds to auto-commit directly.
