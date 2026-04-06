@@ -88,14 +88,29 @@ case "$format" in
       exit 1
     fi
 
-    last=0
-    for f in "$adr_dir"/[0-9]*.md; do
-      [ -f "$f" ] || continue
-      num=$(basename "$f" | sed -E 's/^0*([0-9]+)-.*/\1/')
-      if [ "$num" -gt "$last" ] 2>/dev/null; then
-        last="$num"
-      fi
-    done
+    # User-mode: override directory and scope numbering to username-prefixed files
+    if [ "${ADR_SCOPE:-}" = "user" ]; then
+      adr_dir=".adr/usr/docs/adr"
+      mkdir -p "$adr_dir"
+      local_username="${ADR_USERNAME:-$(whoami)}"
+      last=0
+      for f in "$adr_dir"/${local_username}-[0-9]*.md; do
+        [ -f "$f" ] || continue
+        num=$(basename "$f" | sed -E "s/^${local_username}-0*([0-9]+)-.*/\1/")
+        if [ "$num" -gt "$last" ] 2>/dev/null; then
+          last="$num"
+        fi
+      done
+    else
+      last=0
+      for f in "$adr_dir"/[0-9]*.md; do
+        [ -f "$f" ] || continue
+        num=$(basename "$f" | sed -E 's/^0*([0-9]+)-.*/\1/')
+        if [ "$num" -gt "$last" ] 2>/dev/null; then
+          last="$num"
+        fi
+      done
+    fi
     next=$(printf "%04d" $(( last + 1 )))
 
     exec "$format_script" new "$next" "$title" "$adr_dir"

@@ -12,6 +12,10 @@ slugify() {
 }
 
 resolve_dir() {
+  if [ "${ADR_SCOPE:-}" = "user" ]; then
+    echo ".adr/usr/docs/adr"
+    return
+  fi
   if [ -f ".adr/adr-dir" ]; then
     cat .adr/adr-dir
   elif [ -f ".adr-dir" ]; then
@@ -19,6 +23,10 @@ resolve_dir() {
   else
     echo "docs/adr"
   fi
+}
+
+resolve_username() {
+  echo "${ADR_USERNAME:-$(whoami)}"
 }
 
 adr_date() {
@@ -120,10 +128,15 @@ EOF
 
 cmd_new() {
   local number="$1" title="$2" dir="$3"
-  local slug
+  local slug prefix=""
   slug=$(slugify "$title")
-  local file="$dir/${number}-${slug}.md"
 
+  if [ "${ADR_SCOPE:-}" = "user" ]; then
+    prefix="$(resolve_username)-"
+    mkdir -p "$dir"
+  fi
+
+  local file="$dir/${prefix}${number}-${slug}.md"
   generate_template "$number" "$title" > "$file"
   echo "$file"
 }
@@ -226,7 +239,14 @@ cmd_list() {
     exit 1
   fi
 
-  for f in "$dir"/[0-9]*.md; do
+  local pattern
+  if [ "${ADR_SCOPE:-}" = "user" ]; then
+    pattern="$(resolve_username)-[0-9]*.md"
+  else
+    pattern="[0-9]*.md"
+  fi
+
+  for f in "$dir"/$pattern; do
     [ -f "$f" ] || continue
     local title status
     title=$(parse_title "$f")
