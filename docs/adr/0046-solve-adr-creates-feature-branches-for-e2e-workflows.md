@@ -1,7 +1,7 @@
 # 46. solve-adr Creates Feature Branches for End-to-End Workflows
 
 Date: 2026-04-06
-Status: Planned
+Status: Accepted
 Last Updated: 2026-04-06
 Links: ADR-0010 (auto-commit), ADR-0044 (solve-adr skill)
 

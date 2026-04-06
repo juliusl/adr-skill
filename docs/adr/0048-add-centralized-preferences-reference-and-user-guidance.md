@@ -1,7 +1,7 @@
 # 48. Add Centralized Preferences Reference and User Guidance
 
 Date: 2026-04-06
-Status: Planned
+Status: Accepted
 Last Updated: 2026-04-06
 Links: ADR-0011 (XDG config), ADR-0012 (TOML format), ADR-0014 (author/implement tables)
 

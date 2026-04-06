@@ -1,7 +1,7 @@
 # 47. User-Mode ADR Storage in .adr/usr/
 
 Date: 2026-04-06
-Status: Planned
+Status: Accepted
 Last Updated: 2026-04-06
 Links: ADR-0020 (.adr/ convention), ADR-0017 (nygard-agent template), ADR-0048 (centralized preferences reference — `[author].scope` and `[author].username` keys)
 
