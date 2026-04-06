@@ -1,0 +1,16 @@
+=== valid ===
+VALID
+=== invalid remote ===
+Validation errors:
+field remote: invalid value "github", expected one of ["gh","ado","local","gitea"]
+INVALID
+=== missing fields ===
+Validation errors:
+missing required field: id
+missing required field: title
+missing required field: type
+missing required field: state
+missing required field: labels
+missing required field: created
+missing required field: updated
+INVALID

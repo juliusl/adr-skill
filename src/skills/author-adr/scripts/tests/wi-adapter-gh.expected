@@ -1,0 +1,34 @@
+=== basic issue ===
+{
+  "created": "2026-04-01T10:00:00Z",
+  "description": "Some description",
+  "id": "42",
+  "labels": [
+    "adr",
+    "architecture"
+  ],
+  "remote": "gh",
+  "state": "open",
+  "title": "Evaluate PostgreSQL",
+  "type": "issue",
+  "updated": "2026-04-05T07:00:00Z",
+  "url": "https://github.com/org/repo/issues/42"
+}
+=== bug label ===
+{
+  "created": "2026-04-01T10:00:00Z",
+  "description": "App crashes",
+  "id": "7",
+  "labels": [
+    "bug",
+    "urgent"
+  ],
+  "remote": "gh",
+  "state": "closed",
+  "title": "Fix crash on startup",
+  "type": "bug",
+  "updated": "2026-04-05T07:00:00Z",
+  "url": "https://github.com/org/repo/issues/7"
+}
+=== validation ===
+VALID
