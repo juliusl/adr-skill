@@ -153,9 +153,7 @@ When the user selects a preferred option, the agent finalizes the ADR.
 
 2. **Draft the Decision section** — write a Y-statement justification:
 
-   > In the context of **{problem}**, facing **{key concern}**, we decided for
-   > **{chosen option}** and neglected **{alternatives}**, to achieve
-   > **{benefits}**, accepting that **{drawbacks}**.
+   > In the context of **{problem}**, facing **{key concern}**, we decided for **{chosen option}** and neglected **{alternatives}**, to achieve **{benefits}**, accepting that **{drawbacks}**.
 
    Follow with any implementation details or constraints on the decision.
 
@@ -185,8 +183,7 @@ The solve task produces a `Proposed` ADR ready for the existing review workflow.
 
 2. **Recommend review** — offer to run the structured review:
 
-   > This ADR is now `Proposed`. Would you like to review it for completeness,
-   > reasoning fallacies, and anti-patterns?
+   > This ADR is now `Proposed`. Would you like to review it for completeness, reasoning fallacies, and anti-patterns?
 
    If the user agrees, hand off to the [Reviewing an ADR](../SKILL.md#reviewing-an-adr) workflow.
 

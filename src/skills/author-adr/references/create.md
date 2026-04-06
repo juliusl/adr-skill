@@ -59,7 +59,7 @@ Before drafting, check if a **Draft Worksheet** exists in the ADR's `## Comments
 - **Candidates** → pre-populate the Options section with the author's identified candidates, expanding each into a full option structure.
 - **Uncertainty** → inform which areas need more analysis in Context and which constraints are firm vs. tentative.
 
-If no worksheet exists, proceed with the standard drafting workflow below — the worksheet is optional.
+If no worksheet exists, proceed with the standard drafting workflow below — A-1 should have created one, but the workflow must not block if it's absent.
 
 ### Good Practices
 
@@ -94,8 +94,7 @@ If no worksheet exists, proceed with the standard drafting workflow below — th
 - **Problem-solution mismatch** — solution doesn't address the stated problem
 - **Pseudo-accuracy** — false quantitative scoring to disguise subjective judgment
 
-> An ADR is an executive summary, not a novel. It should answer "why this
-> option?" with honest tradeoffs, not sell a predetermined conclusion.
+> An ADR is an executive summary, not a novel. It should answer "why this option?" with honest tradeoffs, not sell a predetermined conclusion.
 
 ### Decision Criteria
 
@@ -106,9 +105,7 @@ When defining evaluation criteria, normalize DOWN to the same abstraction level 
 ### Writing Justifications
 
 **Y-Statement Template:**
-> In the context of **{use case}**, facing **{concern}**, we decided for
-> we chose **{option}** over **{alternatives}** to achieve **{benefits}**,
-> accepting **{drawbacks}**.
+> In the context of **{use case}**, facing **{concern}**, we decided for we chose **{option}** over **{alternatives}** to achieve **{benefits}**, accepting **{drawbacks}**.
 
 **Good justifications (grounded in):**
 - Prior successful project experience in a similar context

@@ -207,3 +207,9 @@ validate:
   The protocol applies regardless of whether auto-commit is enabled.
 - The auto-commit preference is independent of participation mode. Either can
   be configured without the other.
+
+---
+
+## Comments
+
+<!-- No review cycle on record. This ADR predates the formal review process. -->

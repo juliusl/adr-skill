@@ -127,3 +127,9 @@ switching to Full control for a stage they want to closely supervise.
   Autonomous.
 - The per-task evaluation happens at plan execution time, not plan generation
   time. The plan itself is unchanged.
+
+---
+
+## Comments
+
+<!-- No review cycle on record. This ADR predates the formal review process. -->

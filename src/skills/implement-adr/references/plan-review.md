@@ -1,14 +1,10 @@
 # Plan Review Protocol
 
-Self-contained reference for the plan-reviewer sub-agent. Read this file when
-generating the reviewer prompt after plan creation.
+Self-contained reference for the plan-reviewer sub-agent. Read this file when generating the reviewer prompt after plan creation.
 
 ## When to Use
 
-After `implement-adr` generates an implementation plan (Step 3), spawn a
-general-purpose sub-agent with a structured review prompt derived from this
-reference. The reviewer reads both the source ADR(s) and the generated plan,
-then produces a finding report.
+After `implement-adr` generates an implementation plan (Step 3), spawn a general-purpose sub-agent with a structured review prompt derived from this reference. The reviewer reads both the source ADR(s) and the generated plan, then produces a finding report.
 
 The review is mandatory for every plan. The ~3 minute cost per cycle is small compared with missed requirements.
 
@@ -18,12 +14,9 @@ The reviewer evaluates the plan against 6 checks:
 
 ### 1. Quality Strategy Coverage
 
-For each checked `[x]` item in the ADR's Quality Strategy section, verify at
-least one plan task or acceptance criterion addresses it.
+For each checked `[x]` item in the ADR's Quality Strategy section, verify at least one plan task or acceptance criterion addresses it.
 
-**Cross-reference each checkbox against the Quality Strategy Items
-documentation** (in `nygard-agent-template.md` §Quality Strategy Items) to
-understand what each checkbox means and what plan coverage it implies:
+**Cross-reference each checkbox against the Quality Strategy Items documentation** (in `nygard-agent-template.md` §Quality Strategy Items) to understand what each checkbox means and what plan coverage it implies:
 
 | Checkbox | Meaning | Expected Plan Coverage |
 |----------|---------|----------------------|
@@ -38,29 +31,23 @@ understand what each checkbox means and what plan coverage it implies:
 | Tooling | Build/install/CI affected | Task to update Makefiles, install targets, CI configs |
 | User documentation | User-facing changes | Documentation update task or criteria |
 
-Report **PASS** or **FAIL** per item. For FAIL, quote the checkbox and state
-what plan coverage is missing.
+Report **PASS** or **FAIL** per item. For FAIL, quote the checkbox and state what plan coverage is missing.
 
 ### 2. Consequence Traceability
 
-For each stated **positive** consequence, verify there's a plan task that
-realizes it. For each stated **negative** consequence, verify there's a
-mitigation task or an explicit acknowledgment that the risk is accepted.
+For each stated **positive** consequence, verify there's a plan task that realizes it. For each stated **negative** consequence, verify there's a mitigation task or an explicit acknowledgment that the risk is accepted.
 
 Report PASS/FAIL per consequence with quoted text.
 
 ### 3. AQC Coverage
 
-For each item in the **Additional Quality Concerns** section, verify at least
-one plan task or acceptance criterion addresses it.
+For each item in the **Additional Quality Concerns** section, verify at least one plan task or acceptance criterion addresses it.
 
 Report PASS/FAIL per item.
 
 ### 4. Evaluation Checkpoint Coverage
 
-If the ADR has a populated **Validation needs** section (from the Evaluation
-Checkpoint), verify each need is addressed in the plan. Pay special attention
-to items marked as deferred to implementation.
+If the ADR has a populated **Validation needs** section (from the Evaluation Checkpoint), verify each need is addressed in the plan. Pay special attention to items marked as deferred to implementation.
 
 ### 5. Scope Completeness
 
@@ -68,8 +55,7 @@ Verify the plan covers the full decision scope:
 
 - Are there decision subsections without corresponding tasks?
 - Does the plan cover all skill behaviors described in the Decision section?
-- Are all components, interfaces, or artifacts mentioned in the Decision
-  represented in the plan?
+- Are all components, interfaces, or artifacts mentioned in the Decision represented in the plan?
 
 ### 6. Project Integration
 
@@ -150,8 +136,7 @@ revise again, re-review (cycle 3)
 User Escape Hatch
 ```
 
-**Cycle limit: 3.** If the reviewer and planner can't converge in 3 cycles,
-the remaining findings likely require human judgment.
+**Cycle limit: 3.** If the reviewer and planner can't converge in 3 cycles, the remaining findings likely require human judgment.
 
 ### User Escape Hatch
 
@@ -208,5 +193,4 @@ faithfully reflects the source ADR's stated requirements.
 Be thorough. Check every checked checkbox, every consequence, every AQC item.
 ```
 
-The agent reads this reference, constructs the prompt with the actual ADR and
-plan content, and spawns a `general-purpose` agent with `mode="background"`.
+The agent reads this reference, constructs the prompt with the actual ADR and plan content, and spawns a `general-purpose` agent with `mode="background"`.

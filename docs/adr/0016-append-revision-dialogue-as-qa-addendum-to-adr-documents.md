@@ -160,3 +160,9 @@ prefixed with a round marker (e.g., `<!-- Round 2 -->`).
 - **Requires updating `references/revise.md`** — Step 5 (Produce a Revision
   Summary) must be updated to include addendum-appending behavior and to scan
   for an existing `## Revision Addendum` section before appending new entries.
+
+---
+
+## Comments
+
+<!-- No review cycle on record. -->

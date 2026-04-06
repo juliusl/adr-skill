@@ -125,6 +125,12 @@ Provide a summary verdict:
 
 > **Note:** The "Accept" verdict means the ADR passes review and is ready for implementation. It does **not** trigger a status transition to `Accepted` — that status is set by the `implement-adr` skill after plan execution. The `author-adr` skill caps at `Proposed` status.
 
+When the verdict is **Accept**, append a review cycle marker to the ADR's `## Comments` section to record that the review ran (see `revise.md` Step 5c):
+
+```markdown
+<!-- Review cycle 1 — [YYYY-MM-DD] — Verdict: Accept. No findings. -->
+```
+
 ## Review Perspectives
 
 Apply three perspectives progressively:

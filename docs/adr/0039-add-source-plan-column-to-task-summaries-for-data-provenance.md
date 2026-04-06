@@ -201,3 +201,28 @@ When the same plan is ingested multiple times, duplicate rows accumulate. This i
 ---
 
 ## Comments
+
+### Draft Worksheet
+<!-- Captures original intent and workflow calibration. -->
+
+**Framing:**
+The task_summaries table in adr-db lacks a column identifying which plan each task belongs to. Without source plan provenance, tasks from different plans are indistinguishable in queries and reports.
+
+**Tolerance:**
+- Risk: Low — additive schema change with no breaking changes
+- Change: Low — single column addition with default empty string
+- Improvisation: Low — straightforward data modeling
+
+**Uncertainty:**
+- Certain: tasks come from plans; the relationship is not captured in the schema
+- Uncertain: whether to store the full path or just the filename; how to handle stdin input
+
+**Options:**
+- Target count: 2
+- [ ] Explore additional options beyond candidates listed below
+
+**Candidates:**
+- Add source_plan column to task_summaries (derived from awk FILENAME)
+- Add a separate plan-to-task mapping table
+
+<!-- No review cycle on record. -->

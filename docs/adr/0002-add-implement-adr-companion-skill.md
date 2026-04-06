@@ -148,3 +148,9 @@ billing-conscious users to plan agent usage accordingly.
   execution.
 - A follow-up ADR for detailed test and acceptance instruction taxonomy is
   expected and should be linked to this record once authored.
+
+---
+
+## Comments
+
+<!-- No review cycle on record. This ADR predates the formal review process. -->

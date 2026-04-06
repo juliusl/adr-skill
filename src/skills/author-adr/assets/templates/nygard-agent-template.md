@@ -1,8 +1,6 @@
 # Nygard Agent Template
 
-The default ADR template for the author-adr skill (per ADR-0017). Extends
-Michael Nygard's original format with inline metadata, dedicated Options and
-Quality Strategy sections, and a revision Comments area.
+The default ADR template for the author-adr skill (per ADR-0017). Extends Michael Nygard's original format with inline metadata, dedicated Options and Quality Strategy sections, and a revision Comments area.
 
 ## Template
 
@@ -81,10 +79,8 @@ Links:
 
 ## Quality Strategy Items
 
-- **Semantic change checkboxes** — track versioning impact so downstream users
-  aren't broken by unversioned changes
-- **Testing checkboxes** — feed directly into the implement-adr skill's plan
-  generation for automatic testing task creation
+- **Semantic change checkboxes** — track versioning impact so downstream users aren't broken by unversioned changes
+- **Testing checkboxes** — feed directly into the implement-adr skill's plan generation for automatic testing task creation
 - **Backwards Compatible** — explicit signal for breaking change assessment
 - **Integration tests** — explicit signal that the decision involves a dependency external to the immediate system (e.g., databases, third-party APIs, message queues, external services). If integration tests do not yet exist for the relevant dependency, an ADR should be scheduled to address the gap. If integration tests already exist, they must be kept up to date with the changes introduced by this decision.
 - **Tooling** — explicit signal that the decision affects project build, install, CI/CD, or development tooling infrastructure. When checked, verify that Makefiles, install targets, validation pipelines, CI configurations, and any other build/ship/test infrastructure are updated to include new artifacts (e.g., new skill directories, new scripts, new configuration files). If a new component is created but not wired into the project's tooling, it is effectively invisible to developers and CI.

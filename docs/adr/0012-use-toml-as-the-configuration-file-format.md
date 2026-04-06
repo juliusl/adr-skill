@@ -82,3 +82,9 @@ Configuration files will use the `.toml` extension (e.g.,
 
 Revisit if the config schema exceeds three levels of nesting, or if shell-based
 skills need to read config without agent assistance.
+
+---
+
+## Comments
+
+<!-- Review cycle 1 — Verdict: Revise. Findings addressed inline. Predates structured Q&A addendum (ADR-0016). -->

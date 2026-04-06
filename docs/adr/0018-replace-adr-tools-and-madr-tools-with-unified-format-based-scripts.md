@@ -181,3 +181,9 @@ The new scripts must pass tests for init, new, list, and status operations.
 Backward compatibility with existing ADRs in standard Nygard format must be
 verified — `list` and `status` must handle both inline `Status:` and
 `## Status` heading formats during the transition period.
+
+---
+
+## Comments
+
+<!-- No review cycle on record. -->

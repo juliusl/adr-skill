@@ -82,3 +82,9 @@ aspects of configuration behavior (e.g., structured workflow hooks, project-
 scoped config). This decision is foundational and intentionally minimal — it
 establishes the location convention; the schema and semantics of config files
 will be defined by follow-up decisions.
+
+---
+
+## Comments
+
+<!-- Review cycle 1 — Verdict: Revise. Findings addressed inline. Predates structured Q&A addendum (ADR-0016). -->

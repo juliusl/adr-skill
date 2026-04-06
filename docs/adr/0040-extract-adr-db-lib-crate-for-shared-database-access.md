@@ -269,3 +269,28 @@ use adr_db_lib::schema::task_summaries;
 ---
 
 ## Comments
+
+### Draft Worksheet
+<!-- Captures original intent and workflow calibration. -->
+
+**Framing:**
+The adr-db binary crate bundles database logic (schema, models, migrations) that downstream consumers need. Extracting a library crate enables shared database access without depending on the binary.
+
+**Tolerance:**
+- Risk: Low — internal refactor with no user-facing changes
+- Change: Medium — crate restructuring within the workspace
+- Improvisation: Low — standard Rust library extraction pattern
+
+**Uncertainty:**
+- Certain: downstream consumers need database access; the binary crate is the wrong dependency boundary
+- Uncertain: which modules to move vs keep; how to handle diesel re-exports across crate boundaries
+
+**Options:**
+- Target count: 2
+- [ ] Explore additional options beyond candidates listed below
+
+**Candidates:**
+- Extract adr-db-lib library crate (schema, models, migrations, db connection)
+- Keep everything in adr-db and use it as both library and binary
+
+<!-- No review cycle on record. -->

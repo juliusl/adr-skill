@@ -123,3 +123,9 @@ author-adr creates    implement-adr plans    implement-adr final step
 
 - The `implement-adr` skill already reads ADR files during planning; this change
   adds a write step but does not alter the read/analysis workflow.
+
+---
+
+## Comments
+
+<!-- No review cycle on record. This ADR predates the formal review process. -->

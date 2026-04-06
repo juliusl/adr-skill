@@ -143,3 +143,9 @@ The following directory locations were considered:
   want persistence should ask `author-adr` to initialize the `.meta` directory.
 - The `.meta` directory convention is independent of the Weighted participation
   mode (ADR-0007). Either can be adopted without the other.
+
+---
+
+## Comments
+
+<!-- No review cycle on record. This ADR predates the formal review process and is superseded. -->

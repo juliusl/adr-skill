@@ -1,7 +1,6 @@
 # Observation Format
 
-Prototype results are captured as structured observations in JSONL format,
-consistent with ADR-0021's extraction pattern.
+Prototype results are captured as structured observations in JSONL format, consistent with ADR-0021's extraction pattern.
 
 ## JSONL Schema
 
@@ -52,12 +51,9 @@ cat observations.jsonl | jq -r '[.objective, .result] | @tsv'
 After prototyping completes, observations feed back into the ADR lifecycle:
 
 1. **Summarize findings** — aggregate pass/fail/data results per objective
-2. **Update the ADR** — append findings to the Context section as evidence,
-   or update option Strengths/Weaknesses with empirical data
-3. **Update checkpoint state** — if all objectives pass, set the Evaluation
-   Checkpoint Assessment to `Proceed`
-4. **Status transition** — validated decisions can progress from
-   `Prototype` → `Proposed`
+2. **Update the ADR** — append findings to the Context section as evidence, or update option Strengths/Weaknesses with empirical data
+3. **Update checkpoint state** — if all objectives pass, set the Evaluation Checkpoint Assessment to `Proceed`
+4. **Status transition** — validated decisions can progress from `Prototype` → `Proposed`
 
 ## Integration with implement-adr
 

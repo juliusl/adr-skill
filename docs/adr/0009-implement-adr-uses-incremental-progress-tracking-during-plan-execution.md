@@ -131,3 +131,9 @@ Revisit this decision after **5 plan executions** using the protocol to validate
 - This ADR is independent of [ADR-0010](0010-implement-adr-optionally-commits-on-task-completion.md),
   which proposes git commits at task boundaries. The protocol applies regardless
   of whether auto-commit is enabled.
+
+---
+
+## Comments
+
+<!-- No review cycle on record. This ADR predates the formal review process. -->

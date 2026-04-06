@@ -150,3 +150,9 @@ the general-purpose agent unless the custom agent is explicitly named).
   implied by SKILL.md guardrails. This is an opportunity to make ADR
   management guidance explicit, but the content must be authored from scratch
   rather than migrated from existing fragments.
+
+---
+
+## Comments
+
+<!-- No review cycle on record. Created and implemented in a single session. -->

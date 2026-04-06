@@ -1,8 +1,6 @@
 # Profile Format Reference
 
-Prototyping profiles are declarative TOML files stored in `.adr/profiles/`
-(per ADR-0020's project-scoped convention). They define environment setup —
-not experiment logic.
+Prototyping profiles are declarative TOML files stored in `.adr/profiles/` (per ADR-0020's project-scoped convention). They define environment setup — not experiment logic.
 
 ## Schema
 

@@ -173,3 +173,8 @@ Links:
 
 The template change affects every future ADR created by the skill. Existing
 ADRs are not migrated — they continue to use their original format.
+
+---
+
+## Comments
+<!-- No review cycle on record. -->

@@ -285,3 +285,4 @@ Prototype results are captured as structured observations and fed back into the 
 ---
 
 ## Comments
+<!-- Review cycle 1 — Verdict: Revise. Findings addressed inline. Predates structured Q&A addendum convention. -->

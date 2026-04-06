@@ -17,16 +17,10 @@
 
 When executing any task from this plan, follow this protocol:
 
-1. **Before starting a task** — read the task's **Test & Acceptance Criteria**
-   section in full.
-2. **As each criterion is satisfied** — immediately edit this plan file to mark
-   the checkbox from `- [ ]` to `- [x]`.
-3. **After completing all implementation work** for a task — review the criteria
-   list one final time. Any criterion still unchecked is either incomplete work
-   (go back and finish it) or an oversight (check it off with a brief inline
-   note if it was already satisfied by prior work).
-4. **Do not batch checkbox updates** to the end of a stage — update them
-   incrementally so that progress is visible in the file at all times.
+1. **Before starting a task** — read the task's **Test & Acceptance Criteria** section in full.
+2. **As each criterion is satisfied** — immediately edit this plan file to mark the checkbox from `- [ ]` to `- [x]`.
+3. **After completing all implementation work** for a task — review the criteria list one final time. Any criterion still unchecked is either incomplete work (go back and finish it) or an oversight (check it off with a brief inline note if it was already satisfied by prior work).
+4. **Do not batch checkbox updates** to the end of a stage — update them incrementally so that progress is visible in the file at all times.
 
 ---
 
@@ -96,8 +90,7 @@ When executing any task from this plan, follow this protocol:
 
 ### Task N.1: Update ADR status to Accepted    [small]
 
-**Description:** Update the status of each source ADR from `Planned` to
-`Accepted` to reflect that the decision has been fully implemented.
+**Description:** Update the status of each source ADR from `Planned` to `Accepted` to reflect that the decision has been fully implemented.
 
 **Files to update:**
 <!-- List each source ADR file: -->

@@ -182,3 +182,28 @@ The `procedure` key is a multi-line string containing project-specific instructi
 ---
 
 ## Comments
+
+### Draft Worksheet
+<!-- Captures original intent and workflow calibration. -->
+
+**Framing:**
+Prototype experiments need a project-scoped protocol to store experiment configuration, isolation settings, and observation parameters. The prototype-adr skill currently lacks project-level configuration, making experiments harder to reproduce across sessions.
+
+**Tolerance:**
+- Risk: Medium — introduces new configuration surface that affects experiment behavior
+- Change: Medium — new protocol and configuration patterns
+- Improvisation: Medium — open to different configuration approaches
+
+**Uncertainty:**
+- Certain: experiments need reproducibility; project-scoped config is the standard pattern (ADR-0020)
+- Uncertain: exact protocol format; relationship to global preferences; isolation backend selection
+
+**Options:**
+- Target count: 2
+- [ ] Explore additional options beyond candidates listed below
+
+**Candidates:**
+- File-based protocol in .adr/ directory
+- Environment variable configuration
+
+<!-- No review cycle on record. -->

@@ -131,3 +131,9 @@ reconsidered here.
   which associate settings by instruction rather than strict key lookup. If
   the config surface expands to be consumed by tooling (scripts, CI), schema
   validation should be addressed in a dedicated ADR.
+
+---
+
+## Comments
+
+<!-- Review cycle 1 — Verdict: Revise. Findings addressed inline. Predates structured Q&A addendum (ADR-0016). -->

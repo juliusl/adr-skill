@@ -4,24 +4,19 @@
 
 ## Primary: Nygard Agent (default)
 
-The **nygard-agent template** is the default format for ADRs created by this
-skill (per ADR-0017). It extends the original Nygard format with inline
-metadata, a dedicated Options section, a Quality Strategy checklist, and a
-Comments area for revision dialogue.
+The **nygard-agent template** is the default format for ADRs created by this skill (per ADR-0017). It extends the original Nygard format with inline metadata, a dedicated Options section, a Quality Strategy checklist, and a Comments area for revision dialogue.
 
 **Template:** [nygard-agent-template.md](../assets/templates/nygard-agent-template.md)
 
 ### Structure
 
 1. **Title** — short noun phrase (e.g., "ADR 1: Use React for frontend")
-2. **Inline metadata** — `Date:`, `Status:`, `Last Updated:`, `Links:` as
-   compact key-value lines
+2. **Inline metadata** — `Date:`, `Status:`, `Last Updated:`, `Links:` as compact key-value lines
 3. **Context** — forces at play: technological, political, social, project-local
 4. **Options** — dedicated section for alternatives with strengths/weaknesses
 5. **Decision** — the response to the forces; active voice imperative ("We will...")
 6. **Consequences** — all outcomes, positive and negative
-7. **Quality Strategy** — checklist: semantic changes, testing types, backward
-   compatibility. Inapplicable items struck through (`~~`).
+7. **Quality Strategy** — checklist: semantic changes, testing types, backward compatibility. Inapplicable items struck through (`~~`).
 8. **Comments** — below `---` separator, mutable worksheet for revision Q&A
 
 ### When to Use
@@ -34,9 +29,7 @@ Comments area for revision dialogue.
 
 ## Legacy: Standard Nygard
 
-The original four-section format from Michael Nygard's 2011 article. Still
-supported for reading — `list` and `status` commands handle both inline
-`Status:` and `## Status` heading formats.
+The original four-section format from Michael Nygard's 2011 article. Still supported for reading — `list` and `status` commands handle both inline `Status:` and `## Status` heading formats.
 
 **Template:** [nygard-template.md](../assets/templates/nygard-template.md) — with inline guidance: [gh-joelparkerhenderson-nygard-template.md](../assets/templates/gh-joelparkerhenderson-nygard-template.md)
 
@@ -44,9 +37,7 @@ supported for reading — `list` and `status` commands handle both inline
 
 ## Alternative: MADR (Markdown Architectural Decision Records)
 
-MADR extends the Nygard format with structured tradeoff analysis. The name
-stands for decisions that *matter* (`[ˈmæɾɚ]`). MADR is the recommended
-template from the [adr GitHub organization](../assets/adr-github-io-madr.md).
+MADR extends the Nygard format with structured tradeoff analysis. The name stands for decisions that *matter* (`[ˈmæɾɚ]`). MADR is the recommended template from the [adr GitHub organization](../assets/adr-github-io-madr.md).
 
 **Full template:** [madr-full-template.md](../assets/templates/madr-full-template.md)
 — official MADR 4.0.0 source: [gh-adr-madr-full-template.md](../assets/templates/gh-adr-madr-full-template.md)
@@ -56,8 +47,7 @@ template from the [adr GitHub organization](../assets/adr-github-io-madr.md).
 
 ### Key Features (Beyond Nygard)
 
-- **Considered options with pros and cons** — enables future readers to
-  understand the tradeoff analysis
+- **Considered options with pros and cons** — enables future readers to understand the tradeoff analysis
 - **Decision drivers** — explicit list of forces and concerns
 - **Confirmation** — how the team will validate implementation
 - **Metadata** — decision makers, date, status, links to related ADRs
@@ -95,8 +85,7 @@ A single-sentence format originated from the [Sustainable Architectural Decision
 
 ### Short Form
 
-> In the context of `<use case/user story>`, facing `<concern>` we decided for
-> `<option>` to achieve `<quality>`, accepting `<downside>`.
+> In the context of `<use case/user story>`, facing `<concern>` we decided for `<option>` to achieve `<quality>`, accepting `<downside>`.
 
 ### Long Form
 

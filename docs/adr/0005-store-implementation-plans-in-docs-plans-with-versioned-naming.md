@@ -114,3 +114,9 @@ instead of writing to `plan.md` in the repository root.
 
 - Existing plans written to the repository root by earlier versions of the
   skill are unaffected. Migration is optional.
+
+---
+
+## Comments
+
+<!-- No review cycle on record. This ADR predates the formal review process. -->

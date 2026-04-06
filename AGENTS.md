@@ -2,6 +2,40 @@
 
 Instructions for agents and developers making changes to skills in this repo.
 
+## Writing Style
+
+All writing should follow this style
+
+- **Technical and simple** — write for engineers/agents, not academics
+- **No double negatives** — say what things *do*, not what they don't not do
+- **Clear logic** — one idea per sentence, explicit cause-and-effect
+- **Concise** — cut filler words; if a sentence works without a word, remove it
+- **Do not arbitrarily wrap technical docs meant for agents** - If a document will be consumed by an agent, avoid manual wrapping in formatting.
+
+## ADHD Friendly Guidelines
+
+In addition to the above writing style guidelines, writing must be presented in an ADHD friendly manner.
+
+This DOES NOT mean:
+
+- Using emojis
+- Stating that information is ADHD friendly
+
+This DOES mean:
+
+- Order information logically — most important information first
+- Frontload actions — put the command or instruction before the explanation, not after
+- Use lists, flow-charts, and tables proactively
+- Use whitespace and visual chunking — short paragraphs, consistent formatting patterns, clear separation between sections
+- Do not use headers arbitrarily — organize around process flow, not arbitrary categories
+- Keep justification brief
+- State evidence and rationale explicitly — do not expect the reader to infer connections or fill in gaps
+- Follow KISS — Keep It Simple, Stupid
+
+NEVER:
+
+- When giving a recommendation, do not preface the recommendation with this guideline, ADHD users do not need to be reminded that they have ADHD
+
 ## Git Policy
 
 Agents **must not** commit or push changes. Stage your work and let the
@@ -215,6 +249,28 @@ should-not-trigger) for testing whether the skill's `description` field
 triggers reliably. See the
 [agentskills.io optimization guide](https://agentskills.io/skill-creation/optimizing-descriptions)
 for the evaluation workflow.
+
+## Formatting Convention for Review Artifacts
+
+Use **tables** when presenting items for review or posterity (QA findings,
+recommendations, checklists). Do not split related items into separate
+sections — if items differ by a property (e.g., classification, status,
+action), add a **column** for that property instead. A single flat table is
+easier to scan than multiple subsections with separate tables.
+
+**Example — QA recommendations:** Instead of separate `### Quality Concerns`
+and `### Preferences` subsections with different table schemas, use one table
+with a `Classification` column:
+
+```markdown
+| # | Stage | Classification | Finding | Recommendation |
+|---|-------|----------------|---------|----------------|
+| 1 | 1 | Quality concern | Description | Action |
+| 2 | 2 | Preference | Description | Reason for deferral |
+```
+
+Extended prose (e.g., Won't Fix rationale) can follow the table under its own
+heading when needed.
 
 ## ADR References in Skills
 

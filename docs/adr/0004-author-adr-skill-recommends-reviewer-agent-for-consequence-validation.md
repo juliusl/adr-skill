@@ -150,3 +150,9 @@ ADR drafted (Step 5)
 - The existing manual review process documented in SKILL.md is unchanged and
   remains available as a fallback. This ADR adds an active recommendation layer
   on top of it.
+
+---
+
+## Comments
+
+<!-- No review cycle on record. This ADR predates the formal review process. -->

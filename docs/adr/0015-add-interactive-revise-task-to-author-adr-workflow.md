@@ -133,3 +133,9 @@ reference that the agent loads on demand when the revise task is activated.
   interaction workflows are difficult to quantify at this stage. Validation
   will rely on continued dogfooding and qualitative assessment of the revision
   experience.
+
+---
+
+## Comments
+
+<!-- Review cycle 1 — Verdict: Revise. Findings addressed inline. Predates structured Q&A addendum (ADR-0016). -->

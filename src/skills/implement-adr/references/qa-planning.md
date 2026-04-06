@@ -37,14 +37,14 @@ The QA planner receives:
    - **Security** — apply the [6-item security checklist](#security-checklist) to the stage's specific tasks, interfaces, and data flows.
    - **UX (crash prevention and observability)** — apply the [7-item UX checklist](#ux-checklist), with particular attention to observability gaps (items 5–7).
 4. **Classify findings** using the [Finding Eligibility Gate](#finding-eligibility-gate).
-5. **Write the QA plan** to `docs/plans/<range>.<revision>.qa-plan.md` alongside the main plan. Use the [QA plan template](../assets/templates/qa-plan-template.md).
+5. **Write the QA plan** to `docs/plans/<range>.<revision>.qa-plan.md` alongside the main plan. Use the [QA plan template](../assets/templates/qa-plan-template.md). Present all findings in a single flat Recommendations table with a Classification column — do not split into separate subsections.
 
 ### Output
 
 A `qa-plan.md` file with:
 - Per-stage security and UX checks (checkboxes)
 - Test-gap findings with concrete examples
-- Recommendations classified as quality concerns or preferences
+- A flat Recommendations table classifying each finding as quality concern or preference
 
 ## Security Checklist
 
@@ -128,21 +128,14 @@ During plan execution, after all tasks in a stage complete but before auto-commi
 
 ### Documenting Accepted Findings
 
-When QA findings are accepted without remediation (e.g., low-risk gaps deemed
-acceptable for the current scope), the main executor **must** document the
-rationale in the QA plan file. Undocumented acceptances are silent
-gaps — a future reader cannot distinguish "we evaluated this and decided not
-to fix it" from "we missed this."
+When QA findings are accepted without remediation (e.g., low-risk gaps deemed acceptable for the current scope), the main executor **must** document the rationale in the QA plan file. Undocumented acceptances are silent gaps — a future reader cannot distinguish "we evaluated this and decided not to fix it" from "we missed this."
 
 For each finding that won't be fixed:
 
-1. Update the finding's status in the summary table from `⚠️ Open` to
-   `Won't Fix`.
-2. Add an entry under the **Won't Fix — rationale** section explaining
-   why the finding won't be addressed. Include:
+1. Update the finding's Status column in the Recommendations table to `Won't Fix`.
+2. Add an entry under a **Won't Fix — rationale** heading below the table explaining why. Include:
    - Why the risk is low enough to accept
-   - What existing mechanisms mitigate the gap (e.g., shared error handling,
-     consistent patterns across the codebase)
+   - What existing mechanisms mitigate the gap (e.g., shared error handling, consistent patterns across the codebase)
    - Under what conditions the finding should be revisited
 
 ### Backwards Compatibility

@@ -13,7 +13,7 @@ You are an expert on Architectural Decision Records. Use this skill whenever a u
 | ID | Step | Mandatory | Description |
 |----|------|-----------|-------------|
 | A-0 | Format Detection | Yes | Read config, detect template format, bootstrap docs/adr/ if missing |
-| A-1 | Draft Worksheet | No | Capture intent in a draft worksheet before create/solve |
+| A-1 | Draft Worksheet | Yes | Capture intent in a draft worksheet before create/solve |
 | A-2 | Create or Solve | Yes | Run the create or solve workflow to produce the ADR |
 | A-3 | Review | Yes | Run structured review using the configured review agent |
 | A-4 | Revise | Conditional | Run if review verdict is "Revise"; use configured editor agent |
@@ -40,9 +40,9 @@ User request
 ├─ docs/adr/ exists? ────────────► Read config → set format
 ├─ docs/adr/ missing? ──────────► Bootstrap with nygard-agent → set format
 │
-├─ "Draft an ADR / start a draft" ► Go to: Drafting an ADR
-├─ "Create an ADR" ──────────────► Go to: Creating an ADR
-├─ "I have a problem to solve" ─► Go to: Solving a Problem
+├─ "Create an ADR" ──────────────► Draft Worksheet (A-1) → Creating an ADR (A-2)
+├─ "I have a problem to solve" ─► Draft Worksheet (A-1) → Solving a Problem (A-2)
+├─ "Draft an ADR / start a draft" ► Draft Worksheet (A-1) only
 ├─ "Review an ADR" ──────────────► Go to: Reviewing an ADR
 ├─ "Revise an ADR" ──────────────► Go to: Revising an ADR
 ├─ "Update/supersede an ADR" ───► Go to: Managing ADRs
@@ -99,8 +99,8 @@ Before any ADR operation, determine which ADR format to use:
    ```bash make -f <skill-root>/Makefile init DIR=docs/adr ```
 3. **Cache the format** — for the rest of the session, pass `ADR_AGENT_SKILL_FORMAT=nygard-agent` (or the configured format) to all Makefile targets.
 ### A-1: Draft Worksheet
-Per ADR-0032, a draft worksheet captures the author's original intent and workflow calibration before the create/solve workflow runs. Draft mode is optional — users can skip it and go directly to Creating or Solving.
-**Activation triggers:** "draft an ADR," "start a draft," "I have an idea for a decision."
+Per ADR-0032, a draft worksheet captures the author's original intent and workflow calibration before the create/solve workflow runs. The agent always runs this step. The user may decline to fill specific fields, but the worksheet structure must be present in the ADR before proceeding to A-2.
+**Activation triggers:** Any create or solve request triggers A-1 first. Direct triggers: "draft an ADR," "start a draft," "I have an idea for a decision."
 **Workflow:**
 1. **Create the ADR file** — `make -f <skill-root>/Makefile new TITLE="tbd"` to create a placeholder ADR.
 2. **Fill the Draft Worksheet** — populate the following structure in the `## Comments` section (below the `---` semantic boundary):

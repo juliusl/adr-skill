@@ -20,11 +20,7 @@ Prototype ──► Proposed ──► Accepted ──► Deprecated
 | **Deprecated** | Decision is no longer relevant | When the problem it solved no longer exists |
 | **Superseded** | Decision is replaced by a newer ADR | When a new decision explicitly replaces this one |
 
-**Workflow note:** In the local agent-developer workflow, new ADRs start as
-`Prototype`. The author promotes to `Proposed` when the decision is ready for
-team review (e.g., before opening a PR). ADRs may also go directly from
-`Prototype` to `Planned` via the `implement-adr` skill if the author chooses to
-skip team review and proceed straight to implementation.
+**Workflow note:** In the local agent-developer workflow, new ADRs start as `Prototype`. The author promotes to `Proposed` when the decision is ready for team review (e.g., before opening a PR). ADRs may also go directly from `Prototype` to `Planned` via the `implement-adr` skill if the author chooses to skip team review and proceed straight to implementation.
 
 ### Transitioning Status
 

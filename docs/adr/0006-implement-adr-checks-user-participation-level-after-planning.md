@@ -147,3 +147,9 @@ it should:
   Guided and switch to Full control for a specific stage. The skill should
   respect in-session preference changes even if the recorded ADR captures
   the initial choice.
+
+---
+
+## Comments
+
+<!-- No review cycle on record. This ADR predates the formal review process and is superseded. -->

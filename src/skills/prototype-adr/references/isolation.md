@@ -1,8 +1,6 @@
 # Isolation Backends
 
-The prototype-adr skill supports three isolation backends, selected via profile
-configuration or user preference. Each provides a different tradeoff between
-isolation strength and environmental requirements.
+The prototype-adr skill supports three isolation backends, selected via profile configuration or user preference. Each provides a different tradeoff between isolation strength and environmental requirements.
 
 ## Backend Comparison
 
@@ -14,8 +12,7 @@ isolation strength and environmental requirements.
 
 ## Worktree Backend
 
-The default and lowest-dependency backend. Uses `git worktree` to create an
-isolated copy of the repository.
+The default and lowest-dependency backend. Uses `git worktree` to create an isolated copy of the repository.
 
 **Setup:**
 ```bash
@@ -68,8 +65,7 @@ docker rm -f prototype-<adr-number>
 ## ACP Sandbox Backend
 
 Uses Agent Communication Protocol to spawn sub-agents in isolated sandboxes.
-This backend is opt-in and requires `[prototype].runtime = "acp"` in
-`preferences.toml`.
+This backend is opt-in and requires `[prototype].runtime = "acp"` in `preferences.toml`.
 
 **Strengths:**
 - Agent-level isolation with structured communication

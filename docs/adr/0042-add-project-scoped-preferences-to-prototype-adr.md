@@ -144,3 +144,28 @@ This ADR only adds project-scoped config reading to `prototype-adr`. The `author
 ---
 
 ## Comments
+
+### Draft Worksheet
+<!-- Captures original intent and workflow calibration. -->
+
+**Framing:**
+Prototype-adr needs project-scoped preferences in .adr/preferences.toml to configure experiment behavior per-project. This unblocks ADR-0041's experiment protocol and follows the .adr/ convention from ADR-0020.
+
+**Tolerance:**
+- Risk: Low — layered config is a well-understood pattern
+- Change: Low — minimal addition to skill startup
+- Improvisation: Low — follows established TOML config pattern from ADR-0011/0012
+
+**Uncertainty:**
+- Certain: ADR-0041 is blocked on project-scoped config; .adr/ is the project directory convention
+- Uncertain: shallow merge vs deep merge behavior; interaction with global preferences
+
+**Options:**
+- Target count: 2
+- [ ] Explore additional options beyond candidates listed below
+
+**Candidates:**
+- File-based preferences in .adr/preferences.toml
+- Environment variable configuration
+
+<!-- Review cycle 1 — Verdict: Accept. One advisory finding (non-blocking): consider noting that prototype-adr ignores keys outside [prototype] in .adr/preferences.toml. -->

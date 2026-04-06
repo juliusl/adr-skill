@@ -254,3 +254,4 @@ Existing shell scripts (ADR creation, listing, status updates) continue to work 
 ---
 
 ## Comments
+<!-- Review cycle 1 — Verdict: Revise. Findings addressed inline. -->

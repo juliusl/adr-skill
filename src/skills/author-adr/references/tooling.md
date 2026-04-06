@@ -1,7 +1,6 @@
 # Decision Capturing Tools
 
-> This skill uses a unified script architecture (per ADR-0018) with a single
-> default format: `nygard-agent`.
+> This skill uses a unified script architecture (per ADR-0018) with a single default format: `nygard-agent`.
 >
 > | Format | Template | Scripts | Default Dir |
 > |--------|----------|---------|-------------|
@@ -97,9 +96,7 @@ The scripts resolve the ADR directory using a priority chain:
 2. `.adr-dir` — legacy adr-tools convention (backwards compatible)
 3. `docs/adr` — default
 
-This means projects that adopt `.adr/` can migrate their directory pointer from
-the root-level `.adr-dir` file into `.adr/adr-dir`. Legacy projects continue to
-work unchanged.
+This means projects that adopt `.adr/` can migrate their directory pointer from the root-level `.adr-dir` file into `.adr/adr-dir`. Legacy projects continue to work unchanged.
 
 ### Backward Compatibility
 
@@ -107,8 +104,7 @@ The `list` and `status` commands handle both:
 - **Inline `Status:` metadata** (nygard-agent format)
 - **`## Status` heading** (standard Nygard format)
 
-This ensures existing ADRs written in standard Nygard format work correctly
-during the transition period.
+This ensures existing ADRs written in standard Nygard format work correctly during the transition period.
 
 ### Adding a New Format
 
