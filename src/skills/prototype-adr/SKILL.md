@@ -21,6 +21,24 @@ This skill reads user-scoped preferences from a TOML configuration file at
 | `runtime` | `""` | Set to `"acp"` to enable ACP sandbox backend |
 | `teardown` | `"automatic"` | Default teardown behavior: `automatic` or `manual` |
 If the file or directory is missing, use built-in defaults. Do not fail when config is absent.
+**Project-scoped overrides (ADR-0042):** If `.adr/preferences.toml` exists in the project root, its keys override user-scoped settings. This allows per-project experiment configuration without changing global preferences. Each skill reads only its own namespace — prototype-adr reads `[prototype]` keys and ignores others.
+**Config reading order:**
+1. `~/.config/adr-skills/preferences.toml` — user-scoped base config
+2. `.adr/preferences.toml` (if exists) — project-scoped overrides
+3. Built-in defaults — fallback for missing keys
+### Persona Experiment Protocol (ADR-0041)
+When testing persona accuracy (e.g., validating editor agents against ground truth), the file-access confound can skew results — agents with file access read already-applied fixes and reject findings as "already documented."
+**Supported keys under `[prototype.persona]`:**
+| Key | Default | Description |
+|-----|---------|-------------|
+| `embed_source` | `false` | Embed ADR content in prompts instead of giving file paths |
+| `ground_truth` | `""` | Where correct answers live (e.g., `"comments"` for the Comments section) |
+**When `embed_source = true`:**
+1. Read the ADR file content up to the `---` separator (before Comments).
+2. Embed that content in the experiment prompt as inline text.
+3. Do not provide the file path to the agent being tested.
+4. The agent triages findings based only on persona judgment and the embedded content.
+**When `embed_source` is absent or false:** Default behavior — provide file paths normally. Correct for non-persona experiments (benchmarks, spikes, PoCs).
 ## Agent Workflow
 ```
 User request
