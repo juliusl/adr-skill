@@ -129,7 +129,7 @@ skill: "implement-adr"  — when an accepted decision needs execution
 
 Each invocation loads the target skill's SKILL.md into the conversation context. The target skill runs its full procedure — this is intentionally thorough. When the target skill completes, control returns to solve-adr.
 
-**Callback pattern:** When solve-adr delegates to `/implement-adr` and more work remains (additional groups in S-1.4), instruct `/implement-adr` to invoke `/solve-adr` on completion to continue. This creates the continuation chain: solve → implement → solve → implement. Each skill invocation carries its full safeguard overhead (plan review, QA) — this is the intended cost.
+**Callback pattern:** When solve-adr delegates to `/implement-adr` and more work remains (additional groups in S-1.4), instruct `/implement-adr` to invoke `/solve-adr` on completion to continue. This creates the continuation chain: solve → implement → solve → implement. Each skill invocation carries its full safeguards (plan review, QA) — this is intentional, not reducible.
 
 The platform constraint "do not invoke a skill that is already running" permits this pattern: solve-adr and the target skill are different skills. The agent's orchestration state (scenario step, problem context, ADRs created) is maintained in the conversation — not in skill-scoped storage.
 

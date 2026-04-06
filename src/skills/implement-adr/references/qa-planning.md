@@ -118,7 +118,7 @@ The minimum implementation that closes the quality concern is what gets schedule
 
 QA execution at stage boundaries is **mandatory regardless of participation mode** — including autonomous mode. Generating a QA plan but skipping execution defeats the purpose of the QA separation principle. If QA execution is skipped for any stage, log the justification inline before proceeding. Skipping without justification is a workflow violation.
 
-In autonomous mode with multiple stages, the agent may merge adjacent stages to reduce the number of QA cycles (e.g., validate stages 1–2 together, then stages 3–4). This reduces overhead while preserving coverage. Skipping QA entirely is not an acceptable optimization.
+In autonomous mode with multiple stages, the agent may merge adjacent stages to reduce the number of QA cycles (e.g., validate stages 1–2 together, then stages 3–4). This consolidates execution while preserving coverage. Skipping QA entirely is not an acceptable optimization.
 
 ### Stage Boundary Hook
 

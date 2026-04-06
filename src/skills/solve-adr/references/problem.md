@@ -56,15 +56,17 @@ If no worksheet exists:
    ```
    In guided mode, confirm with the user. In autonomous mode, proceed.
 
-3. **Scale check** — before proceeding, evaluate whether the ADR overhead is proportionate to the problem:
+3. **Scale check** — before proceeding, evaluate whether the number of ADRs is proportionate to the problem's decision complexity:
 
-   | Project Scale | Heuristic | Recommendation |
-   |---------------|-----------|----------------|
-   | < 500 LOC expected | ADR+plan overhead likely exceeds code volume | Use fewer ADRs (combine related decisions) or lighter templates (Y-Statement, MADR Minimal) |
-   | 500–2000 LOC | Proportionate | Standard workflow |
-   | > 2000 LOC | ADR overhead amortizes well | Full workflow with detailed Quality Strategy |
+   | Decision Complexity | Signal | Recommendation |
+   |---------------------|--------|----------------|
+   | Few decisions, narrow scope | 1–2 distinct choices (language, architecture pattern) | Combine into fewer ADRs; lighter templates (Y-Statement, MADR Minimal) are fine |
+   | Moderate scope | 3–5 distinct decisions with tradeoffs | Standard workflow |
+   | Many decisions, cross-cutting | 5+ decisions with dependencies between them | Full workflow with detailed Quality Strategy |
 
-   The scale check is advisory — it recommends adjustments, not hard limits. In autonomous mode, apply the recommendation. In guided mode, present it and let the user decide.
+   The scale check adjusts **ADR count and template weight only**. It does not reduce plan review, QA, or other quality safeguards — those apply uniformly regardless of project size. A 100-line project and a 10,000-line project both deserve high-quality code; the quality artifacts (ADR, plan, QA plan) are deliverables that produce that quality, not costs to minimize.
+
+   The scale check is advisory. In autonomous mode, apply the recommendation. In guided mode, present it and let the user decide.
 
 4. **Confirm the problem statement** — "Does this capture the problem accurately?"
 
