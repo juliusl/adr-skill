@@ -1,6 +1,6 @@
 ---
 name: author-adr
-description: "Use this skill when the user needs to create, review, revise, or manage Architectural Decision Records (ADRs) — including drafting new decisions, evaluating existing ones for quality, addressing review comments interactively, solving architectural problems through guided exploration, choosing between ADR templates (Nygard, MADR, Y-Statement), setting up ADR tooling, or understanding ADR best practices. Activate when the user says things like \"create an ADR,\" \"new ADR,\" \"draft a decision,\" \"review this ADR,\" \"address review comments,\" \"help me decide,\" or \"document this decision.\" Also activate when the user wants to justify a technology selection, record why an architecture was chosen over alternatives, or capture tradeoffs — even if they don't explicitly say \"ADR.\" Do not use for general code review, project management, or non-architectural documentation."
+description: "Use this skill when the user needs to create, review, revise, or manage Architectural Decision Records (ADRs) — including drafting new decisions, evaluating existing ones for quality, addressing review comments interactively, choosing between ADR templates (Nygard, MADR, Y-Statement), setting up ADR tooling, or understanding ADR best practices. Activate when the user says things like \"create an ADR,\" \"new ADR,\" \"draft a decision,\" \"review this ADR,\" \"address review comments,\" or \"document this decision.\" Also activate when the user wants to justify a technology selection, record why an architecture was chosen over alternatives, or capture tradeoffs — even if they don't explicitly say \"ADR.\" Do not use for problem-solving workflows — use solve-adr. Do not use for general code review, project management, or non-architectural documentation."
 license: CC-BY-4.0
 metadata:
   source: adr.github.io
@@ -13,8 +13,8 @@ You are an expert on Architectural Decision Records. Use this skill whenever a u
 | ID | Step | Mandatory | Description |
 |----|------|-----------|-------------|
 | A-0 | Format Detection | Yes | Read config, detect template format, bootstrap docs/adr/ if missing |
-| A-1 | Draft Worksheet | Yes | Capture intent in a draft worksheet before create/solve |
-| A-2 | Create or Solve | Yes | Run the create or solve workflow to produce the ADR |
+| A-1 | Draft Worksheet | Yes | Capture intent in a draft worksheet before create |
+| A-2 | Create | Yes | Run the create workflow to produce the ADR |
 | A-3 | Review | Yes | Run structured review using the configured review agent |
 | A-4 | Revise | Conditional | Run if review verdict is "Revise"; use configured editor agent |
 | A-5 | Re-review | Conditional | Run if revisions were substantive; max 3 cycles |
@@ -41,8 +41,8 @@ User request
 ├─ docs/adr/ missing? ──────────► Bootstrap with nygard-agent → set format
 │
 ├─ "Create an ADR" ──────────────► Draft Worksheet (A-1) → Creating an ADR (A-2)
-├─ "I have a problem to solve" ─► Draft Worksheet (A-1) → Solving a Problem (A-2)
 ├─ "Draft an ADR / start a draft" ► Draft Worksheet (A-1) only
+├─ "I have a problem to solve" ─► Redirect to /solve-adr
 ├─ "Review an ADR" ──────────────► Go to: Reviewing an ADR
 ├─ "Revise an ADR" ──────────────► Go to: Revising an ADR
 ├─ "Update/supersede an ADR" ───► Go to: Managing ADRs
@@ -99,8 +99,8 @@ Before any ADR operation, determine which ADR format to use:
    ```bash make -f <skill-root>/Makefile init DIR=docs/adr ```
 3. **Cache the format** — for the rest of the session, pass `ADR_AGENT_SKILL_FORMAT=nygard-agent` (or the configured format) to all Makefile targets.
 ### A-1: Draft Worksheet
-Per ADR-0032, a draft worksheet captures the author's original intent and workflow calibration before the create/solve workflow runs. The agent always runs this step. The user may decline to fill specific fields, but the worksheet structure must be present in the ADR before proceeding to A-2.
-**Activation triggers:** Any create or solve request triggers A-1 first. Direct triggers: "draft an ADR," "start a draft," "I have an idea for a decision."
+Per ADR-0032, a draft worksheet captures the author's original intent and workflow calibration before the create workflow runs. The agent always runs this step. The user may decline to fill specific fields, but the worksheet structure must be present in the ADR before proceeding to A-2.
+**Activation triggers:** Any create request triggers A-1 first. Direct triggers: "draft an ADR," "start a draft," "I have an idea for a decision."
 **Workflow:**
 1. **Create the ADR file** — `make -f <skill-root>/Makefile new TITLE="tbd"` to create a placeholder ADR.
 2. **Fill the Draft Worksheet** — populate the following structure in the `## Comments` section (below the `---` semantic boundary):
@@ -126,9 +126,9 @@ Per ADR-0032, a draft worksheet captures the author's original intent and workfl
 3. **Fill mode** depends on the workflow:
    - **Create workflow** (user arrives with direction) — fill the worksheet **before** populating Context/Options. The user provides the framing upfront.
    - **Solve workflow** (user arrives with a problem) — fill the worksheet **after** the problem intake conversation. The agent drafts the worksheet from the conversation and the user confirms/adjusts.
-4. **Hand off** — after the worksheet is filled, proceed to [Creating an ADR](#creating-an-adr) or [Solving a Problem](#solving-a-problem). The create/solve workflows read the worksheet for grounding (see their respective references).
+4. **Hand off** — after the worksheet is filled, proceed to [Creating an ADR](#creating-an-adr). The create workflow reads the worksheet for grounding (see [references/create.md](references/create.md)).
 **Comments area evolution:** The `## Comments` section holds both the Draft Worksheet (pre-decision intent) and Revision Q&A entries (post-review dialogue). The Draft Worksheet always appears first, before any revision Q&A entries.
-### A-2: Create or Solve
+### A-2: Create
 #### Creating an ADR
 Read [references/create.md](references/create.md) for the full creation workflow including significance assessment, readiness checks, good practices, and anti-patterns.
 1. **Assess significance** — score the decision against the 7 ASR criteria. If it's not architecturally significant, suggest informal documentation.
@@ -142,16 +142,7 @@ Read [references/create.md](references/create.md) for the full creation workflow
 7. **Recommend review** — after creating the ADR, recommend reviewing it:
    > Would you like to review this ADR? It will be checked for completeness, > reasoning fallacies, and anti-patterns.
    If the user agrees, proceed to [Reviewing an ADR](#reviewing-an-adr).
-#### Solving a Problem
-Read [references/solve.md](references/solve.md) for the full problem-first solve workflow. Use this when the user has a problem to solve but hasn't yet identified a decision.
-The solve process covers:
-1. **Problem intake** — gather the problem statement, create a TBD ADR (`make new TITLE="tbd"`), populate the Context section
-2. **Option discovery** — agent proposes candidate solutions, user collaborates to refine and add options
-3. **Requirements refinement** — as options are evaluated, new requirements emerge and are folded back into Context
-4. **Optional prototyping** — lightweight spikes to validate options; ADR stays in `Prototype` status
-5. **Convergence** — user selects an option; agent drafts Decision and Consequences, renames the ADR (`make rename NUM=<n> TITLE="..."`), transitions status to `Proposed`
-6. **Handoff** — the `Proposed` ADR is ready for the existing review workflow
-**Solve vs. Create:** Use solve when the user describes a problem without a predetermined solution. Use create when the user arrives with a decision already made.
+**Problem-solving workflows:** For problem-first workflows (exploring options before committing to a solution), use `/solve-adr` instead. It orchestrates across `/author-adr`, `/prototype-adr`, and `/implement-adr`.
 ### A-3: Review
 Read [references/review.md](references/review.md) for the full structured review process. Use it as a prompt for the configured review agent (see [Agent Dispatch](#agent-dispatch-authordispatch)). By default this is a general-purpose agent; a custom agent can be configured via `[author.dispatch].review`.
 The review process covers:
@@ -223,7 +214,6 @@ Use **Mermaid** for all diagrams. Diagrams are valuable when complex relationshi
 ## Deep References
 For detailed guidance beyond what is covered above, consult these references on-demand:
 - [references/create.md](references/create.md) — full ADR creation workflow with significance assessment, readiness checks, and anti-patterns
-- [references/solve.md](references/solve.md) — problem-first solve workflow with option discovery, requirements refinement, and convergence
 - [references/review.md](references/review.md) — structured review process with implementability checks, fallacy scan, and verdict format
 - [references/revise.md](references/revise.md) — interactive revision workflow for addressing review comments after a Revise verdict
 - [references/manage.md](references/manage.md) — status transitions, superseding, linking, splitting, and guardrails
