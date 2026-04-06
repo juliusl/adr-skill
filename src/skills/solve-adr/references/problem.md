@@ -8,6 +8,31 @@ Self-contained reference for solving a problem. Read this file when the user has
 
 ---
 
+## Multi-Turn Session Management
+
+- **Summarize progress between turns** — at the start of each response, briefly state where in the lifecycle you are.
+- **Preserve the ADR as source of truth** — write findings to the ADR file as they emerge, not just at the end.
+- **Don't rush convergence** — the value is in the exploration. Let the user drive the pace.
+- **Keep options open** — avoid signaling a preference unless asked. Present tradeoffs neutrally.
+
+## Defensive Logging
+
+During any lifecycle step, architectural decisions may emerge that aren't covered by existing ADRs. When this happens:
+
+1. Pause the current work
+2. Invoke `/author-adr` to create an ADR for the new decision
+3. Review and accept the new ADR
+4. Add it to the current or next group
+5. Resume
+
+Every decision gets an ADR — even mid-execution discoveries.
+
+---
+
+**All steps must be visited in order. If a step is skipped or its entry condition is not met, log the justification inline before proceeding.** Skipping without justification is a workflow violation.
+
+---
+
 ## Lifecycle
 
 ```
@@ -237,24 +262,3 @@ After all groups complete (or execution stops), stay on the feature branch and r
 **Remaining:** [list]
 **Blocked:** None
 ```
-
----
-
-## Multi-Turn Session Management
-
-- **Summarize progress between turns** — at the start of each response, briefly state where in the lifecycle you are.
-- **Preserve the ADR as source of truth** — write findings to the ADR file as they emerge, not just at the end.
-- **Don't rush convergence** — the value is in the exploration. Let the user drive the pace.
-- **Keep options open** — avoid signaling a preference unless asked. Present tradeoffs neutrally.
-
-## Defensive Logging
-
-During any lifecycle step, architectural decisions may emerge that aren't covered by existing ADRs. When this happens:
-
-1. Pause the current work
-2. Invoke `/author-adr` to create an ADR for the new decision
-3. Review and accept the new ADR
-4. Add it to the current or next group
-5. Resume
-
-Every decision gets an ADR — even mid-execution discoveries.

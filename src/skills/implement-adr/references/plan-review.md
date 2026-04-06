@@ -12,6 +12,8 @@ The review is mandatory for every plan. The ~3 minute cost per cycle is small co
 
 The reviewer evaluates the plan against 6 checks:
 
+**All six checks must be evaluated. If a check is skipped, log the justification inline before proceeding.** Skipping without justification is a workflow violation.
+
 ### 1. Quality Strategy Coverage
 
 For each checked `[x]` item in the ADR's Quality Strategy section, verify at least one plan task or acceptance criterion addresses it.

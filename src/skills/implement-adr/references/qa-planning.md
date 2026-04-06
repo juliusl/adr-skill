@@ -31,6 +31,8 @@ The QA planner receives:
 
 ### Process
 
+**All five steps must be executed in order. If a step is skipped, log the justification inline before proceeding.** Skipping without justification is a workflow violation.
+
 1. **Read the approved plan** — extract the stage structure and task descriptions.
 2. **Test-gap analysis** — before generating per-stage checks, review the dev plan's acceptance criteria for blind spots (see [Test-Gap Analysis](#test-gap-analysis)).
 3. **For each stage, generate checks** in two categories:

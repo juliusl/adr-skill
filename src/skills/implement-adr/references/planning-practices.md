@@ -2,6 +2,8 @@
 
 Detailed guidance for decomposing ADRs into staged implementation plans.
 
+**All sections in this reference must be consulted during plan generation. If a section is skipped, log the justification inline before proceeding.** Skipping without justification is a workflow violation.
+
 ## Stage Decomposition
 
 Stages represent logical phases of implementation. They impose order on work and make progress visible.

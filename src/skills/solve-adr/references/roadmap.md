@@ -8,9 +8,59 @@ Self-contained reference for solving a roadmap. Read this file when the user has
 
 ---
 
+## Status Markers
+
+Milestone progress is tracked using HTML comment status markers appended to milestone headings:
+
+```markdown
+### Milestone 1 <!-- status: complete -->
+### Milestone 2 <!-- status: in-progress -->
+### Milestone 3
+```
+
+### Valid Values
+
+| Marker | Meaning |
+|--------|---------|
+| `<!-- status: complete -->` | All objectives solved and implemented |
+| `<!-- status: in-progress -->` | Work has started; ADRs exist for this milestone |
+| (no marker) | Pending — no work done yet. This is the default state. |
+
+These are the only valid status values. The agent must not invent new values.
+
+### Format Rules
+
+- Markers are case-insensitive: `<!-- status: Complete -->` and `<!-- status: complete -->` are equivalent.
+- Whitespace around the value is trimmed: `<!-- status:  complete  -->` is valid.
+- The marker must appear on the same line as the `###` heading.
+- If a marker contains an unrecognized value, treat the milestone as pending and log a warning.
+
+### Immutability
+
+Do not modify milestone content (the objective list). Status markers are appended to headings only. Changes to scope go through the user, not the agent.
+
+---
+
+## Defensive Logging
+
+During roadmap processing, architectural decisions may emerge that aren't covered by the current milestone's objectives. When this happens:
+
+1. Pause the current work
+2. The decision is captured via S-1's normal `/author-adr` invocation
+3. Add the new ADR to the current milestone's tracking
+4. Resume
+
+Every decision gets an ADR — even mid-milestone discoveries. This is inherited from S-1's defensive logging behavior.
+
+---
+
+**All steps must be visited in order. If a step is skipped or its entry condition is not met, log the justification inline before proceeding.** Skipping without justification is a workflow violation.
+
+---
+
 ## Roadmap Document Format
 
-A roadmap follows this structure (derived from the `adr-atelier.md` model):
+A roadmap follows this structure:
 
 ```markdown
 # [project name] roadmap
@@ -51,39 +101,6 @@ A roadmap follows this structure (derived from the `adr-atelier.md` model):
 - Supplementary sections below the `---` separator — detailed specs, format definitions, or design notes that support specific milestones
 
 **Milestone items** are high-level objectives, not fully specified tasks. Each item describes a goal but does not design or explore the solution. Gaps are expected — they signal where ADRs are needed.
-
----
-
-## Status Markers
-
-Milestone progress is tracked using HTML comment status markers appended to milestone headings:
-
-```markdown
-### Milestone 1 <!-- status: complete -->
-### Milestone 2 <!-- status: in-progress -->
-### Milestone 3
-```
-
-### Valid Values
-
-| Marker | Meaning |
-|--------|---------|
-| `<!-- status: complete -->` | All objectives solved and implemented |
-| `<!-- status: in-progress -->` | Work has started; ADRs exist for this milestone |
-| (no marker) | Pending — no work done yet. This is the default state. |
-
-These are the only valid status values. The agent must not invent new values.
-
-### Format Rules
-
-- Markers are case-insensitive: `<!-- status: Complete -->` and `<!-- status: complete -->` are equivalent.
-- Whitespace around the value is trimmed: `<!-- status:  complete  -->` is valid.
-- The marker must appear on the same line as the `###` heading.
-- If a marker contains an unrecognized value, treat the milestone as pending and log a warning.
-
-### Immutability
-
-Do not modify milestone content (the objective list). Status markers are appended to headings only. Changes to scope go through the user, not the agent.
 
 ---
 
@@ -217,7 +234,7 @@ When S-1 creates a feature branch for a roadmap milestone, use the pattern:
 solve/<project-slug>/milestone-<N>
 ```
 
-Example: `solve/adr-atelier/milestone-3`
+Example: `solve/my-project/milestone-3`
 
 This nested path structure distinguishes roadmap-driven branches from ad-hoc problem branches (`solve/<problem-slug>`). The path nesting prevents namespace collisions — a problem slug would need to contain a `/` to conflict, which is not permitted in slug generation.
 
@@ -311,16 +328,3 @@ S-2 Roadmap is an orchestration layer over S-1 Problem. It does not duplicate S-
 | Resume granularity | Milestone level + S-1 ADR level | ADR level |
 
 S-2 wraps S-1. All mandatory safeguards (plan review, QA, ADR for every decision) flow through S-1 unchanged.
-
----
-
-## Defensive Logging
-
-During roadmap processing, architectural decisions may emerge that aren't covered by the current milestone's objectives. When this happens:
-
-1. Pause the current work
-2. The decision is captured via S-1's normal `/author-adr` invocation
-3. Add the new ADR to the current milestone's tracking
-4. Resume
-
-Every decision gets an ADR — even mid-milestone discoveries. This is inherited from S-1's defensive logging behavior.

@@ -2,6 +2,82 @@
 
 Self-contained reference for the ADR creation workflow. Read this file when the user asks to create, draft, or write an ADR.
 
+**If a step is skipped, log the justification inline before proceeding.** Skipping without justification is a workflow violation.
+
+## Good Practices
+
+1. **Select by priority and architectural significance** — use the ASR Test
+2. **Don't defer high-impact, hard-to-reverse decisions**
+3. **Prioritize meta-qualities** (observability, reactivity) over presumed long-term goals
+4. **Root decisions in actual requirements** and personal experience
+5. **Invest in editorial quality** — write clearly and concisely
+6. **Split complex decisions into stages** (short-term → mid-term → long-term)
+7. **Disclose confidence level** and acknowledge biases
+
+## Anti-Patterns to Avoid
+
+**Subjectivity:**
+- **Fairy Tale** — shallow justification without real evidence
+- **Sales Pitch** — marketing language instead of technical analysis
+- **Free Lunch Coupon** — ignoring negative consequences
+- **Dummy Alternative** — obviously bad options to make the chosen one look good
+
+**Time dimension:**
+- **Sprint** — only one option evaluated
+- **Tunnel Vision** — ignoring broader context
+- **Maze** — topic and content don't match
+
+**Size/nature:**
+- **Blueprint/Policy in Disguise** — not actually a decision
+- **Mega-ADR** — too many decisions bundled together
+- **Novel/Epic** — far too much detail for an executive summary
+
+**Magic tricks:**
+- **Non-existent urgency** — fabricating time pressure
+- **Problem-solution mismatch** — solution doesn't address the stated problem
+- **Pseudo-accuracy** — false quantitative scoring to disguise subjective judgment
+
+> An ADR is an executive summary, not a novel. It should answer "why this option?" with honest tradeoffs, not sell a predetermined conclusion.
+
+## Decision Criteria
+
+When defining evaluation criteria, normalize DOWN to the same abstraction level by decomposing high-level criteria into 3–4 specific sub-criteria. Avoid weighted scoring systems — they create false precision and maintenance burden.
+
+**Example:** "Maintainability" (too abstract) → API stability, major release frequency, developer familiarity (concrete, comparable).
+
+## Writing Justifications
+
+**Y-Statement Template:**
+> In the context of **{use case}**, facing **{concern}**, we decided for we chose **{option}** over **{alternatives}** to achieve **{benefits}**, accepting **{drawbacks}**.
+
+**Good justifications (grounded in):**
+- Prior successful project experience in a similar context
+- PoC/PoT with convincing results
+- Available market skills for the chosen technology
+
+**Bad justifications (pseudo-rationale):**
+- "Everybody does it" — bandwagon fallacy
+- "We've always done it this way" — inertia
+- "It'll look good on my resume" — personal interest over project needs
+
+## Seven AD Making Fallacies
+
+Watch for these fallacies when drafting and use the countermeasures:
+
+| # | Fallacy | Countermeasure |
+|---|---------|----------------|
+| 1 | **Blind flight** — skip context/NFR analysis | **Agree on landing zones** — elicit specific, measurable NFRs |
+| 2 | **Following the crowd** — what works for others works for us | **Beat the street** — validate fit against your own requirements |
+| 3 | **Anecdotal evidence** — one example justifies everything | **Balanced judgments** — use SMART NFRs, make tradeoffs explicit |
+| 4 | **Blending whole and part** — if one element is bad, the whole is bad | **Divide and conquer** — separate system-wide from local concerns |
+| 5 | **Abstraction aversion** — mix concepts, tech, and products in one ADR | **Navigate abstract↔concrete** — separate conceptual from technological ADRs |
+| 6 | **Golden hammer / silver bullet** — one size fits all | **Grow your toolbox** — stay curious, learn from peers |
+| 7 | **Time irrelevance** — old evidence never expires | **Look back, think ahead** — set review dates, re-validate measurements |
+
+**Bonus: AI über-confidence** — using AI-generated design advice without QA; baking fallacies into prompts yields fallacious outputs.
+
+> AD making is a team sport — group decisions mitigate fallacy risk.
+
 ## Step 1: Assess Architectural Significance (ASR Test)
 
 Before creating an ADR, verify that the decision is architecturally significant. Score the issue against these 7 criteria (takes 1–2 minutes):
@@ -60,62 +136,6 @@ Before drafting, check if a **Draft Worksheet** exists in the ADR's `## Comments
 - **Uncertainty** → inform which areas need more analysis in Context and which constraints are firm vs. tentative.
 
 If no worksheet exists, proceed with the standard drafting workflow below — A-1 should have created one, but the workflow must not block if it's absent.
-
-### Good Practices
-
-1. **Select by priority and architectural significance** — use the ASR Test
-2. **Don't defer high-impact, hard-to-reverse decisions**
-3. **Prioritize meta-qualities** (observability, reactivity) over presumed long-term goals
-4. **Root decisions in actual requirements** and personal experience
-5. **Invest in editorial quality** — write clearly and concisely
-6. **Split complex decisions into stages** (short-term → mid-term → long-term)
-7. **Disclose confidence level** and acknowledge biases
-
-### Anti-Patterns to Avoid
-
-**Subjectivity:**
-- **Fairy Tale** — shallow justification without real evidence
-- **Sales Pitch** — marketing language instead of technical analysis
-- **Free Lunch Coupon** — ignoring negative consequences
-- **Dummy Alternative** — obviously bad options to make the chosen one look good
-
-**Time dimension:**
-- **Sprint** — only one option evaluated
-- **Tunnel Vision** — ignoring broader context
-- **Maze** — topic and content don't match
-
-**Size/nature:**
-- **Blueprint/Policy in Disguise** — not actually a decision
-- **Mega-ADR** — too many decisions bundled together
-- **Novel/Epic** — far too much detail for an executive summary
-
-**Magic tricks:**
-- **Non-existent urgency** — fabricating time pressure
-- **Problem-solution mismatch** — solution doesn't address the stated problem
-- **Pseudo-accuracy** — false quantitative scoring to disguise subjective judgment
-
-> An ADR is an executive summary, not a novel. It should answer "why this option?" with honest tradeoffs, not sell a predetermined conclusion.
-
-### Decision Criteria
-
-When defining evaluation criteria, normalize DOWN to the same abstraction level by decomposing high-level criteria into 3–4 specific sub-criteria. Avoid weighted scoring systems — they create false precision and maintenance burden.
-
-**Example:** "Maintainability" (too abstract) → API stability, major release frequency, developer familiarity (concrete, comparable).
-
-### Writing Justifications
-
-**Y-Statement Template:**
-> In the context of **{use case}**, facing **{concern}**, we decided for we chose **{option}** over **{alternatives}** to achieve **{benefits}**, accepting **{drawbacks}**.
-
-**Good justifications (grounded in):**
-- Prior successful project experience in a similar context
-- PoC/PoT with convincing results
-- Available market skills for the chosen technology
-
-**Bad justifications (pseudo-rationale):**
-- "Everybody does it" — bandwagon fallacy
-- "We've always done it this way" — inertia
-- "It'll look good on my resume" — personal interest over project needs
 
 ## Step 4: Evaluate Readiness (Evaluation Checkpoint)
 
@@ -193,21 +213,3 @@ If using MADR format, the full template sections are:
 - Evaluate all options at the same abstraction level
 - Document "Good, because…" and "Bad, because…" separately for each option
 - Status values: prototype → proposed → accepted → deprecated → superseded by
-
-## Seven AD Making Fallacies
-
-Watch for these fallacies when drafting and use the countermeasures:
-
-| # | Fallacy | Countermeasure |
-|---|---------|----------------|
-| 1 | **Blind flight** — skip context/NFR analysis | **Agree on landing zones** — elicit specific, measurable NFRs |
-| 2 | **Following the crowd** — what works for others works for us | **Beat the street** — validate fit against your own requirements |
-| 3 | **Anecdotal evidence** — one example justifies everything | **Balanced judgments** — use SMART NFRs, make tradeoffs explicit |
-| 4 | **Blending whole and part** — if one element is bad, the whole is bad | **Divide and conquer** — separate system-wide from local concerns |
-| 5 | **Abstraction aversion** — mix concepts, tech, and products in one ADR | **Navigate abstract↔concrete** — separate conceptual from technological ADRs |
-| 6 | **Golden hammer / silver bullet** — one size fits all | **Grow your toolbox** — stay curious, learn from peers |
-| 7 | **Time irrelevance** — old evidence never expires | **Look back, think ahead** — set review dates, re-validate measurements |
-
-**Bonus: AI über-confidence** — using AI-generated design advice without QA; baking fallacies into prompts yields fallacious outputs.
-
-> AD making is a team sport — group decisions mitigate fallacy risk.

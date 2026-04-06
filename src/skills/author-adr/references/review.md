@@ -6,6 +6,8 @@ Use this as the review prompt for the configured review agent (per ADR-0031, `[a
 
 ## Review Process
 
+**All six steps must be executed in order. If a step is skipped, log the justification inline before proceeding.** Skipping without justification is a workflow violation.
+
 ### Step 1: Implementability Check
 
 Verify 6 criteria that predict whether `implement-adr` can successfully plan from this ADR:
