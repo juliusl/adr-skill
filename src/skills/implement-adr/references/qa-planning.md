@@ -130,16 +130,16 @@ During plan execution, after all tasks in a stage complete but before auto-commi
 
 When QA findings are accepted without remediation (e.g., low-risk gaps deemed
 acceptable for the current scope), the main executor **must** document the
-acceptance rationale in the QA plan file. Undocumented acceptances are silent
+rationale in the QA plan file. Undocumented acceptances are silent
 gaps — a future reader cannot distinguish "we evaluated this and decided not
 to fix it" from "we missed this."
 
-For each accepted finding:
+For each finding that won't be fixed:
 
 1. Update the finding's status in the summary table from `⚠️ Open` to
-   `⚠️ Accepted`.
-2. Add an entry under the **Accepted findings — rationale** section explaining
-   why the finding was accepted. Include:
+   `Won't Fix`.
+2. Add an entry under the **Won't Fix — rationale** section explaining
+   why the finding won't be addressed. Include:
    - Why the risk is low enough to accept
    - What existing mechanisms mitigate the gap (e.g., shared error handling,
      consistent patterns across the codebase)
