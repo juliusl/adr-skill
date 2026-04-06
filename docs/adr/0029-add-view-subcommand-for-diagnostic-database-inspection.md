@@ -1,7 +1,7 @@
 # 29. Add view subcommand for diagnostic database inspection
 
 Date: 2026-04-04
-Status: Proposed
+Status: Accepted
 Last Updated: 2026-04-04
 Links:
 - Extends [ADR-0026](0026-add-rust-cli-for-data-plumbing.md) (adds a read command to the plumbing CLI — blurs the plumbing/porcelain boundary intentionally)
