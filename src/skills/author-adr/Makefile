@@ -37,17 +37,29 @@ init-data: ## Bootstrap .adr/ project-scoped directory
 	@if [ ! -f .adr/.gitignore ]; then echo "var/" > .adr/.gitignore; fi
 	@echo "Initialized .adr/ project-scoped directory"
 
-new: ## Create a new ADR (TITLE="...")
+new: ## Create a new ADR (TITLE="..." or REMOTE=gh ID=42 TITLE="...")
+ifeq ($(ADR_AGENT_SKILL_FORMAT),wi-nygard-agent)
+	$(ORCHESTRATOR) $(ADR_AGENT_SKILL_FORMAT) $(REMOTE) $(ID) $(TITLE)
+else
 	$(ORCHESTRATOR) $(ADR_AGENT_SKILL_FORMAT) $(TITLE)
+endif
 
-rename: ## Rename an ADR (NUM=N TITLE="New Title")
+rename: ## Rename an ADR (NUM=N or REMOTE=gh ID=42 TITLE="New Title")
+ifeq ($(ADR_AGENT_SKILL_FORMAT),wi-nygard-agent)
+	$(FORMAT_SCRIPT) rename $(REMOTE) $(ID) $(TITLE)
+else
 	$(FORMAT_SCRIPT) rename $(NUM) $(TITLE)
+endif
 
 list: ## List all ADRs
 	$(FORMAT_SCRIPT) list
 
-status: ## Show or update ADR status (NUM=N [STATUS=Accepted])
+status: ## Show or update ADR status (NUM=N or REMOTE=gh ID=42 [STATUS=Accepted])
+ifeq ($(ADR_AGENT_SKILL_FORMAT),wi-nygard-agent)
+	$(FORMAT_SCRIPT) status $(REMOTE) $(ID) $(STATUS)
+else
 	$(FORMAT_SCRIPT) status $(NUM) $(STATUS)
+endif
 
 install-agents: ## Install custom agents to the agents/ directory (ADR_AGENTS_DIR overrides target)
 	@agents_src="$(SKILL_ROOT)assets"; \
