@@ -130,6 +130,14 @@ Whether creating or solving, more context produces better ADRs. Include:
 
 After authoring, always run the review. The review catches reasoning fallacies, anti-patterns, and missing quality criteria that are easy to overlook during drafting. If the verdict is "Revise," the skill will walk you through each finding interactively.
 
+## Configuration
+
+All skills read preferences from `~/.config/adr-skills/preferences.toml` (user-scoped) and `.adr/preferences.toml` (project-scoped). Project values override user values.
+
+See [docs/PREFERENCES.md](docs/PREFERENCES.md) for the full reference with all keys, defaults, and example configurations.
+
+When using solve-adr for end-to-end workflows, it creates a `solve/<topic>` feature branch to isolate its output from your working branch. The resulting branch is ready for PR review.
+
 ## Project Structure
 
 ```
