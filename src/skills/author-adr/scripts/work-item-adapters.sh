@@ -185,3 +185,37 @@ local_adapter() {
       updated: $now
     }'
 }
+
+# --- Cache Functions (ADR-0036) ---
+
+# Cache a normalized work item by appending to .adr/var/work-items.jsonl
+# Reads JSON from stdin, adds cached_at timestamp, appends to cache file.
+cache_work_item() {
+  local cache_file=".adr/var/work-items.jsonl"
+  mkdir -p "$(dirname "$cache_file")"
+  local now
+  now="${ADR_CACHE_TS:-$(date -u +%Y-%m-%dT%H:%M:%SZ 2>/dev/null || date +%Y-%m-%dT%H:%M:%SZ)}"
+  jq -c --arg ts "$now" '. + {cached_at: $ts}' >> "$cache_file"
+}
+
+# Look up the latest cached snapshot for a given remote and id.
+# Returns the JSON on stdout and exit 0, or exit 1 if not found.
+lookup_work_item() {
+  local remote="${1:-}" id="${2:-}"
+  if [ -z "$remote" ] || [ -z "$id" ]; then
+    echo "Usage: lookup_work_item <remote> <id>" >&2
+    return 1
+  fi
+
+  local cache_file=".adr/var/work-items.jsonl"
+  if [ ! -f "$cache_file" ]; then
+    return 1
+  fi
+
+  local result
+  result=$(grep "\"remote\":\"${remote}\"" "$cache_file" | grep "\"id\":\"${id}\"" | tail -1)
+  if [ -z "$result" ]; then
+    return 1
+  fi
+  echo "$result"
+}

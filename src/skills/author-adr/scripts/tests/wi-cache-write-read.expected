@@ -1,0 +1,13 @@
+=== write and read ===
+First snapshot
+2026-04-06T07:00:00Z
+=== latest wins ===
+Updated snapshot
+closed
+2026-04-06T08:00:00Z
+=== not found ===
+NOT_FOUND
+=== dir auto-created ===
+DIR_EXISTS
+=== file line count ===
+2

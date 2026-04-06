@@ -1,7 +1,7 @@
 # 36. Cache work item snapshots in .adr/var/
 
 Date: 2026-04-05
-Status: Proposed
+Status: Accepted
 Last Updated: 2026-04-05
 Links:
 - [ADR-0034: Adopt work-item-referenced naming for ADR files](0034-adopt-work-item-referenced-naming-for-adr-files.md)
