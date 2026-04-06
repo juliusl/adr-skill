@@ -1,3 +1,10 @@
 [prototype.persona]
 embed_source = true
-ground_truth = "comments"
+procedure = """
+When testing persona accuracy against ground truth:
+1. Read the ADR file content up to the --- separator
+2. Embed that content in the experiment prompt as inline text
+3. Do not provide the file path to the agent being tested
+4. Ground truth answers are in the Comments section (after ---)
+5. Strip the Comments section before embedding to prevent data leakage
+"""

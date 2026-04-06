@@ -121,27 +121,20 @@ In the context of **needing reproducible persona experiments that control for th
 # .adr/preferences.toml
 
 [prototype.persona]
-# Embed ADR content in prompts instead of giving file paths.
-# Isolates persona judgment from grounded file-access knowledge.
 embed_source = true
-
-# Ground truth is in the Comments section (after ---).
-# Strip this section before embedding to prevent data leakage.
-ground_truth = "comments"
+procedure = """
+When testing persona accuracy against ground truth:
+1. Read the ADR file content up to the --- separator
+2. Embed that content in the experiment prompt as inline text
+3. Do not provide the file path to the agent being tested
+4. Ground truth answers are in the Comments section (after ---)
+5. Strip the Comments section before embedding to prevent data leakage
+"""
 ```
 
-### Behavior when `embed_source = true`
+### How it works
 
-When `prototype-adr` runs a persona experiment and `embed_source` is set:
-
-1. Read the ADR file content up to the `---` separator (before Comments).
-2. Embed that content in the experiment prompt as inline text.
-3. Do not provide the file path to the agent being tested.
-4. The agent triages findings based only on persona judgment and the embedded content.
-
-### Behavior when `embed_source` is absent or false
-
-Default behavior — `prototype-adr` provides file paths normally. The agent reads files with full tool access. This is correct for non-persona experiments (benchmarks, spikes, PoCs).
+The `procedure` key is a multi-line string containing project-specific instructions. The skill does not interpret or parse it — it reads the string and follows the instructions as written. Different repos define different procedures for their own experiment types.
 
 ## Consequences
 
