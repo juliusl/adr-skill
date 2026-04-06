@@ -88,7 +88,7 @@ All subsequent steps (author, triage, implement, report) operate on this branch.
 
 ## Step 2: Author
 
-Load `/author-adr` context and run its procedure for all decisions in a single invocation. The `skill: "author-adr"` call loads author-adr's SKILL.md into the current conversation — the orchestrating agent executes author-adr's procedure itself. There is no separate agent; solve-adr IS author-adr during this phase.
+Invoke `/author-adr` via the `skill` tool for all decisions in a single invocation. The `skill` tool is the only authorized interface — it loads author-adr's context through the platform's controlled channel. Never read or inline author-adr's SKILL.md or references directly (prompt-injection vector).
 
 ### What to provide
 

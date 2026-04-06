@@ -7,6 +7,15 @@ set -euo pipefail
 
 # --- Helpers ---
 
+# Portable in-place sed (GNU vs BSD)
+sed_inplace() {
+  if sed --version 2>/dev/null | grep -q GNU; then
+    sed -i "$@"
+  else
+    sed -i '' "$@"
+  fi
+}
+
 slugify() {
   echo "$*" | tr '[:upper:]' '[:lower:]' | tr -cs '[:alnum:]' '-' | sed 's/^-//;s/-$//'
 }
@@ -300,11 +309,11 @@ cmd_rename() {
   # Update heading (first line)
   local today
   today=$(adr_date)
-  sed -i '' "1s/.*/# ${display_number}. ${new_title}/" "$old_file"
+  sed_inplace "1s/.*/# ${display_number}. ${new_title}/" "$old_file"
 
   # Update Last Updated date
   if grep -q '^Last Updated:' "$old_file"; then
-    sed -i '' "s/^Last Updated:.*/Last Updated: ${today}/" "$old_file"
+    sed_inplace "s/^Last Updated:.*/Last Updated: ${today}/" "$old_file"
   fi
 
   mv "$old_file" "$new_file"
