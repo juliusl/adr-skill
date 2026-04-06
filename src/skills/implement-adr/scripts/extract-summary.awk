@@ -12,6 +12,12 @@
 
 BEGIN { in_block = 0 }
 
+# Extract basename from FILENAME (strip directory path)
+FNR == 1 {
+    n_parts = split(FILENAME, path_parts, "/")
+    source_plan = path_parts[n_parts]
+}
+
 /<!-- BEGIN implementation-summary -->/ { in_block = 1; next }
 /<!-- END implementation-summary -->/  { in_block = 0; next }
 
@@ -35,6 +41,6 @@ in_block && /\|/ {
     # Escape double quotes in description
     gsub(/"/, "\\\"", description)
 
-    printf "{\"task_id\":\"%s\",\"status\":\"%s\",\"cost\":\"%s\",\"commit\":\"%s\",\"description\":\"%s\"}\n", \
-        task_id, status, cost, commit, description
+    printf "{\"task_id\":\"%s\",\"status\":\"%s\",\"cost\":\"%s\",\"commit\":\"%s\",\"description\":\"%s\",\"source_plan\":\"%s\"}\n", \
+        task_id, status, cost, commit, description, source_plan
 }

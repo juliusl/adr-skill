@@ -1,4 +1,4 @@
-{"task_id":"1.1","status":"done","cost":"small","commit":"abc1234","description":"Create config file"}
-{"task_id":"1.2","status":"done","cost":"small","commit":"def5678","description":"Add validation logic"}
-{"task_id":"2.1","status":"done","cost":"medium","commit":"9ab0123","description":"Implement parser module"}
-{"task_id":"3.1","status":"done","cost":"small","commit":"cde4567","description":"Update ADR status to Accepted"}
+{"task_id":"1.1","status":"done","cost":"small","commit":"abc1234","description":"Create config file","source_plan":"plan.md"}
+{"task_id":"1.2","status":"done","cost":"small","commit":"def5678","description":"Add validation logic","source_plan":"plan.md"}
+{"task_id":"2.1","status":"done","cost":"medium","commit":"9ab0123","description":"Implement parser module","source_plan":"plan.md"}
+{"task_id":"3.1","status":"done","cost":"small","commit":"cde4567","description":"Update ADR status to Accepted","source_plan":"plan.md"}
