@@ -88,6 +88,10 @@ Run this before every scenario.
    >
    > Save these defaults?
 4. **Load dispatch config** — read `[author.dispatch]` keys (`review`, `editor`) for downstream `/author-adr` calls. These control which agents handle review and revision cycles.
+5. **Pre-flight check** — before proceeding to any scenario, verify the environment:
+   - `git status --porcelain` — warn if the working tree is dirty (branching in S-1 requires a clean tree)
+   - `make test` — run the test suite to establish a clean baseline. If tests fail, note pre-existing failures so they aren't mistaken for regressions during implementation.
+   - Pre-flight is advisory — log findings and proceed. Do not block on pre-existing issues.
 
 ### S-1: Problem
 
