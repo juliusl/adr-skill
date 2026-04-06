@@ -131,7 +131,7 @@ After authoring, always run the review. The review catches reasoning fallacies, 
 │       ├── Cargo.toml
 │       ├── diesel.toml               # Diesel schema output config
 │       ├── migrations/               # Diesel SQL migrations
-│       └── src/                      # Rust source (main, init, ingest, models, schema)
+│       └── src/                      # Rust source (main, init, ingest, view, models, schema)
 ├── docs/adr/                         # Project-level ADRs
 ├── docs/plans/                       # Implementation plans generated from ADRs
 ├── src/skills/
@@ -183,7 +183,24 @@ adr-db init
 
 # Ingest JSONL from a plan's implementation summary
 awk -f src/skills/implement-adr/scripts/extract-summary.awk docs/plans/0020.0.plan.md | adr-db ingest
+
+# Inspect database contents (list tables)
+adr-db view
+
+# View table data in TSV format (awk/grep-friendly)
+adr-db view task_summaries
+
+# View as JSONL (ingest-compatible, round-trips with `adr-db ingest`)
+adr-db view task_summaries --output jsonl
+
+# Limit output rows
+adr-db view task_summaries --limit 10
+
+# Suppress header row
+adr-db view task_summaries --no-header
 ```
+
+> **⚠️ Instability notice:** The `view` subcommand is proto-porcelain with no stability guarantees. Output format, flags, column order, and behavior may change at any time. Do not depend on this output in scripts or downstream tooling. Use `--output jsonl` for any structured consumption.
 
 **For contributors working on `adr-db`:**
 
