@@ -1,7 +1,7 @@
 # 40. Extract adr-db-lib crate for shared database access
 
 Date: 2026-04-06
-Status: Planned
+Status: Accepted
 Last Updated: 2026-04-06
 Links:
 - Revisits [ADR-0026](0026-add-rust-cli-for-data-plumbing.md) (Option 3 was rejected as over-engineered; this ADR revisits that decision now that downstream consumers exist)
