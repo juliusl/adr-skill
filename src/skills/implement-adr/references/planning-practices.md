@@ -4,11 +4,11 @@ Detailed guidance for decomposing ADRs into staged implementation plans.
 
 **All sections in this reference must be consulted during plan generation. If a section is skipped, log the justification inline before proceeding.** Skipping without justification is a workflow violation.
 
-## Stage Decomposition
+## PP-1: Stage Decomposition
 
 Stages represent logical phases of implementation. They impose order on work and make progress visible.
 
-### Principles
+### PP-1a: Principles
 
 1. **Foundation first** — Start with data models, configuration, and project scaffolding. Later stages depend on these.
 2. **Inside out** — Build core logic before external interfaces. APIs, CLI commands, and UIs come after the engine works.
@@ -16,7 +16,7 @@ Stages represent logical phases of implementation. They impose order on work and
 4. **2–5 tasks per stage** — Fewer than 2 means the stage is too narrow; more than 5 means it should be split.
 5. **Minimize cross-stage dependencies** — Tasks within a stage may depend on each other, but stages should depend only on prior stages, not on partial completion of parallel stages.
 
-### Common Stage Patterns
+### PP-1b: Common Stage Patterns
 
 | Pattern | Stage Sequence | When to Use |
 |---------|---------------|-------------|
@@ -25,18 +25,18 @@ Stages represent logical phases of implementation. They impose order on work and
 | **Infrastructure-first** | Infra → Core → Integration → Polish | Greenfield projects |
 | **Migration** | Scaffold → Dual-write → Cutover → Cleanup | System migrations |
 
-### Stage Naming
+### PP-1c: Stage Naming
 
 Use short, descriptive names that communicate the phase:
 
 - ✅ "Data Layer", "Authentication", "API Surface", "Observability"
 - ❌ "Phase 1", "Part A", "Misc", "Other Stuff"
 
-## Task Scoping
+## PP-2: Task Scoping
 
 Each task must be independently executable. An engineer or agent should be able to pick up a task and complete it without reading other task plans.
 
-### Self-Containment Checklist
+### PP-2a: Self-Containment Checklist
 
 - [ ] The task description explains _what_ to do without referencing other tasks
 - [ ] Any interfaces or contracts from other tasks are restated in this task
@@ -44,7 +44,7 @@ Each task must be independently executable. An engineer or agent should be able 
 - [ ] The expected output or artifact is clearly described
 - [ ] Test criteria are specific to this task's scope
 
-### Splitting Oversized Tasks
+### PP-2b: Splitting Oversized Tasks
 
 If a task feels too large (rule of thumb: more than ~200 lines of code or touches more than 3 files), consider:
 
@@ -52,11 +52,11 @@ If a task feels too large (rule of thumb: more than ~200 lines of code or touche
 2. **Split by concern** — Separate validation, business logic, and persistence.
 3. **Split by interface** — One task per public method or endpoint.
 
-## Gap Detection
+## PP-3: Gap Detection
 
 Before generating tasks, check for missing decisions.
 
-### Heuristic Checklist
+### PP-3a: Heuristic Checklist
 
 For each major component implied by the ADR, verify:
 
@@ -71,7 +71,7 @@ For each major component implied by the ADR, verify:
 | Is error handling / resilience approach decided? | Need ADR on resilience |
 | Are there integration points with undefined contracts? | Need ADR on integration |
 
-### Gap Report Format
+### PP-3b: Gap Report Format
 
 When reporting gaps, use this structure:
 
@@ -87,7 +87,7 @@ complete task plans:
 2. **[Gap Title]** — ...
 ```
 
-### Proceeding with Partial Plans
+### PP-3c: Proceeding with Partial Plans
 
 If the user chooses to proceed despite gaps:
 
@@ -95,9 +95,9 @@ If the user chooses to proceed despite gaps:
 - Add a note explaining which decision is missing
 - Do not fabricate architectural choices — leave those sections as TODOs
 
-## ADR Linkage
+## PP-4: ADR Linkage
 
-### Referencing ADRs in Plans
+### PP-4a: Referencing ADRs in Plans
 
 Every plan must cite its source ADRs in the header. Use relative file paths:
 
@@ -107,7 +107,7 @@ Every plan must cite its source ADRs in the header. Use relative file paths:
 - [ADR-0005: Use PostgreSQL for persistence](docs/adr/0005-use-postgresql-for-persistence.md)
 ```
 
-### Per-Task ADR References
+### PP-4b: Per-Task ADR References
 
 Each task should cite the specific ADR section that drives it:
 

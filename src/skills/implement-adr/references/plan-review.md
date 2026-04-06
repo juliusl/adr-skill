@@ -105,7 +105,7 @@ The reviewer must produce a structured finding report:
 - Verdict: [Plan Approved / Plan Needs Revision]
 ```
 
-## Iteration Protocol
+## Review 7: Iteration Protocol
 
 ```
 implement-adr generates plan
@@ -140,7 +140,7 @@ User Escape Hatch
 
 **Cycle limit: 3.** If the reviewer and planner can't converge in 3 cycles, the remaining findings likely require human judgment.
 
-### User Escape Hatch
+### Review 7a: User Escape Hatch
 
 When the 3-cycle limit is reached, present remaining findings to the user:
 

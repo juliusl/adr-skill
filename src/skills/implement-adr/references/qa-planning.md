@@ -20,28 +20,28 @@ Three distinct agent roles ensure no agent reviews its own work:
 
 The main executor must not write its own QA plan, and the agent that executes stage tasks must not QA its own work.
 
-## QA Plan Generation
+## QA-1: QA Plan Generation
 
-### Input
+### QA-1a: Input
 
 The QA planner receives:
 1. The approved implementation plan (full content)
 2. The source ADR(s) (full content)
 3. This reference document (procedural checklists and protocols)
 
-### Process
+### QA-1b: Process
 
 **All five steps must be executed in order. If a step is skipped, log the justification inline before proceeding.** Skipping without justification is a workflow violation.
 
 1. **Read the approved plan** — extract the stage structure and task descriptions.
-2. **Test-gap analysis** — before generating per-stage checks, review the dev plan's acceptance criteria for blind spots (see [Test-Gap Analysis](#test-gap-analysis)).
+2. **Test-gap analysis** — before generating per-stage checks, review the dev plan's acceptance criteria for blind spots (see [QA-2: Test-Gap Analysis](#qa-2-test-gap-analysis)).
 3. **For each stage, generate checks** in two categories:
    - **Security** — apply the [6-item security checklist](#security-checklist) to the stage's specific tasks, interfaces, and data flows.
    - **UX (crash prevention and observability)** — apply the [7-item UX checklist](#ux-checklist), with particular attention to observability gaps (items 5–7).
-4. **Classify findings** using the [Finding Eligibility Gate](#finding-eligibility-gate).
+4. **Classify findings** using the [QA-3: Finding Eligibility Gate](#qa-3-finding-eligibility-gate).
 5. **Write the QA plan** to `docs/plans/<range>.<revision>.qa-plan.md` alongside the main plan. Use the [QA plan template](../assets/templates/qa-plan-template.md). Present all findings in a single flat Recommendations table with a Classification column — do not split into separate subsections.
 
-### Output
+### QA-1c: Output
 
 A `qa-plan.md` file with:
 - Per-stage security and UX checks (checkboxes)
@@ -73,7 +73,7 @@ For each stage, verify:
 
 Items 5–7 are the **observability check**: a stage that produces unverifiable output is a QA finding. The resolution may be a documentation note, a diagnostic command, or a recommendation for a new feature.
 
-## Test-Gap Analysis
+## QA-2: Test-Gap Analysis
 
 Before generating per-stage checks, the QA planner reviews the dev plan's acceptance criteria for blind spots. For each stage, ask: **"are there things the dev tests won't catch?"**
 
@@ -81,7 +81,7 @@ A test gap is any scenario where all dev acceptance criteria pass but the implem
 
 Test-gap findings may result in the QA planner recommending **new tasks or criteria** to be scheduled — the ADR is an incomplete design, and the implementation plan has leeway to make additions when it makes sense.
 
-### Example
+### QA-2a: Example
 
 The dev plan for an `ingest` command has acceptance criteria:
 - "5 valid JSONL lines ingested, 5 rows in database"
@@ -89,24 +89,24 @@ The dev plan for an `ingest` command has acceptance criteria:
 
 Test-gap analysis reveals: these tests verify ingest *works*, but there's no test for *verifying ingested data*. If the data is silently corrupted (wrong columns, truncated values), all dev tests pass. QA recommends a view/inspection capability to close the observability gap.
 
-## Finding Eligibility Gate
+## QA-3: Finding Eligibility Gate
 
 Not all QA findings justify scheduling new work. The QA planner and executor must distinguish between quality concerns and preferences.
 
-### Eligible for scheduling (quality concerns)
+### QA-3a: Eligible for scheduling (quality concerns)
 
 - Security vulnerabilities — injection, credential exposure, permission issues
 - Crash-inducing gaps — unhandled errors, resource leaks, missing validation
 - Observability gaps — no way to verify that a stage's output is correct
 - UX violations — output format that prevents the intended audience from using the tool effectively
 
-### Not eligible — defer to follow-up iterations (preferences)
+### QA-3b: Not eligible — defer to follow-up iterations (preferences)
 
 - Aesthetic or ergonomic suggestions — "this should have a fancy table view"
 - Feature requests beyond the minimum needed to close the quality concern
 - Opinions about implementation approach that don't affect security or UX
 
-### The boundary case — UX-grounded design feedback
+### QA-3c: The boundary case — UX-grounded design feedback
 
 A QA finding that *looks* like a preference may actually be a quality concern when it affects the intended user's ability to use the tool. Example: if a pipeline tool only supports formatted table output (not pipeable), a QA finding saying "this should be awk-friendly" is a legitimate UX concern — the output format violates the tool's design intent.
 
@@ -114,15 +114,15 @@ A QA finding that *looks* like a preference may actually be a quality concern wh
 
 The minimum implementation that closes the quality concern is what gets scheduled — iteration handles the rest.
 
-## QA Execution
+## QA-4: QA Execution
 
-### Enforcement
+### QA-4a: Enforcement
 
 QA execution at stage boundaries is **mandatory regardless of participation mode** — including autonomous mode. Generating a QA plan but skipping execution defeats the purpose of the QA separation principle. If QA execution is skipped for any stage, log the justification inline before proceeding. Skipping without justification is a workflow violation.
 
 In autonomous mode with multiple stages, the agent may merge adjacent stages to reduce the number of QA cycles (e.g., validate stages 1–2 together, then stages 3–4). This consolidates execution while preserving coverage. Skipping QA entirely is not an acceptable optimization.
 
-### Stage Boundary Hook
+### QA-4b: Stage Boundary Hook
 
 During plan execution, after all tasks in a stage complete but before auto-commit:
 
@@ -134,7 +134,7 @@ During plan execution, after all tasks in a stage complete but before auto-commi
 3. **If all checks pass** — mark them `[x]` in the QA plan, proceed to auto-commit.
 4. **If any check fails** — pause execution, report findings to the main executor, and request remediation before committing.
 
-### Documenting Accepted Findings
+### QA-4c: Documenting Accepted Findings
 
 When QA findings are accepted without remediation (e.g., low-risk gaps deemed acceptable for the current scope), the main executor **must** document the rationale in the QA plan file. Undocumented acceptances are silent gaps — a future reader cannot distinguish "we evaluated this and decided not to fix it" from "we missed this."
 
@@ -146,7 +146,7 @@ For each finding that won't be fixed:
    - What existing mechanisms mitigate the gap (e.g., shared error handling, consistent patterns across the codebase)
    - Under what conditions the finding should be revisited
 
-### Backwards Compatibility
+### QA-4d: Backwards Compatibility
 
 If no QA plan exists (plans generated before this feature), the stage boundary hook is a no-op — execution proceeds to auto-commit directly.
 
@@ -163,9 +163,9 @@ The main executor is responsible for triggering QA plan regeneration when a plan
 - **Not blocking plan generation** — the QA plan is generated after plan approval, not during.
 - **Not limited to checking** — the QA planner can recommend new work (tasks, features, documentation) when test-gap analysis reveals blind spots. Recommendations are surfaced to the main executor for scheduling, gated by the finding eligibility test.
 
-## Prompt Templates
+## QA-5: Prompt Templates
 
-### QA Planner Agent Prompt
+### QA-5a: QA Planner Agent Prompt
 
 ```
 You are a QA planner agent. Your role is adversarial: "how could this
@@ -203,7 +203,7 @@ Write a QA plan using the qa-plan-template.md structure. For each stage:
 4. Classify all findings using the eligibility gate
 ```
 
-### QA Executor Agent Prompt
+### QA-5b: QA Executor Agent Prompt
 
 ```
 You are a QA executor agent. Review the actual implementation of a

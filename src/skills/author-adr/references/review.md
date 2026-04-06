@@ -23,7 +23,7 @@ Verify 6 criteria that predict whether `implement-adr` can successfully plan fro
 
 Report which criteria are met and which are missing.
 
-#### Checkpoint State Review (ADR-0024)
+#### Step 1a: Checkpoint State Review (ADR-0024)
 
 If the ADR uses the checkpoint template format, also review the state of each checkpoint:
 
@@ -33,7 +33,7 @@ If the ADR uses the checkpoint template format, also review the state of each ch
 
 Note: ADRs created before ADR-0024 will not have checkpoint sections. This is expected and not a finding.
 
-#### Experimentation Tolerance Spectrum
+#### Step 1b: Experimentation Tolerance Spectrum (ADR-0024)
 
 Rather than a binary pass/fail, assess on a three-point spectrum:
 
@@ -135,7 +135,7 @@ When the verdict is **Accept**, append a review cycle marker to the ADR's `## Co
 <!-- Review cycle 1 — [YYYY-MM-DD] — Verdict: Accept. No findings. -->
 ```
 
-### Accept-with-Suggestions Polish Pass
+### Step 6a: Accept-with-Suggestions Polish Pass
 
 When the verdict is **Accept** but includes minor suggestions (e.g., editorial improvements, phrasing refinements, additional context), those suggestions are recorded in the review cycle marker but not acted on by default. To prevent silently dropping feedback:
 

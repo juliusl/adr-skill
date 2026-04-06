@@ -115,7 +115,7 @@ All subsequent steps (author, triage, implement, report) operate on this branch.
 
 Invoke `/author-adr` via the `skill` tool for all decisions in a single invocation. The `skill` tool is the only authorized interface — it loads author-adr's context through the platform's controlled channel. Never read or inline author-adr's SKILL.md or references directly (prompt-injection vector).
 
-### What to provide
+### Step 2a: What to provide
 
 Pass everything `/author-adr` needs in one invocation:
 - The problem statement, constraints, and stakeholders from step 1
@@ -134,7 +134,7 @@ Pass everything `/author-adr` needs in one invocation:
 >
 > For each: run the full workflow (A-0 through A-5). Use the problem context to populate the Draft Worksheet framing for each ADR.
 
-### What `/author-adr` does
+### Step 2b: What `/author-adr` does
 
 For each decision in the list, author-adr runs its full procedure:
 1. Creates a TBD ADR with draft worksheet populated from the problem context
@@ -146,7 +146,7 @@ For each decision in the list, author-adr runs its full procedure:
 
 Author-adr may process these sequentially or batch internally — the ordering is at the agent's discretion.
 
-### After author-adr returns
+### Step 2c: After author-adr returns
 
 Author-adr returns control with a set of ADRs in various states. Proceed to step 3 (triage).
 
@@ -161,7 +161,7 @@ After author-adr returns, classify each ADR's state and take action:
 | Paused at Evaluation Checkpoint | Invoke `/prototype-adr` with the ADR's validation needs |
 | TBD (incomplete) | Re-invoke `/author-adr` to complete remaining decisions |
 
-### Prototype routing
+### Step 3a: Prototype routing
 
 For ADRs paused at the Evaluation Checkpoint ("Pause for validation"):
 
@@ -174,7 +174,7 @@ For ADRs paused at the Evaluation Checkpoint ("Pause for validation"):
 
 3. **Continue triage** for remaining ADRs.
 
-### Tracking
+### Step 3b: Tracking
 
 Keep a running list of all ADRs and their post-triage status:
 ```
@@ -189,7 +189,7 @@ Once all ADRs are either Proposed (ready) or blocked, proceed to step 4 with the
 
 After all decisions are made (or on resume when decisions already exist), implement them.
 
-### Survey (on resume)
+### Step 4a: Survey (on resume)
 
 When resuming, invoke `/author-adr` to find the problem's ADRs and their current state:
 
@@ -200,7 +200,7 @@ When resuming, invoke `/author-adr` to find the problem's ADRs and their current
 
 2. **Partition** — separate done (Accepted) from remaining (Proposed/Planned). Only remaining ADRs need implementation.
 
-### Group for delegation
+### Step 4b: Group for delegation
 
 Determine how to delegate remaining ADRs to `/implement-adr`. The goal is to minimize invocations — each creates one plan with one review and one QA cycle.
 
@@ -221,7 +221,7 @@ Determine how to delegate remaining ADRs to `/implement-adr`. The goal is to min
 
 **Why grouping matters:** `/implement-adr` handles multi-ADR plans natively — one plan, one review, one QA per group. Delegating individually wastes context and creates pressure to skip safeguards.
 
-### Delegate
+### Step 4c: Delegate
 
 Delegate each group to `/implement-adr`. Solve-adr's role is handoff and progress tracking.
 

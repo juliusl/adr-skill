@@ -206,7 +206,7 @@ In autonomous mode, proceed without confirmation.
 
 Delegate the selected milestone to S-1 Problem as a structured intake.
 
-### Handoff to S-1
+### Step 4a: Handoff to S-1
 
 The milestone becomes S-1's problem input:
 
@@ -226,7 +226,7 @@ The milestone becomes S-1's problem input:
 
 **Invoke S-1** — pass the constructed intake to the Problem lifecycle. S-1 runs its full lifecycle (Branch → Author → Triage → Implement → Report).
 
-### Branch naming
+### Step 4b: Branch naming
 
 When S-1 creates a feature branch for a roadmap milestone, use the pattern:
 
@@ -238,7 +238,7 @@ Example: `solve/my-project/milestone-3`
 
 This nested path structure distinguishes roadmap-driven branches from ad-hoc problem branches (`solve/<problem-slug>`). The path nesting prevents namespace collisions — a problem slug would need to contain a `/` to conflict, which is not permitted in slug generation.
 
-### Two-level resume
+### Step 4c: Two-level resume
 
 S-2 delegates to S-1, creating two levels of resume state:
 
@@ -258,7 +258,7 @@ On resume:
 
 The two levels compose naturally because each uses independent state storage. S-2 does not need to track S-1's internal state — it only needs to know whether the milestone is complete.
 
-### Session boundaries
+### Step 4d: Session boundaries
 
 A single milestone may exceed session limits. When this happens:
 1. S-1 reports its progress at the current group boundary
@@ -281,7 +281,7 @@ After S-1 completes (or partially completes) a milestone, update the roadmap fil
 
 3. **Stage the updated roadmap file** — `git add <roadmap-path>`
 
-### Continuation
+### Step 5a: Continuation
 
 After updating, check if more milestones remain:
 - If yes → return to step 3 (select next milestone)

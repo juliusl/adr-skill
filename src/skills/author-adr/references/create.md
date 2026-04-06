@@ -108,15 +108,15 @@ Verify these five criteria before beginning a decision:
 - **R** — **Requirements** / criteria documented
 - **T** — **Template** chosen
 
-### Identifying Big/Early Decisions
+### Step 2a: Identifying Big/Early Decisions
 
 Look for 7 markers: high significance, financial cost, long execution time, many dependencies, long decision-making time, high abstraction level, unusual problem/solution space.
 
-### Most Responsible Moment
+### Step 2b: Most Responsible Moment
 
 Don't decide too early (reduces flexibility) or too late (causes costly rework). The MRM is the point where waiting costs more than deciding now.
 
-### ADMM — 5 Logical Steps
+### Step 2c: ADMM — 5 Logical Steps
 
 1. Identification of design issue & options
 2. Criteria collection & option analysis
@@ -126,7 +126,7 @@ Don't decide too early (reduces flexibility) or too late (causes costly rework).
 
 ## Step 3: Draft the ADR
 
-### Draft Worksheet Integration
+### Step 3a: Draft Worksheet Integration
 
 Before drafting, check if a **Draft Worksheet** exists in the ADR's `## Comments` section (per ADR-0032). If present, use it to ground the drafting process:
 
@@ -166,7 +166,7 @@ Verify these six criteria before considering the ADR complete:
 5. **Actionable Consequences** — consequences specific enough to derive test/acceptance criteria
 6. **Dependency Visibility** — links to related ADRs, systems, or prerequisites are explicit
 
-### Quick Self-Test
+### Step 5a: Quick Self-Test
 
 1. Have we decided between ≥2 genuine options?
 2. Have we captured and shared the decision?

@@ -22,7 +22,7 @@ Prototype ──► Proposed ──► Accepted ──► Deprecated
 
 **Workflow note:** In the local agent-developer workflow, new ADRs start as `Prototype`. The author promotes to `Proposed` when the decision is ready for team review (e.g., before opening a PR). ADRs may also go directly from `Prototype` to `Planned` via the `implement-adr` skill if the author chooses to skip team review and proceed straight to implementation.
 
-### Transitioning Status
+## M-1: Transitioning Status
 
 Use the Makefile `status` target:
 
@@ -42,9 +42,9 @@ make -f <skill-root>/Makefile status NUM=3 STATUS=Deprecated
 - The `Accepted` status is set by the `implement-adr` skill after successful plan execution — `author-adr` does not transition ADRs to `Accepted`.
 - The `Planned` status is used by the `implement-adr` skill when an ADR has been decomposed into a plan but not yet fully implemented. Both `Prototype` and `Proposed` ADRs can transition to `Planned`.
 
-## Superseding Decisions
+## M-2: Superseding Decisions
 
-### When to Supersede vs. Amend
+### M-2a: When to Supersede vs. Amend
 
 | Situation | Action |
 |-----------|--------|
@@ -54,7 +54,7 @@ make -f <skill-root>/Makefile status NUM=3 STATUS=Deprecated
 | Adding detail that doesn't change the decision | **Amend** — edit the existing ADR in place |
 | Extending scope beyond the original decision | **Supersede** — the new scope is a new decision |
 
-### Superseding Workflow
+### M-2b: Superseding Workflow
 
 1. Create the new ADR with the `SUPERSEDE` parameter:
 
@@ -68,11 +68,11 @@ make -f <skill-root>/Makefile status NUM=3 STATUS=Deprecated
 
 3. The new ADR starts in `Proposed` status — it still needs to go through its own acceptance process.
 
-## Linking Related ADRs
+## M-3: Linking Related ADRs
 
 ADRs often relate to each other without one replacing the other. Use links to express these relationships.
 
-### Relationship Types
+### M-3a: Relationship Types
 
 | Relationship | When to Use | Example |
 |-------------|-------------|---------|
@@ -82,7 +82,7 @@ ADRs often relate to each other without one replacing the other. Use links to ex
 | **Related to** | Decisions in the same problem space | ADR-6 related to ADR-4 |
 | **Constrains / Constrained by** | Limits options for another | ADR-3 constrains ADR-8 |
 
-### Linking with the Makefile (Nygard format only)
+### M-3b: Linking with the Makefile (Nygard format only)
 
 ```bash
 make -f <skill-root>/Makefile link SOURCE=5 LINK="amends" TARGET=3 REVERSE="amended by"
@@ -90,17 +90,17 @@ make -f <skill-root>/Makefile link SOURCE=5 LINK="amends" TARGET=3 REVERSE="amen
 
 For MADR format, add links manually by editing the ADR files directly.
 
-### Best Practices for Linking
+### M-3c: Best Practices for Linking
 
 - Link bidirectionally — if ADR-5 amends ADR-3, both should mention the link.
 - Keep link text concise — use the relationship type as the link label.
 - Don't over-link — only express relationships that aid navigation or understanding. Not every ADR in the same domain needs to link to every other.
 
-## Splitting Mega-ADRs
+## M-4: Splitting Mega-ADRs
 
 A Mega-ADR bundles too many decisions into one document. Signs that an ADR should be split:
 
-### Signs of a Mega-ADR
+### M-4a: Signs of a Mega-ADR
 
 - The Decision section describes more than one distinct choice
 - The Consequences section has items that only relate to some of the decisions
@@ -108,7 +108,7 @@ A Mega-ADR bundles too many decisions into one document. Signs that an ADR shoul
 - The ADR is longer than ~2 pages (rough guideline)
 - Alternatives are only compared for some decisions but not others
 
-### Splitting Process
+### M-4b: Splitting Process
 
 1. Identify the distinct decisions within the Mega-ADR.
 2. Create a new ADR for each distinct decision using `make new`.

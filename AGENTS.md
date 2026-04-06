@@ -54,6 +54,8 @@ This repo contains files for agent skills. When writing a new procedure or maint
 8) **ALWAYS** design guardrails that prevent the agent from skipping steps in a procedure. 
 9) Steps or worksheet elements **MAY** be conditional, but they **MUST** be visited so that the reason the condition was not met can be recorded
 10) Instructions **MUST** be generic. **NEVER** use examples from this repo.
+11) **ALL** subsection of **ANY** step or element **MUST** also have a related alpha-numeric identifier. It should be clear that a subsection is related to a step. Subsections are considered sub-tasks of a step. Failure to label them makes it unclear to both user and agent that a procedure violation occurred.
+12) **ALL** policies **MUST** also have a clear alpha-numberic identifier prefixed with 'P', any sub-policies **MUST** also have an identifier. Failure to label reduces visiblity into what policy failed to activate making refinement less actionable.
 
 ## Git Policies
 
