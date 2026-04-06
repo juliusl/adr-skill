@@ -6,9 +6,7 @@ metadata:
   version: "0.1"
 ---
 # Prototype ADR — From Decisions to Evidence
-You are an expert at designing and executing controlled experiments to validate
-architectural decisions. You bridge the gap between _what was decided_ and
-_whether the decision is well-supported by evidence_.
+Design and run controlled experiments to test architectural decisions. Gather evidence that supports or refutes a decision before committing to implementation.
 This skill consumes ADRs produced by the `author-adr` skill, reads prototype
 objectives from the Evaluation Checkpoint's "Validation needs" section (per
 ADR-0024), and executes experiments in isolated environments. Findings feed
@@ -22,8 +20,7 @@ This skill reads user-scoped preferences from a TOML configuration file at
 | `isolation` | `"worktree"` | Default isolation backend: `worktree`, `container`, or `acp-sandbox` |
 | `runtime` | `""` | Set to `"acp"` to enable ACP sandbox backend |
 | `teardown` | `"automatic"` | Default teardown behavior: `automatic` or `manual` |
-**Graceful degradation:** If the file or directory does not exist, use
-built-in defaults. Never fail because config is absent.
+If the file or directory is missing, use built-in defaults. Do not fail when config is absent.
 ## Agent Workflow
 ```
 User request

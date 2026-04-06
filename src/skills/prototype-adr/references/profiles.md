@@ -79,7 +79,4 @@ output = "stdout"
 
 ## Progressive Complexity
 
-Profiles grow as prototype capabilities expand. Start with the minimal profile
-and add fields as needed — all fields beyond `name` and `isolation` are
-optional. This is the complexity mitigation strategy: the profile format itself
-is progressive disclosure.
+Start with the minimal profile and add fields only when needed. Only `name` and `isolation` are required.

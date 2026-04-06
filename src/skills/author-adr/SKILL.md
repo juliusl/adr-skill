@@ -15,6 +15,15 @@ This skill reads user-scoped preferences from a TOML configuration file at `~/.c
 2. Otherwise, use `$HOME/.config/adr-skills/preferences.toml`.
 **Graceful degradation:** If the file or directory does not exist, use built-in defaults. Never fail because config is absent.
 **Create on first write:** When persisting a preference, create the directory with `mkdir -p` before writing. Never assume it already exists.
+
+## Writing Style
+
+All generated content (ADRs, comments, review findings) must follow this style:
+- **Technical and simple** — write for engineers, not academics
+- **No double negatives** — say what things *do*, not what they don't not do
+- **Clear logic** — one idea per sentence, explicit cause-and-effect
+- **Concise** — cut filler words; if a sentence works without a word, remove it
+
 ### Project-Scoped Directory (`.adr/`)
 Per ADR-0020, projects can opt in to a `.adr/` directory at the project root for project-scoped data (telemetry, intermediate artifacts, project-level preferences). This is separate from `docs/adr/` (decision records) and `~/.config/adr-skills/` (user preferences).
 Bootstrap with: `make -f <skill-root>/Makefile init-data`

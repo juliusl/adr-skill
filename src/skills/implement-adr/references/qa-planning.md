@@ -18,7 +18,7 @@ Three distinct agent roles ensure no agent reviews its own work:
 | **QA planner** | Separate general-purpose agent | Generates the QA plan (adversarial: "how could this go wrong?") |
 | **QA executor** | Separate general-purpose agent (per stage) | Validates completed stage code against QA checks |
 
-The main executor must not write its own QA plan. The agent that executes stage tasks must not QA its own work. This mirrors the software engineering principle that developers do not write their own QA test plans.
+The main executor must not write its own QA plan, and the agent that executes stage tasks must not QA its own work.
 
 ## QA Plan Generation
 

@@ -49,7 +49,7 @@ If a task is estimated as `[heavy]`, consider whether it can be decomposed into 
 - Are there independent sub-components? → Split into multiple `[medium]` tasks
 - Is research or prototyping needed first? → Add a `[small]` spike task
 
-A `[heavy]` estimate is acceptable when the complexity is inherent and indivisible, but it should be the exception rather than the norm.
+Use `[heavy]` only when the work cannot be split further.
 
 ### Uncertainty Premium
 

@@ -38,7 +38,7 @@ Look for 7 markers: high significance, financial cost, long execution time, many
 
 ### Most Responsible Moment
 
-Don't decide too early (reduces flexibility) or too late (causes costly rework). The MRM is the last point at which the cost of deferral begins to exceed the cost of deciding now.
+Don't decide too early (reduces flexibility) or too late (causes costly rework). The MRM is the point where waiting costs more than deciding now.
 
 ### ADMM — 5 Logical Steps
 
@@ -107,8 +107,8 @@ When defining evaluation criteria, normalize DOWN to the same abstraction level 
 
 **Y-Statement Template:**
 > In the context of **{use case}**, facing **{concern}**, we decided for
-> **{option}** and neglected **{alternatives}**, to achieve **{benefits}**,
-> accepting that **{drawbacks}**.
+> we chose **{option}** over **{alternatives}** to achieve **{benefits}**,
+> accepting **{drawbacks}**.
 
 **Good justifications (grounded in):**
 - Prior successful project experience in a similar context

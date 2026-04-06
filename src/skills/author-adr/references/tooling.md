@@ -129,7 +129,7 @@ To add support for a new format (e.g., MADR):
 
 ### When to Use Diagrams
 
-Use diagrams when complex relationships between processes or entities are better understood visually. Humans tend to have limited working memory, and visualizations can compress information into a digestible format. However, by that same token, overuse of visualizations can overload context — so use them sparingly and only when they genuinely clarify what prose or tables cannot.
+Use diagrams when they clarify structure that prose or tables cannot. Skip them otherwise — too many diagrams overload context.
 
 **Good uses for diagrams:**
 - ADR status transitions (state diagram)
@@ -150,7 +150,7 @@ See [assets/mermaid-chart-examples.md](../assets/mermaid-chart-examples.md) for 
 
 ### Markdown Tables for Comparisons
 
-When presenting decision justification, use markdown tables to condense the analysis. Tables are lower-overhead than diagrams, scannable, and keep the ADR focused on substance:
+When presenting decision justification, use markdown tables to condense the analysis. Tables are easier to scan and keep the ADR focused:
 
 ```markdown
 | Criteria   | Option A  | Option B  | Option C  |

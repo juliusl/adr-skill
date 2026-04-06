@@ -10,9 +10,7 @@ general-purpose sub-agent with a structured review prompt derived from this
 reference. The reviewer reads both the source ADR(s) and the generated plan,
 then produces a finding report.
 
-The review is mandatory — it runs for every plan, regardless of participation
-mode. The cost (~3 minutes per cycle) is small relative to the cost of
-silently unimplemented requirements.
+The review is mandatory for every plan. The ~3 minute cost per cycle is small compared with missed requirements.
 
 ## Review Checklist
 

@@ -61,7 +61,4 @@ After prototyping completes, observations feed back into the ADR lifecycle:
 
 ## Integration with implement-adr
 
-The JSONL observation format aligns with ADR-0021's implementation summary
-format — both use pipe/field-delimited structured data extractable by awk/jq.
-This consistency enables tooling that works across both prototyping and
-implementation artifacts.
+The JSONL observation format matches the implementation summary format (ADR-0021), so the same awk/jq tooling works for both.

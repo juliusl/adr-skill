@@ -32,7 +32,7 @@ When the ADR author checks `[x] Integration tests`, the decision involves a depe
 
 1. **If integration tests already exist** for the relevant dependency — add criteria to keep them up to date with the changes introduced by this decision. Existing tests must be extended or modified to cover the new behavior.
 
-2. **If integration tests do not yet exist** — add a task to create them. If creating integration tests requires infrastructure or tooling decisions that are not yet made (e.g., choosing a test container strategy, setting up a mock service), recommend that the user schedule an ADR to address the integration testing gap rather than making ad-hoc tooling decisions in the implementation plan.
+2. **If integration tests do not yet exist** — add a task to create them. If creating integration tests requires infrastructure or tooling decisions that are not yet made (e.g., choosing a test container strategy, setting up a mock service), recommend an ADR for the integration testing gap instead of making ad-hoc tooling choices in the plan.
 
 ### Additional Quality Concerns
 

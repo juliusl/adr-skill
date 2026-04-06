@@ -13,8 +13,17 @@ This skill reads user-scoped preferences from a TOML configuration file at `~/.c
 **Path resolution:**
 1. If `$XDG_CONFIG_HOME` is set, use `$XDG_CONFIG_HOME/adr-skills/preferences.toml`.
 2. Otherwise, use `$HOME/.config/adr-skills/preferences.toml`.
-**Graceful degradation:** If the file or directory does not exist, use built-in defaults. Never fail because config is absent.
+If the file or directory is missing, use built-in defaults. Do not fail when config is absent.
 **Create on first write:** When persisting a preference, create the directory with `mkdir -p` before writing. Never assume it already exists.
+
+## Writing Style
+
+All generated content (plans, QA plans, review findings, implementation summaries) must follow this style:
+- **Technical and simple** — write for engineers, not academics
+- **No double negatives** — say what things *do*, not what they don't not do
+- **Clear logic** — one idea per sentence, explicit cause-and-effect
+- **Concise** — cut filler words; if a sentence works without a word, remove it
+
 ## Agent Workflow
 ```
 User request
@@ -145,7 +154,7 @@ Read the [Plan Review Protocol](references/plan-review.md) for the full reviewer
 4. If **Plan Approved** — proceed to Step 5.
 5. If **Plan Needs Revision** — revise the plan to address findings and re-submit to the reviewer (max 3 cycles).
 6. After 3 rejection cycles — activate the **user escape hatch**: present remaining findings to the user with options to address, reject (with rationale), or defer each finding.
-The review runs regardless of participation mode. It is mandatory because the prototype validated that even simple plans miss items (~24% gap rate observed on 49 checks).
+The review is mandatory — a prototype found gaps in ~24% of checks (49 total).
 ### Step 4b — QA Plan Generation (Mandatory)
 After the plan-reviewer approves the plan (Step 4), spawn a **separate general-purpose agent** to generate the QA plan. The main executor must not write its own QA plan — this is the same separation principle that prevents developers from writing their own QA test plans.
 Read the [QA Planning Protocol](references/qa-planning.md) for the full QA planner prompt, procedural checklists (6 security + 7 UX items), test-gap analysis, and finding eligibility gate.

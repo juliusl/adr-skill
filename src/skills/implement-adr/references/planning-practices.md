@@ -52,7 +52,7 @@ If a task feels too large (rule of thumb: more than ~200 lines of code or touche
 
 ## Gap Detection
 
-Before generating tasks, systematically check for missing decisions.
+Before generating tasks, check for missing decisions.
 
 ### Heuristic Checklist
 
