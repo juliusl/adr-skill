@@ -1,7 +1,7 @@
 # 44. Extract solve-adr skill for scenario-driven problem solving
 
 Date: 2026-04-06
-Status: Prototype
+Status: Planned
 Last Updated: 2026-04-05
 Links:
 - [ADR-0019: Problem-first solve task](0019-add-problem-first-solve-task-to-author-adr-workflow.md)
@@ -100,14 +100,14 @@ Create `src/skills/solve-adr/` but make it a pure dispatcher with no domain logi
 ## Evaluation Checkpoint (Optional)
 <!-- Gate: Options → Decision. Agent assesses and recommends. -->
 
-**Assessment:** Pause for validation
+**Assessment:** Proceed
 
 - [x] All options evaluated at comparable depth
 - [x] Decision drivers are defined and referenced in option analysis
 - [x] No unacknowledged experimentation gaps (ADR-0022 tolerance check)
 
 **Validation needs:**
-- Verify that prompt-based cross-skill invocation works for the S-1 workflow (agent can invoke `/author-adr` to create ADRs mid-scenario and resume the solve workflow after)
+- ~~Verify that cross-skill invocation works for the S-1 workflow~~ — **Partially validated.** Prototype confirmed Makefile targets and reference files work across skill boundaries. Full validation of `skill` tool invocation (solve-adr invoking `/author-adr` mid-scenario) is deferred to implementation — the platform constraint ("do not invoke a skill that is already running") permits invoking a *different* skill, but end-to-end context preservation across skill switches needs live testing.
 
 ## Decision
 
@@ -167,9 +167,19 @@ S-1.8: Handoff — offer /implement-adr for execution
 
 ### Cross-Skill Invocation Mechanism
 
-The solve-adr agent delegates to companion skills by instructing the user (or, in autonomous mode, directly invoking) the target skill with the relevant ADR path. The mechanism is **prompt-based delegation**: the agent outputs a skill invocation instruction (e.g., "invoke `/author-adr` to create an ADR for this decision") and the platform routes it to the target skill's SKILL.md.
+The solve-adr agent delegates to companion skills by invoking them via the `skill` tool:
 
-This is not a sub-agent launch or file-based contract — it is the same mechanism a user employs when manually switching skills. The solve-adr agent manages the orchestration state (which scenario step it's on, which ADRs have been created) and delegates atomic operations to the companion skills.
+```
+skill: "author-adr"   — when a decision needs to be recorded, reviewed, or revised
+skill: "prototype-adr" — when an assumption needs experimental validation
+skill: "implement-adr" — when an accepted decision needs execution
+```
+
+Each invocation loads the target skill's SKILL.md into the conversation context. The target skill runs its full procedure (e.g., author-adr's A-0 → A-1 → A-2 → A-3). When the target skill completes, the solve-adr agent resumes its scenario from the conversation history.
+
+The constraint "do not invoke a skill that is already running" permits this pattern: solve-adr and author-adr are different skills. The solve-adr agent invokes author-adr, author-adr runs to completion, then the agent continues with solve-adr's next scenario step.
+
+The agent's orchestration state (which scenario step, which problem, which ADRs created) is maintained in the conversation context — not in skill-scoped storage. This is what enables cross-skill delegation without state loss.
 
 ### Defensive Logging Principle
 
