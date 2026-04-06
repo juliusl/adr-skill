@@ -8,35 +8,7 @@ metadata:
 # Implement ADR — From Decisions to Plans
 You are an expert at turning Architectural Decision Records into structured, actionable implementation plans. You bridge the gap between _what was decided_ and _how to build it_.
 This skill consumes ADRs produced by the `author-adr` skill (or any Nygard/MADR-formatted ADR) and generates a `plan.md` with staged tasks, test criteria, cost estimates, and full traceability back to the source decisions.
-## Configuration
-This skill reads user-scoped preferences from a TOML configuration file at `~/.config/adr-skills/preferences.toml` (per ADR-0011 and ADR-0012).
-**Path resolution:**
-1. If `$XDG_CONFIG_HOME` is set, use `$XDG_CONFIG_HOME/adr-skills/preferences.toml`.
-2. Otherwise, use `$HOME/.config/adr-skills/preferences.toml`.
-If the file or directory is missing, use built-in defaults. Do not fail when config is absent.
-**Create on first write:** When persisting a preference, create the directory with `mkdir -p` before writing. Never assume it already exists.
-
-## Writing Style
-
-All generated content (plans, QA plans, review findings, implementation summaries) must follow this style:
-- **Technical and simple** — write for engineers, not academics
-- **No double negatives** — say what things *do*, not what they don't not do
-- **Clear logic** — one idea per sentence, explicit cause-and-effect
-- **Concise** — cut filler words; if a sentence works without a word, remove it
-
-## Agent Workflow
-```
-User request
-├─ docs/adr/ exists? ────────────► List ADRs → check config → user selects scope
-├─ docs/adr/ missing? ──────────► Recommend: use author-adr skill first
-│
-├─ "Implement this ADR" ────────► Go to: Generating an Implementation Plan
-├─ "What's missing?" ───────────► Go to: Gap Detection
-├─ "Estimate effort" ───────────► Go to: Cost Estimation
-├─ "Explain plan structure" ────► Go to: Plan Structure
-└─ "Show plan template" ────────► Go to: Template Reference
-```
-### Procedure
+## Procedure
 
 | ID | Step | Mandatory | Description |
 |----|------|-----------|-------------|
@@ -55,7 +27,34 @@ User request
 **If a mandatory step is skipped, log the justification inline before proceeding.** Skipping without justification is a workflow violation.
 
 **Dispatch config:** Use configured agents from `preferences.toml`. Do not substitute `general-purpose` when a custom agent is configured.
-### Step 0 — Locate ADRs
+```
+User request
+├─ docs/adr/ exists? ────────────► List ADRs → check config → user selects scope
+├─ docs/adr/ missing? ──────────► Recommend: use author-adr skill first
+│
+├─ "Implement this ADR" ────────► Go to: Generating an Implementation Plan
+├─ "What's missing?" ───────────► Go to: Gap Detection
+├─ "Estimate effort" ───────────► Go to: Cost Estimation
+├─ "Explain plan structure" ────► Go to: Plan Structure
+└─ "Show plan template" ────────► Go to: Template Reference
+```
+## Configuration
+This skill reads user-scoped preferences from a TOML configuration file at `~/.config/adr-skills/preferences.toml` (per ADR-0011 and ADR-0012).
+**Path resolution:**
+1. If `$XDG_CONFIG_HOME` is set, use `$XDG_CONFIG_HOME/adr-skills/preferences.toml`.
+2. Otherwise, use `$HOME/.config/adr-skills/preferences.toml`.
+If the file or directory is missing, use built-in defaults. Do not fail when config is absent.
+**Create on first write:** When persisting a preference, create the directory with `mkdir -p` before writing. Never assume it already exists.
+
+## Writing Style
+
+All generated content (plans, QA plans, review findings, implementation summaries) must follow this style:
+- **Technical and simple** — write for engineers, not academics
+- **No double negatives** — say what things *do*, not what they don't not do
+- **Clear logic** — one idea per sentence, explicit cause-and-effect
+- **Concise** — cut filler words; if a sentence works without a word, remove it
+
+### I-0: Locate ADRs
 1. Check for `docs/adr/` directory in the repository.
 2. **If missing:** Tell the user no ADRs were found. Recommend using the `author-adr` skill to create decision records before planning implementation. Stop here.
 3. **If present:** List ADRs using: ```bash ls docs/adr/*.md ```
@@ -63,7 +62,7 @@ User request
    - If set, store for use in Step 6 (applied silently, skip corresponding prompts).
    - If absent, proceed silently — preferences will be established interactively in Step 6 and optionally saved.
 5. Ask the user which ADR(s) to implement. Accept one or more by number.
-### Step 1 — Read and Analyze ADRs
+### I-1: Read and Analyze
 1. Read the full content of each selected ADR.
 2. Extract the structured sections:
    - **Status** — only proceed with `Prototype`, `Proposed`, `Accepted`, or `Planned` ADRs. Warn if status is `Deprecated` or `Superseded`.
@@ -72,7 +71,7 @@ User request
    - **Consequences** — note positive outcomes to preserve, negative outcomes to mitigate, and neutral observations.
    - **Quality Strategy** — read the checklist to identify which quality concerns the author flagged. Checked items (`[x]`) indicate required testing or quality gates; struck-through items (`~~`) indicate not applicable. Carry these forward into task test criteria in Step 3.
 3. If the ADR links to other ADRs, read those too and include them in scope.
-### Step 2 — Gap Detection
+### I-2: Gap Detection
 Before generating a plan, evaluate whether the ADR(s) contain sufficient detail. For each major component implied by the decision, check:
 - Is there a clear architectural direction? (e.g., chosen technology, pattern)
 - Are the key interfaces or boundaries defined?
@@ -82,7 +81,7 @@ Before generating a plan, evaluate whether the ADR(s) contain sufficient detail.
 2. Recommend that the user author an additional ADR for each gap using the `author-adr` skill.
 3. Ask the user whether to proceed with a partial plan or wait for the missing ADRs.
 Read the [Gap Detection Guide](references/planning-practices.md#gap-detection) for detailed heuristics.
-### Step 3 — Generate the Implementation Plan
+### I-3: Generate Plan
 Produce a `plan.md` file with the following structure. Use the [plan template](assets/templates/plan-template.md) as a starting point.
 #### 3a. Header and ADR References
 Start the plan with:
@@ -155,7 +154,7 @@ End the plan with a summary table:
 
 **Total estimated cost:** X small, Y medium, Z heavy
 ```
-### Step 4 — Plan Review (Sub-Agent)
+### I-4: Plan Review
 After generating the plan (Step 3) and before presenting it to the user, spawn a plan-reviewer sub-agent to verify the plan faithfully covers the source ADR's requirements.
 Read the [Plan Review Protocol](references/plan-review.md) for the full reviewer prompt, checklist, and iteration protocol.
 **Workflow:**
@@ -166,7 +165,7 @@ Read the [Plan Review Protocol](references/plan-review.md) for the full reviewer
 5. If **Plan Needs Revision** — revise the plan to address findings and re-submit to the reviewer (max 3 cycles).
 6. After 3 rejection cycles — activate the **user escape hatch**: present remaining findings to the user with options to address, reject (with rationale), or defer each finding.
 The review is mandatory — a prototype found gaps in ~24% of checks (49 total).
-### Step 4b — QA Plan Generation (Mandatory)
+### I-4b: QA Plan Generation
 After the plan-reviewer approves the plan (Step 4), spawn a **separate general-purpose agent** to generate the QA plan. The main executor must not write its own QA plan — this is the same separation principle that prevents developers from writing their own QA test plans.
 Read the [QA Planning Protocol](references/qa-planning.md) for the full QA planner prompt, procedural checklists (6 security + 7 UX items), test-gap analysis, and finding eligibility gate.
 **Workflow:**
@@ -174,14 +173,14 @@ Read the [QA Planning Protocol](references/qa-planning.md) for the full QA plann
 2. Spawn a `general-purpose` agent with `mode="background"`.
 3. The QA planner writes `docs/plans/<range>.<revision>.qa-plan.md`.
 QA plan generation is mandatory — it runs for every plan, regardless of participation mode. There is no opt-out.
-### Step 5 — Update ADR Statuses
+### I-5: Update ADR Status
 After generating the plan, update each source ADR whose status is `Prototype` or `Proposed` to `Planned`. This signals that the decision has been analyzed, decomposed into tasks, and is ready for implementation.
 **Guard rails:**
 - ADRs with status `Prototype` or `Proposed` are transitioned to `Planned`.
 - ADRs that are already `Accepted`, `Planned`, `Deprecated`, or `Superseded` are left unchanged.
 - If an ADR has an unexpected status, warn the user and ask whether to proceed.
 The status update is performed by editing the ADR file's `## Status` section in-place, replacing `Prototype` or `Proposed` with `Planned`.
-### Step 6 — Participation Check
+### I-6: Participation Check
 After updating ADR statuses, determine how the user wants to participate during implementation.
 1. **Check for existing preference:** If `[implement].participation` was loaded from the config file in Step 0, apply it and inform the user: > Using participation mode: **Guided** (from preferences.toml). > Say "change mode" at any time to switch. Skip to the auto-commit check (item 5).
 2. **If no preference exists**, prompt: > How much participation would you like during implementation? > 1. **Full control** — I'll review each stage and select what to start > 2. **Guided** — Summarize the plan, let me pick stages or request changes > 3. **Autonomous** — Execute the plan, check in at major milestones > 4. **Weighted** — Automatically adjust based on task complexity
@@ -222,7 +221,8 @@ After the user approves a sentinel task, the skill continues with subsequent tas
 #### Auto-Commit on Task Completion
 The skill supports an optional behavior: **create a git commit each time a task's acceptance criteria are all satisfied**. Opt-in, disabled by default.
 #### Stage Completion Sequence
-When all tasks in a stage are complete, follow this sequence:
+### I-7b: QA Validation (per stage)
+When all tasks in a stage are complete, run QA validation:
 1. **QA Validation** — if a QA plan exists (`docs/plans/<range>.<revision>.qa-plan.md`), spawn a **separate general-purpose QA executor agent** to review the stage's changes against the QA plan's checks for that stage. The agent that executed the tasks must not QA its own work. Read the [QA Planning Protocol](references/qa-planning.md#qa-execution) for the executor prompt.
    - **Pass** — mark QA checks `[x]` in the QA plan, proceed.
    - **Fail** — pause execution, report findings to the main executor, remediate before continuing.
@@ -252,6 +252,7 @@ This sequence is **mandatory regardless of participation mode**. Even in autonom
 | **Guided** | Yes | Commit after each completed task within approved stages |
 | **Autonomous** | Yes | Commit after each completed task; commit only task-related files without prompting when unrelated changes exist; still pause on hook failures |
 | **Weighted** | Yes | Commit after each completed task (autonomous or sentinel); same autonomous fallback for `[small]` tasks |
+### I-8: Finalize
 #### Implementation Summary (Auto-Commit Only)
 When auto-commit is enabled and plan execution completes (all tasks including the Finalize stage), append an awk-friendly implementation summary block to the end of the plan file. This provides persistent traceability between the plan and the commits produced during autonomous execution (per ADR-0021).
 **When to append:** After all tasks complete, only when auto-commit mode is active. In manual-commit mode, the user has direct oversight — do not append.
@@ -277,7 +278,7 @@ When auto-commit is enabled and plan execution completes (all tasks including th
 ```bash
 awk -f <skill-root>/scripts/extract-summary.awk docs/plans/NNNN.0.plan.md
 ```
-### Step 7 — Review and Iterate
+### I-7: Execute Plan
 1. Present the generated plan to the user.
 2. Ask if any stages or tasks need adjustment.
 3. If the user identifies additional gaps, go back to Step 2.
