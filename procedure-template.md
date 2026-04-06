@@ -27,9 +27,10 @@
 
 ---
 
-## Step Index
+## Procedure
 
-<!-- Rule 6: ALL steps and subsections MUST be listed in a summary table BEFORE the first detailed section. -->
+<!-- Rule 6: Summary table listing all steps/subsections BEFORE detailed sections. -->
+<!-- Rule 7: Clear logical flow BEFORE step details. -->
 
 | ID | Description |
 |----|-------------|
@@ -39,12 +40,6 @@
 | Step 2 | [One-line description] |
 | Step 2a | [One-line description of sub-task] |
 | Step 3 | [One-line description] |
-
----
-
-## Flow
-
-<!-- Rule 7: Procedure MUST have a clear and logical flow BEFORE step details. -->
 
 ```
 Step 1 — [action summary]
