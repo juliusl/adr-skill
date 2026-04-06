@@ -26,6 +26,16 @@ This skill consumes ADRs produced by the `author-adr` skill (or any Nygard/MADR-
 
 **If a mandatory step is skipped, log the justification inline before proceeding.** Skipping without justification is a workflow violation.
 
+## Assets
+
+| Path | Type | Description |
+|------|------|-------------|
+| `assets/templates/` | Templates | Plan and QA plan templates |
+| `assets/decisions/0003-*.md` | Decision | ADR-0003: Defines ADR status transitions during planning — referenced by I-5, I-8 |
+| `assets/decisions/0021-*.md` | Decision | ADR-0021: Defines implementation summary format appended to plans — referenced by I-8 |
+
+When a step references an ADR (e.g., "per ADR-0003"), read the corresponding file from `assets/decisions/`.
+
 **Dispatch config:** Use configured agents from `preferences.toml`. Do not substitute `general-purpose` when a custom agent is configured.
 ```
 User request
@@ -39,7 +49,7 @@ User request
 └─ "Show plan template" ────────► Go to: Template Reference
 ```
 ## Configuration
-This skill reads user-scoped preferences from a TOML configuration file at `~/.config/adr-skills/preferences.toml` (per ADR-0011 and ADR-0012).
+This skill reads user-scoped preferences from a TOML configuration file at `~/.config/adr-skills/preferences.toml`.
 **Path resolution:**
 1. If `$XDG_CONFIG_HOME` is set, use `$XDG_CONFIG_HOME/adr-skills/preferences.toml`.
 2. Otherwise, use `$HOME/.config/adr-skills/preferences.toml`.

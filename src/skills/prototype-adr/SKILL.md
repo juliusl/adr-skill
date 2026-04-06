@@ -8,8 +8,7 @@ metadata:
 # Prototype ADR — From Decisions to Evidence
 Design and run controlled experiments to test architectural decisions. Gather evidence that supports or refutes a decision before committing to implementation.
 This skill consumes ADRs produced by the `author-adr` skill, reads prototype
-objectives from the Evaluation Checkpoint's "Validation needs" section (per
-ADR-0024), and executes experiments in isolated environments. Findings feed
+objectives from the Evaluation Checkpoint's "Validation needs" section, and executes experiments in isolated environments. Findings feed
 back into the ADR lifecycle as empirical evidence.
 ## Procedure
 
@@ -38,7 +37,7 @@ User request
 
 ## Configuration
 This skill reads user-scoped preferences from a TOML configuration file at
-`~/.config/adr-skills/preferences.toml` (per ADR-0011 and ADR-0012).
+`~/.config/adr-skills/preferences.toml`.
 **Supported keys under `[prototype]`:**
 | Key | Default | Description |
 |-----|---------|-------------|
@@ -46,7 +45,7 @@ This skill reads user-scoped preferences from a TOML configuration file at
 | `runtime` | `""` | Set to `"acp"` to enable ACP sandbox backend |
 | `teardown` | `"automatic"` | Default teardown behavior: `automatic` or `manual` |
 If the file or directory is missing, use built-in defaults. Do not fail when config is absent.
-**Project-scoped overrides (ADR-0042):** If `.adr/preferences.toml` exists in the project root, its keys override user-scoped settings. This allows per-project experiment configuration without changing global preferences. Each skill reads only its own namespace — prototype-adr reads `[prototype]` keys and ignores others.
+**Project-scoped overrides:** If `.adr/preferences.toml` exists in the project root, its keys override user-scoped settings. This allows per-project experiment configuration without changing global preferences. Each skill reads only its own namespace — prototype-adr reads `[prototype]` keys and ignores others.
 
 **Config reading order:**
 1. `~/.config/adr-skills/preferences.toml` — user-scoped base config
@@ -129,7 +128,7 @@ git worktree remove .prototype/<adr-number>
 2. If findings invalidate → keep status at `Prototype`, recommend revisions
 3. Append findings summary to the ADR's Context section as new evidence
 ## Profile Management
-Profiles are declarative TOML files stored in `.adr/profiles/` (per ADR-0020).
+Profiles are declarative TOML files stored in `.adr/profiles/`.
 They define environment setup, not experiment logic.
 See [Profile Format Reference](references/profiles.md) for the full TOML schema
 and examples.

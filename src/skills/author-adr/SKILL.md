@@ -22,6 +22,18 @@ You are an expert on Architectural Decision Records. Use this skill whenever a u
 
 **If a mandatory step is skipped, log the justification inline before proceeding.** Skipping without justification is a workflow violation.
 
+## Assets
+
+| Path | Type | Description |
+|------|------|-------------|
+| `assets/templates/` | Templates | ADR templates (Nygard Agent, MADR, Y-Statement) |
+| `assets/decisions/0023-*.md` | Decision | ADR-0023: Defines prototype-adr skill for validation — referenced by A-3 review checkpoint handling |
+| `assets/decisions/0024-*.md` | Decision | ADR-0024: Defines Evaluation and Conclusion Checkpoint sections in template — referenced by A-0, A-2, A-3 |
+| `assets/decisions/0031-*.md` | Decision | ADR-0031: Defines dispatch hooks for review/editor agents — referenced by A-3, A-4 |
+| `assets/decisions/0032-*.md` | Decision | ADR-0032: Defines draft worksheet workflow — referenced by A-1 |
+
+When a step references an ADR (e.g., "per ADR-0031"), read the corresponding file from `assets/decisions/`.
+
 Follow the procedure table above. Always start at A-0.
 ```
 User request
@@ -41,7 +53,7 @@ User request
 ```
 
 ## Configuration
-This skill reads user-scoped preferences from a TOML configuration file at `~/.config/adr-skills/preferences.toml` (per ADR-0011 and ADR-0012).
+This skill reads user-scoped preferences from a TOML configuration file at `~/.config/adr-skills/preferences.toml`.
 **Path resolution:**
 1. If `$XDG_CONFIG_HOME` is set, use `$XDG_CONFIG_HOME/adr-skills/preferences.toml`.
 2. Otherwise, use `$HOME/.config/adr-skills/preferences.toml`.
@@ -57,7 +69,7 @@ All generated content (ADRs, comments, review findings) must follow this style:
 - **Concise** — cut filler words; if a sentence works without a word, remove it
 
 ### Project-Scoped Directory (`.adr/`)
-Per ADR-0020, projects can opt in to a `.adr/` directory at the project root for project-scoped data (telemetry, intermediate artifacts, project-level preferences). This is separate from `docs/adr/` (decision records) and `~/.config/adr-skills/` (user preferences).
+Projects can opt in to a `.adr/` directory at the project root for project-scoped data (telemetry, intermediate artifacts, project-level preferences). This is separate from `docs/adr/` (decision records) and `~/.config/adr-skills/` (user preferences).
 Bootstrap with: `make -f <skill-root>/Makefile init-data`
 This creates `.adr/`, `.adr/var/` (gitignored for transient data), and `.adr/.gitignore`. See [references/tooling.md](references/tooling.md) for details.
 ### Agent Dispatch (`[author.dispatch]`)
@@ -115,7 +127,7 @@ Per ADR-0032, a draft worksheet captures the author's original intent and workfl
    - **Create workflow** (user arrives with direction) — fill the worksheet **before** populating Context/Options. The user provides the framing upfront.
    - **Solve workflow** (user arrives with a problem) — fill the worksheet **after** the problem intake conversation. The agent drafts the worksheet from the conversation and the user confirms/adjusts.
 4. **Hand off** — after the worksheet is filled, proceed to [Creating an ADR](#creating-an-adr) or [Solving a Problem](#solving-a-problem). The create/solve workflows read the worksheet for grounding (see their respective references).
-**Comments area evolution:** The `## Comments` section (ADR-0016) now holds both the Draft Worksheet (pre-decision intent) and Revision Q&A entries (post-review dialogue). The Draft Worksheet always appears first, before any revision Q&A entries.
+**Comments area evolution:** The `## Comments` section holds both the Draft Worksheet (pre-decision intent) and Revision Q&A entries (post-review dialogue). The Draft Worksheet always appears first, before any revision Q&A entries.
 ### A-2: Create or Solve
 #### Creating an ADR
 Read [references/create.md](references/create.md) for the full creation workflow including significance assessment, readiness checks, good practices, and anti-patterns.
