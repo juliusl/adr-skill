@@ -9,7 +9,7 @@ SOLVE_SKILL_DIR     := $(CURDIR)/src/skills/solve-adr
 # Legacy alias so existing references keep working
 SKILL_DIR := $(AUTHOR_SKILL_DIR)
 
-.PHONY: help test build-tools install-agents install-user-copilot validate-setup validate validate-all check-refs
+.PHONY: help test build-tools install-agents install-skills validate-setup validate validate-all check-refs
 
 help: ## Show available targets
 	@echo "ADR Skill Development Makefile"
@@ -52,7 +52,7 @@ install-agents: ## Install custom agents (ADR_AGENTS_DIR overrides target)
 	fi; \
 	echo "Done. Agents installed to $$target_dir/"
 
-install-user-copilot: ## Install all skills to ~/.copilot/skills
+install-skills: ## Install all skills to ~/.copilot/skills
 	@echo 'Installing author-adr, implement-adr, prototype-adr, and solve-adr to ~/.copilot/skills'
 	@mkdir -p $(HOME)/.copilot/skills
 	@rm -rf $(HOME)/.copilot/skills/author-adr

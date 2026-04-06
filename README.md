@@ -95,7 +95,7 @@ This writes a plan under `docs/plans/` in the format `<ADR-RANGE>.<REVISION>.pla
 git clone github.com/juliusl/adr-skills
 
 # Install the skills to ~/.copilot/skills
-make install-user-copilot
+make install-skills
 ```
 
 ## Usage Tips

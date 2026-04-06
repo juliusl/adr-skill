@@ -1,3 +1,14 @@
+[solve]
+participation = "autonomous"
+auto_delegate = true
+
+[author.dispatch]
+editor = "juliusl-editor-v4"
+
+[implement]
+participation = "autonomous"
+auto_commit = true
+
 [prototype.persona]
 embed_source = true
 procedure = """

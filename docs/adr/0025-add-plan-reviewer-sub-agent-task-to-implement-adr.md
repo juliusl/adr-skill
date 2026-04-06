@@ -295,6 +295,6 @@ The reviewer is not optional — it always runs. This is a deliberate design cho
 ## Comments
 
 **2026-04-04 — Prototype finding: Makefile gap not caught by reviewer.**
-During implementation, the root Makefile's `install-user-copilot`, `check-refs`, and `validate-all` targets were not updated for the new `prototype-adr` skill. The plan-reviewer prototype did not catch this because the Makefile isn't referenced in the ADR. This suggests a 6th review check is needed: **Project integration** — if the plan creates new directories, scripts, or skills, verify the project's build/install/test infrastructure is updated to include them. This is a *convention-based* check, not an ADR-content check.
+During implementation, the root Makefile's `install-skills`, `check-refs`, and `validate-all` targets were not updated for the new `prototype-adr` skill. The plan-reviewer prototype did not catch this because the Makefile isn't referenced in the ADR. This suggests a 6th review check is needed: **Project integration** — if the plan creates new directories, scripts, or skills, verify the project's build/install/test infrastructure is updated to include them. This is a *convention-based* check, not an ADR-content check.
 
 <!-- No review cycle on record. -->
