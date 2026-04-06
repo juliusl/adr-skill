@@ -59,6 +59,8 @@ For each comment, offer the user three choices (when `[author.dispatch].editor` 
 
 - **Reject** — the user marks the comment as considered but declined. The user may optionally provide a reason. Record the rejection with its reason.
 
+> ⚠️ **Self-check:** If your rejection rationale uses words like "deferred," "at implementation time," "belongs in," or "out of scope," reconsider — you are likely describing a Defer, not a Reject.
+
 - **Defer** — the concern is valid but out of scope for this ADR. The user provides a redirect destination (e.g., "ADR-NNNN," "the implementing ADR," "a future decision about X"). Record the deferral with its redirect.
 
 #### Defer Mechanics

@@ -123,7 +123,9 @@ The review process covers:
 4. **Consequence validation** — interactively verify stated consequences with the user
 5. **7-point checklist** — structured quality assessment
 6. **Verdict** — Accept, Revise, or Rethink
-7. **Offer revision** — if the verdict is "Revise," offer to interactively address the review comments. If the user agrees, proceed to [Revising an ADR](#revising-an-adr).
+7. **Revision handoff** — if the verdict is "Revise":
+   - If `editor` is `"interactive"` (or absent): offer to interactively address the review comments. If the user agrees, proceed to [Revising an ADR](#revising-an-adr).
+   - If `editor` is an agent reference: automatically proceed to [Revising an ADR](#revising-an-adr) — the configured editor agent stands in for the user during triage. Do not ask for permission; the delegated editor handles the review→revise loop.
 ### Revising an ADR
 Read [references/revise.md](references/revise.md) for the full interactive revision workflow. Use this after a review produces a "Revise" verdict. When `[author.dispatch].editor` is configured with an agent reference (not `"interactive"`), the configured editor agent stands in for the user during triage — see [Agent Dispatch](#agent-dispatch-authordispatch).
 The revision process covers:
