@@ -1,0 +1,6 @@
+--- path traversal ---
+ERROR: invalid username '../etc' — only alphanumeric, hyphen, and underscore allowed
+--- special chars ---
+ERROR: invalid username 'user;rm' — only alphanumeric, hyphen, and underscore allowed
+--- valid username ---
+.adr/usr/docs/adr/valid-user_1-0001-safe-adr.md

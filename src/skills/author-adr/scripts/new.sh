@@ -93,6 +93,10 @@ case "$format" in
       adr_dir=".adr/usr/docs/adr"
       mkdir -p "$adr_dir"
       local_username="${ADR_USERNAME:-$(whoami)}"
+      if ! echo "$local_username" | grep -qE '^[a-zA-Z0-9_-]+$'; then
+        echo "ERROR: invalid username '$local_username' — only alphanumeric, hyphen, and underscore allowed" >&2
+        exit 1
+      fi
       last=0
       for f in "$adr_dir"/${local_username}-[0-9]*.md; do
         [ -f "$f" ] || continue

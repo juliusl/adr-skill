@@ -26,7 +26,12 @@ resolve_dir() {
 }
 
 resolve_username() {
-  echo "${ADR_USERNAME:-$(whoami)}"
+  local username="${ADR_USERNAME:-$(whoami)}"
+  if ! echo "$username" | grep -qE '^[a-zA-Z0-9_-]+$'; then
+    echo "ERROR: invalid username '$username' — only alphanumeric, hyphen, and underscore allowed" >&2
+    exit 1
+  fi
+  echo "$username"
 }
 
 adr_date() {
