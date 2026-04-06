@@ -1,7 +1,7 @@
 # 37. Add Delivered status and Deliverables section to wi-nygard-agent template
 
 Date: 2026-04-05
-Status: Proposed
+Status: Accepted
 Last Updated: 2026-04-05
 Links:
 - [ADR-0017: Nygard-agent template](0017-adopt-nygard-agent-template-as-default-adr-format.md)
