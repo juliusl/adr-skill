@@ -13,6 +13,8 @@ Self-contained reference for solving a problem. Read this file when the user has
 ```
 1. Intake — capture problem, constraints, stakeholders, enumerate decisions needed
    ↓
+1b. Branch — create solve/<slug> feature branch from current HEAD
+   ↓
 2. Author — load /author-adr context and run its procedure for all decisions
    ↓
 3. Triage — review returned ADRs, route evaluation-checkpoint-paused ones to /prototype-adr
@@ -28,6 +30,7 @@ Self-contained reference for solving a problem. Read this file when the user has
 - ADRs exist but some paused at Evaluation Checkpoint → enter step 3 (triage)
 - All ADRs are Proposed/reviewed but unimplemented → enter step 4 (implement)
 - Some ADRs are Accepted, others remain → enter step 4 for the remaining ones
+- On resume, check for an existing `solve/<slug>` branch — if found and unmerged, checkout it before continuing
 
 ---
 
@@ -69,6 +72,19 @@ If no worksheet exists:
    The scale check is advisory. In autonomous mode, apply the recommendation. In guided mode, present it and let the user decide.
 
 4. **Confirm the problem statement** — "Does this capture the problem accurately?"
+
+## Step 1b: Create Feature Branch
+
+After intake, create a feature branch to isolate the solve workflow's output.
+
+1. **Check working tree** — run `git status --porcelain`. If there are uncommitted changes, warn the user and ask them to commit or stash. Do not proceed with a dirty working tree.
+2. **Derive slug** — from the problem statement, generate a lowercase, hyphenated slug (max 50 chars). Store the slug in session state for resume discovery.
+3. **Check for existing branch** — run `git branch --list "solve/<slug>"`.
+   - If the branch exists and is unmerged → this is a resume. Checkout the branch and skip to the appropriate lifecycle step.
+   - If the branch exists but was already merged or deleted remotely → the previous solve is complete. Append `-2` (or next available suffix) to the slug.
+4. **Create and checkout** — `git checkout -b solve/<slug>`.
+
+All subsequent steps (author, triage, implement, report) operate on this branch. After the report step, stay on the branch — the user reviews via PR and merges.
 
 ## Step 2: Author
 
@@ -205,10 +221,12 @@ For each group in order:
 
 ## Step 5: Report
 
-After all groups complete (or execution stops):
+After all groups complete (or execution stops), stay on the feature branch and report:
 
 ```markdown
 ## Problem: [topic]
+
+**Branch:** `solve/<slug>` — ready for PR review
 
 | Group | ADRs | Status | Result |
 |-------|------|--------|--------|
