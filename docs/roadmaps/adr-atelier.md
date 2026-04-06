@@ -24,7 +24,7 @@ Each item under a milestone are high-level goals, but do not completely describe
 If an item has a gap, then it should be clear signal that an additional ADR is needed to cover the gap.
 
 ### Milestone 1
-- Add "wi-full-agent-adr" format which replaces "wi-nygard-agent-adr" format, See "wi-full-agent-adr" section for details
+- Add "wi-full-agent-adr" format which replaces "wi-nygard-agent-adr" format, See "Work-Item based full-agent ADR Format (wi-full-agent-adr)" section for details
 
 ### Milestone 2
 - Enable additional adr-db tables to store new data

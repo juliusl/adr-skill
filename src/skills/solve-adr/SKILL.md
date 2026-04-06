@@ -1,6 +1,6 @@
 ---
 name: solve-adr
-description: "Use this skill when the user wants to solve a problem through structured exploration — analyzing constraints, discovering options, making decisions, and driving implementation across the ADR skill ecosystem. Activate when the user says things like \"solve this problem,\" \"help me figure out,\" \"explore options for,\" \"I need to decide how to handle,\" or \"what's the best approach for.\" Also activate for multi-ADR orchestration: \"implement these ADRs,\" \"continue solving,\" \"solve remaining ADRs,\" or \"implement milestones X to Y.\" The skill orchestrates across /author-adr (decisions), /prototype-adr (experiments), and /implement-adr (execution). Do not use for creating a single ADR when the user already has a decision — use author-adr. Do not use for implementing an existing ADR — use implement-adr. Do not use for running a standalone experiment — use prototype-adr."
+description: "Use this skill when the user wants to solve a problem through structured exploration — analyzing constraints, discovering options, making decisions, and driving implementation across the ADR skill ecosystem. Activate when the user says things like \"solve this problem,\" \"help me figure out,\" \"explore options for,\" \"I need to decide how to handle,\" or \"what's the best approach for.\" Also activate for multi-ADR orchestration: \"implement these ADRs,\" \"continue solving,\" \"solve remaining ADRs,\" or \"implement milestones X to Y.\" Also activate for roadmap-driven workflows: \"solve this roadmap,\" \"process roadmap,\" \"continue roadmap,\" \"continue milestone N,\" or \"roadmap progress.\" The skill orchestrates across /author-adr (decisions), /prototype-adr (experiments), and /implement-adr (execution). Do not use for creating a single ADR when the user already has a decision — use author-adr. Do not use for implementing an existing ADR — use implement-adr. Do not use for running a standalone experiment — use prototype-adr."
 license: CC-BY-4.0
 metadata:
   version: "0.2"
@@ -16,7 +16,10 @@ In all scenarios, the agent must:
   - `/author-adr` is capable of authoring more than one ADR at a time, this skill only needs to provide the problem context and any pre-emptive options and let `/author-adr` take over
 - Use `/author-adr` review workflow for quality assurance on each decision
 - Never make a decision silently — if a choice affects architecture, it gets an ADR
-- When `auto_delegate = true`, implement accepted ADRs via `/implement-adr` — do not skip implementation based on the user's framing of the task (e.g., "design", "explore")
+- When `auto_delegate = true`, implement accepted ADRs via `/implement-adr` — do not skip implementation based on any framing of the output:
+  - Not the user's framing (e.g., "design", "explore")
+  - Not the agent's own rationalization (e.g., "these are just documentation files", "simple enough to do directly")
+  - Skill files (SKILL.md, references/, eval_queries.json) are executable agent instructions, not passive documentation — changes carry the same risk as code changes and require the full `/implement-adr` pipeline
 
 The solve-adr skill's primary output is a set of reviewed, accepted decisions — not code. The decisions are the audit trail.
 
@@ -30,6 +33,7 @@ The solve-adr skill's primary output is a set of reviewed, accepted decisions �
 |----|----------|-----------|-------------|
 | S-0 | Startup | Yes | Load preferences, check automation config, recommend missing settings |
 | S-1 | Problem | Conditional | Solve a problem — explore options, produce ADRs, implement them |
+| S-2 | Roadmap | Conditional | Solve a roadmap — process milestones sequentially, delegating each to S-1 |
 
 **Resume protocol:** Every solvable thing is resumable. When invoked on a problem that already has ADRs, the agent picks up where it left off — skipping completed steps, implementing remaining ADRs. Resume is not a separate scenario; it's how solve works across sessions.
 
@@ -50,7 +54,12 @@ User request
 ├─ "Implement these ADRs" ──────► S-0 → S-1: Problem (resume)
 ├─ "Continue solving" ──────────► S-0 → S-1: Problem (resume)
 ├─ "Solve remaining ADRs" ──────► S-0 → S-1: Problem (resume)
-└─ "Resume solving [topic]" ────► S-0 → S-1: Problem (resume)
+├─ "Resume solving [topic]" ────► S-0 → S-1: Problem (resume)
+├─ "Solve this roadmap" ────────► S-0 → S-2: Roadmap
+├─ "Process roadmap [path]" ────► S-0 → S-2: Roadmap
+├─ "Continue milestone N" ──────► S-0 → S-2: Roadmap (resume)
+├─ "Continue roadmap" ──────────► S-0 → S-2: Roadmap (resume)
+└─ "Roadmap progress" ──────────► S-0 → S-2: Roadmap (survey only)
 ```
 
 ## Configuration
@@ -156,6 +165,34 @@ solve-adr creates a feature branch to isolate its output from the user's working
 - **Step 3** — re-invoke `/author-adr` to complete convergence on validated ADRs
 - **Step 4** — invoke `/implement-adr` for each group (multi-ADR batch)
 
+### S-2: Roadmap
+
+Process a roadmap document milestone-by-milestone. Each milestone is delegated to S-1 Problem as a structured intake.
+
+Read [references/roadmap.md](references/roadmap.md) for the full workflow detail.
+
+**Lifecycle:**
+
+```
+1. Load — read and parse the roadmap document
+   ↓
+2. Survey — identify milestone progress (complete, in-progress, pending)
+   ↓
+3. Select — determine which milestone to work on next
+   ↓
+4. Solve — delegate milestone to S-1 Problem lifecycle
+   ↓
+5. Update — record milestone completion status
+   ↓
+6. Report — summarize roadmap progress
+```
+
+**On resume:** The agent reads the roadmap file and checks milestone status markers. No markers → step 1. Some milestones complete → step 3 (select next). A milestone in-progress with ADRs → step 4 (solve, resume). All complete → step 6 (report).
+
+**Branch naming:** Roadmap-driven branches use `solve/<project-slug>/milestone-<N>` to distinguish from ad-hoc problem branches.
+
+**Composition:** S-2 wraps S-1. All mandatory safeguards (plan review, QA, ADR for every decision) flow through S-1 unchanged. S-2 does not duplicate S-1's logic — it orchestrates milestone selection and progress tracking.
+
 ## Cross-Skill Invocation
 
 The solve-adr agent delegates to companion skills by invoking them via the `skill` tool:
@@ -175,3 +212,4 @@ The platform constraint "do not invoke a skill that is already running" permits 
 ## Deep References
 
 - **[references/problem.md](references/problem.md)** — Full Problem workflow: intake, batch authoring, triage, implementation delegation, resume protocol, progress tracking.
+- **[references/roadmap.md](references/roadmap.md)** — Full Roadmap workflow: document format, milestone parsing, survey, selection, S-1 delegation, progress tracking, resume protocol.

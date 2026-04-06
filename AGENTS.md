@@ -40,12 +40,29 @@ NEVER:
 
 ALWAYS, when encountering a broken test, STOP and fix the test before proceeding. A broken test is always in scope and ignoring it creates technical debt.
 
-## Git Policy
+## Agent Procedure Writing Policy
 
-Agents **must not** commit or push changes. Stage your work and let the
+This repo contains files for agent skills. When writing a new procedure or maintaining an existing procedure, follow these rules:
+
+1) Instructions for agents **MUST** be procedural similar to any type of legal documentation
+2) When gathering any type of user input, **PROACTIVELY** define a form/worksheet that can be followed procedurally
+3) **ALL** rules for directions or policies **MUST** be placed at the **TOP** of the document. Any rules appended to the end of a document cannot be followed when executing a direction. This includes nested rules for each individual step or element of a procedure or worksheet.
+4) **ALL** steps in the procedure must have a alpha-numeric identifier, and any reference to the step must use this identifier
+5) **ANY** worksheets, forms, or input intake must also have a clear alpha-numberic identifier
+6) **ALL** items with an identifier must be described in a table **BEFORE** they can be used in the document they belong to
+7) Procedure **MUST** have a clear and logical flow presented before any of the individual step details
+8) **ALWAYS** design guardrails that prevent the agent from skipping steps in a procedure. 
+9) Steps or worksheet elements **MAY** be conditional, but they **MUST** be visited so that the reason the condition was not met can be recorded
+10) Instructions **MUST** be generic. **NEVER** use examples from this repo.
+
+## Git Policies
+
+1) Agents **must not** commit or push changes. Stage your work and let the
 developer review, commit, and push manually.
 
-When asked to draft a commit message, use
+This policy can **only** be bypassed with **EXPLICIT** instructions given or delegated by the user.
+
+2) When asked to draft a commit message, use
 [Conventional Commits](https://www.conventionalcommits.org/) format:
 
 ```
@@ -105,7 +122,8 @@ adr-skills/
 │       ├── SKILL.md             # Skill entry point (scenario-based procedures)
 │       ├── Makefile             # Minimal — orchestrator has no scripts
 │       ├── references/          # On-demand documentation loaded by the agent
-│       │   └── solve.md         # S-1 Problem Exploration workflow detail
+│       │   ├── problem.md       # S-1 Problem Exploration workflow detail
+│       │   └── roadmap.md       # S-2 Roadmap workflow detail
 │       └── eval_queries.json    # Trigger evaluation queries for solve-adr
 ```
 
