@@ -6,6 +6,7 @@ mod init;
 mod ingest;
 mod models;
 mod schema;
+mod view;
 
 #[derive(Parser)]
 #[command(name = "adr-db")]
@@ -29,6 +30,27 @@ enum Commands {
         #[arg(long, default_value = ".adr/var/adr.db")]
         db_path: PathBuf,
     },
+    /// Inspect database contents (diagnostic, no stability guarantees).
+    ///
+    /// WARNING: This command is proto-porcelain. Output format, flags, and
+    /// behavior may change at any time. Do not depend on this output in
+    /// scripts or downstream tooling.
+    View {
+        /// Table name to inspect. Omit to list all tables.
+        table_name: Option<String>,
+        /// Output format: tsv (default) or jsonl
+        #[arg(long, default_value = "tsv")]
+        output: String,
+        /// Limit number of output rows
+        #[arg(long)]
+        limit: Option<i64>,
+        /// Suppress header row in TSV mode
+        #[arg(long)]
+        no_header: bool,
+        /// Path to the SQLite database file
+        #[arg(long, default_value = ".adr/var/adr.db")]
+        db_path: PathBuf,
+    },
 }
 
 fn main() {
@@ -43,6 +65,24 @@ fn main() {
         }
         Commands::Ingest { db_path } => {
             if let Err(e) = ingest::run_ingest(&db_path) {
+                eprintln!("error: {e}");
+                std::process::exit(1);
+            }
+        }
+        Commands::View {
+            table_name,
+            output,
+            limit,
+            no_header,
+            db_path,
+        } => {
+            if let Err(e) = view::run_view(
+                &db_path,
+                table_name.as_deref(),
+                &output,
+                limit,
+                no_header,
+            ) {
                 eprintln!("error: {e}");
                 std::process::exit(1);
             }
