@@ -4,6 +4,23 @@ Detailed guidance for decomposing ADRs into staged implementation plans.
 
 **All sections in this reference must be consulted during plan generation. If a section is skipped, log the justification inline before proceeding.** Skipping without justification is a workflow violation.
 
+| ID | Description |
+|----|-------------|
+| PP-1 | Stage Decomposition — group tasks into ordered execution stages |
+| PP-1a | Principles — stage ordering and sizing guidance |
+| PP-1b | Common Stage Patterns — layered, vertical slice, setup-then-feature |
+| PP-1c | Stage Naming — naming conventions |
+| PP-2 | Task Scoping — define self-contained, estimable tasks |
+| PP-2a | Self-Containment Checklist — verify task independence |
+| PP-2b | Splitting Oversized Tasks — when and how to split |
+| PP-3 | Gap Detection — identify missing decisions or information |
+| PP-3a | Heuristic Checklist — common gap patterns |
+| PP-3b | Gap Report Format — how to document gaps |
+| PP-3c | Proceeding with Partial Plans — when to continue despite gaps |
+| PP-4 | ADR Linkage — connect plan tasks to source ADR sections |
+| PP-4a | Referencing ADRs in Plans — plan-level ADR references |
+| PP-4b | Per-Task ADR References — task-level ADR section references |
+
 ## PP-1: Stage Decomposition
 
 Stages represent logical phases of implementation. They impose order on work and make progress visible.

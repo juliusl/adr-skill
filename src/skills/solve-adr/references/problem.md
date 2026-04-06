@@ -59,6 +59,25 @@ Every decision gets an ADR — even mid-execution discoveries.
 
 ---
 
+## Step Summary
+
+| ID | Description |
+|----|-------------|
+| Step 1 | Capture the problem — statement, constraints, stakeholders, enumerate decisions |
+| Step 1b | Create `solve/<slug>` feature branch from current HEAD |
+| Step 2 | Invoke `/author-adr` for all decisions in a single batch |
+| Step 2a | What to provide — problem statement, constraints, decision list |
+| Step 2b | What `/author-adr` does — full procedure per decision |
+| Step 2c | After author-adr returns — proceed to triage |
+| Step 3 | Classify each ADR's state and route accordingly |
+| Step 3a | Prototype routing — invoke `/prototype-adr` for paused ADRs |
+| Step 3b | Tracking — maintain running list of ADR post-triage status |
+| Step 4 | Group accepted ADRs and delegate to `/implement-adr` |
+| Step 4a | Survey on resume — identify the problem's ADRs and partition |
+| Step 4b | Group for delegation — build dependency graph, minimize invocations |
+| Step 4c | Delegate — invoke `/implement-adr` per group, track progress |
+| Step 5 | Report — summarize branch, groups, completion status, remaining work |
+
 ## Step 1: Problem Intake
 
 Capture the problem clearly. Do not jump to solutions. **Enumerate all decisions the problem requires** — this list drives the batch handoff in step 2.

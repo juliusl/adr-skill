@@ -128,6 +128,22 @@ A roadmap follows this structure:
 
 ---
 
+## Step Summary
+
+| ID | Description |
+|----|-------------|
+| Step 1 | Read and parse the roadmap document — extract context, milestones, supplementary sections |
+| Step 2 | Determine current progress by reading status markers and scanning for existing ADRs |
+| Step 3 | Select the next milestone to work on based on status and ordering |
+| Step 4 | Delegate the selected milestone to S-1 Problem as a structured intake |
+| Step 4a | Handoff to S-1 — map roadmap elements to S-1 intake fields |
+| Step 4b | Branch naming — use `solve/<project-slug>/milestone-<N>` pattern |
+| Step 4c | Two-level resume — milestone-level (S-2) + ADR-level (S-1) composition |
+| Step 4d | Session boundaries — handle session limits at milestone boundaries |
+| Step 5 | Update the roadmap file with milestone completion status markers |
+| Step 5a | Continuation — check for remaining milestones and loop or report |
+| Step 6 | Report roadmap progress — milestones, ADRs, current/next status |
+
 ## Step 1: Load
 
 Read and parse the roadmap document. Extract:

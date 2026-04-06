@@ -78,6 +78,22 @@ Watch for these fallacies when drafting and use the countermeasures:
 
 > AD making is a team sport — group decisions mitigate fallacy risk.
 
+## Step Summary
+
+| ID | Description |
+|----|-------------|
+| Step 1 | Assess architectural significance using the ASR Test |
+| Step 2 | Evaluate decision readiness — timing, urgency, reversibility |
+| Step 2a | Identifying big/early decisions |
+| Step 2b | Most responsible moment |
+| Step 2c | ADMM — 5 logical steps for decision-making |
+| Step 3 | Evaluation Checkpoint — gate between options and decision |
+| Step 3a | Draft Worksheet integration |
+| Step 4 | Convergence — transition from exploring to deciding |
+| Step 5 | Conclusion Checkpoint — verify before requesting review |
+| Step 5a | Quick self-test |
+| Step 6 | Rename ADR file — transition from TBD to titled |
+
 ## Step 1: Assess Architectural Significance (ASR Test)
 
 Before creating an ADR, verify that the decision is architecturally significant. Score the issue against these 7 criteria (takes 1–2 minutes):

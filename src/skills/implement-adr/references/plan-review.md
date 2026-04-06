@@ -14,6 +14,17 @@ The reviewer evaluates the plan against 6 checks:
 
 **All six checks must be evaluated. If a check is skipped, log the justification inline before proceeding.** Skipping without justification is a workflow violation.
 
+| ID | Description |
+|----|-------------|
+| Check 1 | Quality Strategy Coverage — verify plan tasks cover each checked ADR quality item |
+| Check 2 | Consequence Traceability — verify tasks realize positive consequences, mitigate negative |
+| Check 3 | AQC Coverage — verify Additional Quality Concerns are addressed |
+| Check 4 | Evaluation Checkpoint Coverage — verify deferred validation needs are in the plan |
+| Check 5 | Scope Completeness — verify plan covers the full decision scope |
+| Check 6 | Project Integration — verify build/install/test infrastructure is updated |
+| Review 7 | Iteration Protocol — cycle limit, revision process, user escape hatch |
+| Review 7a | User Escape Hatch — present remaining findings after 3 cycles |
+
 ### 1. Quality Strategy Coverage
 
 For each checked `[x]` item in the ADR's Quality Strategy section, verify at least one plan task or acceptance criterion addresses it.

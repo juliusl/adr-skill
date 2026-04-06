@@ -20,6 +20,27 @@ Three distinct agent roles ensure no agent reviews its own work:
 
 The main executor must not write its own QA plan, and the agent that executes stage tasks must not QA its own work.
 
+| ID | Description |
+|----|-------------|
+| QA-1 | QA Plan Generation — produce per-stage security and UX checks |
+| QA-1a | Input — what the QA planner receives |
+| QA-1b | Process — 5-step generation procedure |
+| QA-1c | Output — qa-plan.md file structure |
+| QA-2 | Test-Gap Analysis — find blind spots in dev acceptance criteria |
+| QA-2a | Example — illustrates a test gap |
+| QA-3 | Finding Eligibility Gate — classify findings as quality concerns vs preferences |
+| QA-3a | Eligible for scheduling (quality concerns) |
+| QA-3b | Not eligible — defer to follow-up iterations (preferences) |
+| QA-3c | Boundary case — UX-grounded design feedback |
+| QA-4 | QA Execution — stage boundary validation |
+| QA-4a | Enforcement — mandatory regardless of participation mode |
+| QA-4b | Stage Boundary Hook — spawn QA executor agent per stage |
+| QA-4c | Documenting Accepted Findings — rationale for won't-fix items |
+| QA-4d | Backwards Compatibility — handle plans without QA plans |
+| QA-5 | Prompt Templates — prompts for QA planner and executor agents |
+| QA-5a | QA Planner Agent Prompt |
+| QA-5b | QA Executor Agent Prompt |
+
 ## QA-1: QA Plan Generation
 
 ### QA-1a: Input

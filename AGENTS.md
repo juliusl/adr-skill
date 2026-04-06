@@ -2,7 +2,24 @@
 
 Instructions for agents and developers making changes to skills in this repo.
 
-## Writing Style
+## Policies
+
+All policies are listed here with identifiers. Detailed descriptions follow in the sections below.
+
+| ID | Policy | Description |
+|----|--------|-------------|
+| P-1 | Writing Style | Technical, simple, concise — no double negatives, clear logic |
+| P-1a | ADHD Friendly Guidelines | Logical ordering, frontloaded actions, visual chunking |
+| P-2 | Broken Test Policy | Stop and fix broken tests before proceeding |
+| P-3 | Agent Procedure Writing Policy | 12 rules for writing agent skill procedures |
+| P-4 | Git Policies | No commit/push without explicit user delegation |
+| P-4a | Conventional Commits | Use `type(scope): summary` format for commit messages |
+| P-5 | Formatting Convention | Use flat tables with classification columns for review artifacts |
+| P-6 | ADR References in Skills | Bundle behavioral ADR refs as assets; inline provenance-only refs |
+
+---
+
+## P-1: Writing Style
 
 All writing should follow this style
 
@@ -12,7 +29,7 @@ All writing should follow this style
 - **Concise** — cut filler words; if a sentence works without a word, remove it
 - **Do not arbitrarily wrap technical docs meant for agents** - If a document will be consumed by an agent, avoid manual wrapping in formatting.
 
-## ADHD Friendly Guidelines
+### P-1a: ADHD Friendly Guidelines
 
 In addition to the above writing style guidelines, writing must be presented in an ADHD friendly manner.
 
@@ -36,11 +53,11 @@ NEVER:
 
 - When giving a recommendation, do not preface the recommendation with this guideline, ADHD users do not need to be reminded that they have ADHD
 
-## Broken Test Policy
+## P-2: Broken Test Policy
 
 ALWAYS, when encountering a broken test, STOP and fix the test before proceeding. A broken test is always in scope and ignoring it creates technical debt.
 
-## Agent Procedure Writing Policy
+## P-3: Agent Procedure Writing Policy
 
 This repo contains files for agent skills. When writing a new procedure or maintaining an existing procedure, follow these rules:
 
@@ -48,24 +65,26 @@ This repo contains files for agent skills. When writing a new procedure or maint
 2) When gathering any type of user input, **PROACTIVELY** define a form/worksheet that can be followed procedurally
 3) **ALL** rules for directions or policies **MUST** be placed at the **TOP** of the document. Any rules appended to the end of a document cannot be followed when executing a direction. This includes nested rules for each individual step or element of a procedure or worksheet.
 4) **ALL** steps in the procedure must have a alpha-numeric identifier, and any reference to the step must use this identifier
-5) **ANY** worksheets, forms, or input intake must also have a clear alpha-numberic identifier
-6) **ALL** items with an identifier must be described in a table **BEFORE** they can be used in the document they belong to
+5) **ANY** worksheets, forms, or input intake must also have a clear alpha-numeric identifier
+6) **ALL** steps, subsections, and worksheet elements identified by Rules 4, 5, and 11 **MUST** be listed in a summary table with their identifier and a one-line description **BEFORE** the first detailed section. This table serves as the procedure's index — not to be confused with domain-specific tables (e.g., criteria checklists, status diagrams) that may also appear in the document.
 7) Procedure **MUST** have a clear and logical flow presented before any of the individual step details
 8) **ALWAYS** design guardrails that prevent the agent from skipping steps in a procedure. 
 9) Steps or worksheet elements **MAY** be conditional, but they **MUST** be visited so that the reason the condition was not met can be recorded
 10) Instructions **MUST** be generic. **NEVER** use examples from this repo.
 11) **ALL** subsection of **ANY** step or element **MUST** also have a related alpha-numeric identifier. It should be clear that a subsection is related to a step. Subsections are considered sub-tasks of a step. Failure to label them makes it unclear to both user and agent that a procedure violation occurred.
-12) **ALL** policies **MUST** also have a clear alpha-numberic identifier prefixed with 'P', any sub-policies **MUST** also have an identifier. Failure to label reduces visiblity into what policy failed to activate making refinement less actionable.
+12) **ALL** policies **MUST** also have a clear alpha-numeric identifier prefixed with 'P', any sub-policies **MUST** also have an identifier. Failure to label reduces visibility into what policy failed to activate making refinement less actionable.
 
-## Git Policies
+## P-4: Git Policies
 
 1) Agents **must not** commit or push changes. Stage your work and let the
 developer review, commit, and push manually.
 
 This policy can **only** be bypassed with **EXPLICIT** instructions given or delegated by the user.
 
-2) When asked to draft a commit message, use
-[Conventional Commits](https://www.conventionalcommits.org/) format:
+### P-4a: Conventional Commits
+
+When asked to draft a commit message, use
+<a href="https://www.conventionalcommits.org/">Conventional Commits</a> format:
 
 ```
 <type>(<scope>): <short summary>
@@ -75,6 +94,53 @@ This policy can **only** be bypassed with **EXPLICIT** instructions given or del
 
 Common types: `feat`, `fix`, `docs`, `refactor`, `test`, `chore`, `build`.
 Scope is optional but encouraged (e.g., `skill`, `makefile`, `tooling`).
+
+## P-5: Formatting Convention for Review Artifacts
+
+Use **tables** when presenting items for review or posterity (QA findings,
+recommendations, checklists). Do not split related items into separate
+sections — if items differ by a property (e.g., classification, status,
+action), add a **column** for that property instead. A single flat table is
+easier to scan than multiple subsections with separate tables.
+
+**Example — QA recommendations:** Instead of separate `### Quality Concerns`
+and `### Preferences` subsections with different table schemas, use one table
+with a `Classification` column:
+
+```markdown
+| # | Stage | Classification | Finding | Recommendation |
+|---|-------|----------------|---------|----------------|
+| 1 | 1 | Quality concern | Description | Action |
+| 2 | 2 | Preference | Description | Reason for deferral |
+```
+
+Extended prose (e.g., Won't Fix rationale) can follow the table under its own
+heading when needed.
+
+## P-6: ADR References in Skills
+
+Skills are installed to `~/.copilot/skills/` and run in any repo. They do not
+have access to this repo's `docs/adr/` directory at runtime.
+
+**When a skill instruction references an ADR behaviorally** (the agent needs
+the ADR content to execute the step), the ADR must be bundled as an asset:
+
+1. Copy the ADR to `src/skills/<skill>/assets/decisions/`
+2. Add a row to the `## Assets` table in SKILL.md with the file path, ADR
+   number, what it defines, and which step IDs reference it
+3. In the instruction text, keep the ADR reference (e.g., "per ADR-0031") —
+   the agent resolves it via the asset table
+
+**When a reference is provenance only** (explains *why* a convention exists,
+but the agent does not need the ADR content to execute), inline the
+explanation and remove the ADR number. The agent cannot look up ADRs that
+are not bundled.
+
+**Rule of thumb:** If removing the ADR reference would leave the instruction
+ambiguous or incomplete, bundle it. If the instruction stands on its own,
+inline it.
+
+---
 
 ## Directory Structure
 
@@ -277,50 +343,5 @@ so `cargo build` works without `diesel_cli`.
 The `eval_queries.json` file contains 20 queries (11 should-trigger, 9
 should-not-trigger) for testing whether the skill's `description` field
 triggers reliably. See the
-[agentskills.io optimization guide](https://agentskills.io/skill-creation/optimizing-descriptions)
+<a href="https://agentskills.io/skill-creation/optimizing-descriptions">agentskills.io optimization guide</a>
 for the evaluation workflow.
-
-## Formatting Convention for Review Artifacts
-
-Use **tables** when presenting items for review or posterity (QA findings,
-recommendations, checklists). Do not split related items into separate
-sections — if items differ by a property (e.g., classification, status,
-action), add a **column** for that property instead. A single flat table is
-easier to scan than multiple subsections with separate tables.
-
-**Example — QA recommendations:** Instead of separate `### Quality Concerns`
-and `### Preferences` subsections with different table schemas, use one table
-with a `Classification` column:
-
-```markdown
-| # | Stage | Classification | Finding | Recommendation |
-|---|-------|----------------|---------|----------------|
-| 1 | 1 | Quality concern | Description | Action |
-| 2 | 2 | Preference | Description | Reason for deferral |
-```
-
-Extended prose (e.g., Won't Fix rationale) can follow the table under its own
-heading when needed.
-
-## ADR References in Skills
-
-Skills are installed to `~/.copilot/skills/` and run in any repo. They do not
-have access to this repo's `docs/adr/` directory at runtime.
-
-**When a skill instruction references an ADR behaviorally** (the agent needs
-the ADR content to execute the step), the ADR must be bundled as an asset:
-
-1. Copy the ADR to `src/skills/<skill>/assets/decisions/`
-2. Add a row to the `## Assets` table in SKILL.md with the file path, ADR
-   number, what it defines, and which step IDs reference it
-3. In the instruction text, keep the ADR reference (e.g., "per ADR-0031") —
-   the agent resolves it via the asset table
-
-**When a reference is provenance only** (explains *why* a convention exists,
-but the agent does not need the ADR content to execute), inline the
-explanation and remove the ADR number. The agent cannot look up ADRs that
-are not bundled.
-
-**Rule of thumb:** If removing the ADR reference would leave the instruction
-ambiguous or incomplete, bundle it. If the instruction stands on its own,
-inline it.

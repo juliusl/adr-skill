@@ -8,6 +8,18 @@ Use this as the review prompt for the configured review agent (per ADR-0031, `[a
 
 **All six steps must be executed in order. If a step is skipped, log the justification inline before proceeding.** Skipping without justification is a workflow violation.
 
+| ID | Description |
+|----|-------------|
+| Step 1 | Implementability Check — verify 6 criteria that predict planning success |
+| Step 1a | Checkpoint State Review — evaluate Evaluation/Conclusion checkpoint assessments |
+| Step 1b | Experimentation Tolerance Spectrum — assess data support level |
+| Step 2 | Fallacy Scan — check justification against 7 decision-making fallacies |
+| Step 3 | Anti-Pattern Check — scan for 11 ADR creation anti-patterns |
+| Step 4 | Consequence Validation — review stated consequences for plausibility |
+| Step 5 | Review Checklist — answer 7 questions about the ADR |
+| Step 6 | Verdict — Accept, Revise, or Rethink |
+| Step 6a | Accept-with-Suggestions Polish Pass — dispatch editor for minor feedback |
+
 ### Step 1: Implementability Check
 
 Verify 6 criteria that predict whether `implement-adr` can successfully plan from this ADR:
