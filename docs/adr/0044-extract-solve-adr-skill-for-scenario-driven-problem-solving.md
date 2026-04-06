@@ -1,7 +1,7 @@
 # 44. Extract solve-adr skill for scenario-driven problem solving
 
 Date: 2026-04-06
-Status: Planned
+Status: Accepted
 Last Updated: 2026-04-05
 Links:
 - [ADR-0019: Problem-first solve task](0019-add-problem-first-solve-task-to-author-adr-workflow.md)
