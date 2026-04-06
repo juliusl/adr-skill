@@ -14,6 +14,7 @@ pub struct TaskSummary {
     pub commit_sha: String,
     pub description: String,
     pub ingested_at: String,
+    pub source_plan: String,
 }
 
 #[derive(Insertable)]
@@ -24,6 +25,7 @@ pub struct NewTaskSummary {
     pub cost: String,
     pub commit_sha: String,
     pub description: String,
+    pub source_plan: String,
 }
 
 /// Represents a single JSONL record from extract-summary.awk
@@ -34,6 +36,8 @@ pub struct JsonlTaskRecord {
     pub cost: String,
     pub commit: String,
     pub description: String,
+    #[serde(default)]
+    pub source_plan: String,
 }
 
 impl From<JsonlTaskRecord> for NewTaskSummary {
@@ -44,6 +48,7 @@ impl From<JsonlTaskRecord> for NewTaskSummary {
             cost: record.cost,
             commit_sha: record.commit,
             description: record.description,
+            source_plan: record.source_plan,
         }
     }
 }
@@ -61,6 +66,7 @@ mod tests {
         assert_eq!(record.cost, "small");
         assert_eq!(record.commit, "abc1234");
         assert_eq!(record.description, "Create config file");
+        assert_eq!(record.source_plan, ""); // default when absent
     }
 
     #[test]
@@ -70,6 +76,7 @@ mod tests {
         let summary = NewTaskSummary::from(record);
         assert_eq!(summary.task_id, "2.1");
         assert_eq!(summary.commit_sha, "def5678");
+        assert_eq!(summary.source_plan, ""); // default when absent
     }
 
     #[test]
@@ -89,6 +96,7 @@ mod tests {
             cost: "small".to_string(),
             commit_sha: "abc1234".to_string(),
             description: "Create config file".to_string(),
+            source_plan: "0029.0.plan.md".to_string(),
         };
 
         diesel::insert_into(crate::schema::task_summaries::table)

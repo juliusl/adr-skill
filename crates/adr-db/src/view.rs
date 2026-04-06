@@ -149,6 +149,7 @@ mod tests {
                 cost: "small".to_string(),
                 commit_sha: "abc1234".to_string(),
                 description: "Create config file".to_string(),
+                source_plan: "0029.0.plan.md".to_string(),
             },
             NewTaskSummary {
                 task_id: "1.2".to_string(),
@@ -156,6 +157,7 @@ mod tests {
                 cost: "medium".to_string(),
                 commit_sha: "def5678".to_string(),
                 description: "Add validation logic".to_string(),
+                source_plan: "0029.0.plan.md".to_string(),
             },
         ];
         for r in &records {
