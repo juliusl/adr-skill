@@ -74,6 +74,8 @@ This repo contains files for agent skills. When writing a new procedure or maint
 11) **ALL** subsection of **ANY** step or element **MUST** also have a related alpha-numeric identifier. It should be clear that a subsection is related to a step. Subsections are considered sub-tasks of a step. Failure to label them makes it unclear to both user and agent that a procedure violation occurred.
 12) **ALL** policies **MUST** also have a clear alpha-numeric identifier prefixed with 'P', any sub-policies **MUST** also have an identifier. Failure to label reduces visibility into what policy failed to activate making refinement less actionable.
 
+**Templates:** Use [procedure-template.md](procedure-template.md) for new procedures and [worksheet-template.md](worksheet-template.md) for new worksheets. These templates embody Rules 1–12 structurally.
+
 ## P-4: Git Policies
 
 1) Agents **must not** commit or push changes. Stage your work and let the
