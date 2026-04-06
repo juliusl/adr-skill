@@ -72,6 +72,33 @@ All generated content (ADRs, comments, review findings) must follow this style:
 Projects can opt in to a `.adr/` directory at the project root for project-scoped data (telemetry, intermediate artifacts, project-level preferences). This is separate from `docs/adr/` (decision records) and `~/.config/adr-skills/` (user preferences).
 Bootstrap with: `make -f <skill-root>/Makefile init-data`
 This creates `.adr/`, `.adr/var/` (gitignored for transient data), and `.adr/.gitignore`. See [references/tooling.md](references/tooling.md) for details.
+
+### User Mode
+
+Users can store personal/draft ADRs in a gitignored directory, separate from the team's decision log. User-mode ADRs live in `.adr/usr/docs/adr/` with username-prefixed filenames.
+
+```toml
+[author]
+scope = "project"   # "project" (default) or "user"
+username = ""        # override for $(whoami) in user-mode filenames
+```
+
+**Activation:**
+- Persistent: set `[author].scope = "user"` in `preferences.toml`
+- Per-invocation: natural language — "create a personal ADR", "draft in user mode", "personal draft"
+- Override: set `[author].scope = "project"` to force project mode even when user mode is the default
+
+**How it works:**
+- ADR files: `<username>-<NNNN>-<slug>.md` in `.adr/usr/docs/adr/`
+- NNNN numbering is scoped to the user's files in the user directory
+- Username defaults to `$(whoami)`, overridable via `[author].username`
+- Environment: the skill sets `ADR_SCOPE=user` and `ADR_USERNAME=<name>` before calling scripts
+
+**Promotion to project scope:**
+1. Move the file from `.adr/usr/docs/adr/` to `docs/adr/`
+2. Strip the username prefix and renumber to the next available project NNNN
+3. Update cross-references: links from other user-mode ADRs or plans that reference the old filename
+
 ### Agent Dispatch (`[author.dispatch]`)
 Per ADR-0031, the review→revise workflow supports configurable agent dispatch. Each hook point can be set to a specific agent or left at its default.
 ```toml
