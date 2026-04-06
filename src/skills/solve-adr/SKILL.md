@@ -100,6 +100,8 @@ Read [references/problem.md](references/problem.md) for the full workflow detail
 ```
 1. Intake — capture problem, constraints, stakeholders, enumerate decisions needed
    ↓
+1b. Branch — create solve/<slug> feature branch from current HEAD
+   ↓
 2. Author — load /author-adr context and run its procedure for all decisions
    ↓
 3. Triage — review returned ADRs, route evaluation-checkpoint-paused ones to /prototype-adr
@@ -109,7 +111,25 @@ Read [references/problem.md](references/problem.md) for the full workflow detail
 5. Report — summarize what was implemented, what remains
 ```
 
-**On resume:** The agent evaluates the problem's current state and enters the lifecycle at the right point. No ADRs → step 1. ADRs exist but unreviewed → step 2. All ADRs reviewed but unimplemented → step 4. Some Accepted, others remain → step 4 for remaining.
+**On resume:** The agent evaluates the problem's current state and enters the lifecycle at the right point. No ADRs → step 1. ADRs exist but unreviewed → step 2. All ADRs reviewed but unimplemented → step 4. Some Accepted, others remain → step 4 for remaining. On resume, check for an existing `solve/<slug>` branch — if found and unmerged, checkout it and continue.
+
+### Branch Management
+
+solve-adr creates a feature branch to isolate its output from the user's working branch. implement-adr remains branch-agnostic — it commits to whatever branch it's on.
+
+**Branch lifecycle:**
+1. **Create** — after Step 1 (intake), derive a slug from the problem statement (lowercase, hyphenated, max 50 chars). Create `solve/<slug>` from current HEAD: `git checkout -b solve/<slug>`.
+2. **Switch** — all subsequent work (authoring, triage, implementation) happens on this branch.
+3. **Complete** — after Step 5 (report), stay on the branch. The user reviews via PR and merges.
+4. **Resume** — on resume, if the branch exists and is unmerged, checkout it and continue. If the branch was already merged or deleted, the previous solve is complete — create a new branch with a `-2` suffix if the same slug is reused.
+
+**Branch naming:** `solve/<problem-slug>`. Example: `solve/caching-strategy-for-events`.
+
+**Dirty working tree guard:** Before creating the branch, check `git status --porcelain`. If the working tree has uncommitted changes, warn the user and ask them to commit or stash before proceeding. Do not stash automatically — that risks losing user work.
+
+**Base branch:** Branching from current HEAD is intentional. The user controls what base the solve branch starts from by checking out the desired branch before invoking solve-adr.
+
+**Branch name storage:** The branch name is maintained in the conversation/session state. On resume, the agent retrieves the branch name from session context or re-derives it from the problem statement.
 
 **Cross-skill invocation points:**
 - **Step 2** — invoke `/author-adr` once with the full list of decisions and problem context. This loads author-adr's SKILL.md into the conversation — the orchestrating agent then runs author-adr's procedure directly (not a separate agent).
