@@ -100,19 +100,19 @@ Read [references/problem.md](references/problem.md) for the full workflow detail
 ```
 1. Intake — capture problem, constraints, stakeholders, enumerate decisions needed
    ↓
-2. Author — batch-delegate all decisions to /author-adr in a single invocation
+2. Author — load /author-adr context and run its procedure for all decisions
    ↓
 3. Triage — review returned ADRs, route evaluation-checkpoint-paused ones to /prototype-adr
    ↓
-4. Implement — group accepted ADRs, delegate to /implement-adr
+4. Implement — group accepted ADRs, load /implement-adr and run its procedure
    ↓
 5. Report — summarize what was implemented, what remains
 ```
 
 **On resume:** The agent evaluates the problem's current state and enters the lifecycle at the right point. No ADRs → step 1. ADRs exist but unreviewed → step 2. All ADRs reviewed but unimplemented → step 4. Some Accepted, others remain → step 4 for remaining.
 
-**Cross-skill delegation points:**
-- **Step 2** — invoke `/author-adr` once with the full list of decisions and problem context
+**Cross-skill invocation points:**
+- **Step 2** — invoke `/author-adr` once with the full list of decisions and problem context. This loads author-adr's SKILL.md into the conversation — the orchestrating agent then runs author-adr's procedure directly (not a separate agent).
 - **Step 3** — invoke `/prototype-adr` for any ADR that paused at its Evaluation Checkpoint
 - **Step 3** — re-invoke `/author-adr` to complete convergence on validated ADRs
 - **Step 4** — invoke `/implement-adr` for each group (multi-ADR batch)

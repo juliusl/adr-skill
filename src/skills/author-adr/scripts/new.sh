@@ -12,6 +12,7 @@ format="${1:-}"
 if [ -z "$format" ]; then
   echo "Usage: new.sh <format> <title...>" >&2
   echo "       new.sh wi-nygard-agent <remote> <id> <title...>" >&2
+  echo "       new.sh wi-nygard-agent local <title...>  (ID auto-generated)" >&2
   exit 1
 fi
 shift
@@ -42,17 +43,32 @@ case "$format" in
     if [ -z "$remote" ]; then
       echo "ERROR: remote is required for wi-nygard-agent format" >&2
       echo "Usage: new.sh wi-nygard-agent <remote> <id> <title...>" >&2
+      echo "       new.sh wi-nygard-agent local <title...>  (ID auto-generated)" >&2
       exit 1
     fi
     shift
 
-    id="${1:-}"
-    if [ -z "$id" ]; then
-      echo "ERROR: id is required for wi-nygard-agent format" >&2
-      echo "Usage: new.sh wi-nygard-agent <remote> <id> <title...>" >&2
-      exit 1
+    if [ "$remote" = "local" ]; then
+      # Local adapter: ID is optional. Auto-generate when not provided.
+      if [ -n "${ADR_LOCAL_ID:-}" ]; then
+        id="$ADR_LOCAL_ID"
+      elif [ $# -ge 2 ] && echo "$1" | grep -qE '^[a-zA-Z0-9]+$'; then
+        # First arg looks like an explicit ID and more args follow (title)
+        id="$1"
+        shift
+      else
+        id=$(printf '%s' "$(date +%s%N 2>/dev/null || date +%s)$$" | shasum | head -c 8)
+      fi
+    else
+      # Remote adapters: ID is required as next arg
+      id="${1:-}"
+      if [ -z "$id" ]; then
+        echo "ERROR: id is required for wi-nygard-agent format with remote '$remote'" >&2
+        echo "Usage: new.sh wi-nygard-agent <remote> <id> <title...>" >&2
+        exit 1
+      fi
+      shift
     fi
-    shift
 
     title="$*"
     if [ -z "$title" ]; then

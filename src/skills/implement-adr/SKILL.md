@@ -132,20 +132,27 @@ For each task, include:
 | **ADR Reference** | Yes | Which ADR section(s) drive this task |
 **Scoping rule:** A task plan must contain enough detail for an engineer or agent to execute it without referring to other task plans. Cross-task dependencies are declared but each task is self-contained.
 #### 3d. ADR Status Finalize Stage
-Every generated plan **must** end with a final stage that updates each source ADR's status from `Planned` to `Accepted`. This ensures acceptance is an explicit, traceable step tied to implementation completion.
+Every generated plan **must** end with a final stage that updates each source ADR's status from `Planned` to `Accepted` and, when the ADR format includes a `## Deliverables` section, checks off completed deliverables. This ensures acceptance is an explicit, traceable step tied to implementation completion.
 ```markdown
 ## Stage N: Finalize
 
-### Task N.1: Update ADR status to Accepted    [small]
+### Task N.1: Update ADR status and Deliverables    [small]
 
 **Description:** Update the status of each source ADR from `Planned` to
 `Accepted` to reflect that the decision has been fully implemented.
+If the ADR has a `## Deliverables` section, check off each deliverable
+that was produced during implementation and add artifact references
+(file paths, commit SHAs) where applicable.
+
+> **Note:** Source ADRs will be in `Planned` status at this point — they were transitioned from `Proposed` to `Planned` in Step I-5 before execution began.
 
 **Files to update:**
 - `docs/adr/XXXX-<title>.md` — change `## Status` from `Planned` to `Accepted`
+- `docs/adr/XXXX-<title>.md` — mark completed items in `## Deliverables` from `- [ ]` to `- [x]`
 
 **Test & Acceptance Criteria:**
 - [ ] Each source ADR status reads `Accepted`
+- [ ] Each deliverable produced during implementation is checked off in the ADR's `## Deliverables` section (if present)
 - [ ] No other ADR content is modified
 
 **Dependencies:** All prior stages

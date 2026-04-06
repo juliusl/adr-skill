@@ -88,16 +88,20 @@ When executing any task from this plan, follow this protocol:
 
 ## Stage N: Finalize
 
-### Task N.1: Update ADR status to Accepted    [small]
+### Task N.1: Update ADR status and Deliverables    [small]
 
-**Description:** Update the status of each source ADR from `Planned` to `Accepted` to reflect that the decision has been fully implemented.
+**Description:** Update the status of each source ADR from `Planned` to `Accepted` to reflect that the decision has been fully implemented. If the ADR has a `## Deliverables` section, check off each deliverable that was produced during implementation and add artifact references (file paths, commit SHAs) where applicable.
+
+> **Note:** Source ADRs will be in `Planned` status at this point — they were transitioned from `Proposed` to `Planned` in Step I-5 before execution began.
 
 **Files to update:**
 <!-- List each source ADR file: -->
 - `docs/adr/XXXX-<title>.md` — change `## Status` from `Planned` to `Accepted`
+- `docs/adr/XXXX-<title>.md` — mark completed items in `## Deliverables` from `- [ ]` to `- [x]`
 
 **Test & Acceptance Criteria:**
 - [ ] Each source ADR status reads `Accepted`
+- [ ] Each deliverable produced during implementation is checked off in the ADR's `## Deliverables` section (if present)
 - [ ] No other ADR content is modified
 
 **Dependencies:** All prior stages
@@ -113,7 +117,7 @@ When executing any task from this plan, follow this protocol:
 | 1. [Phase] | 1.1 [Title] | small | — |
 | 1. [Phase] | 1.2 [Title] | medium | 1.1 |
 | 2. [Phase] | 2.1 [Title] | medium | Stage 1 |
-| N. Finalize | N.1 Update ADR status to Accepted | small | All prior |
+| N. Finalize | N.1 Update ADR status and Deliverables | small | All prior |
 
 **Total estimated cost:** X small, Y medium, Z heavy
 

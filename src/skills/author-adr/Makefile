@@ -37,7 +37,7 @@ init-data: ## Bootstrap .adr/ project-scoped directory
 	@if [ ! -f .adr/.gitignore ]; then echo "var/" > .adr/.gitignore; fi
 	@echo "Initialized .adr/ project-scoped directory"
 
-new: ## Create a new ADR (TITLE="..." or REMOTE=gh ID=42 TITLE="...")
+new: ## Create a new ADR (TITLE="..." or REMOTE=local TITLE="..." or REMOTE=gh ID=42 TITLE="...")
 ifeq ($(ADR_AGENT_SKILL_FORMAT),wi-nygard-agent)
 	$(ORCHESTRATOR) $(ADR_AGENT_SKILL_FORMAT) $(REMOTE) $(ID) $(TITLE)
 else

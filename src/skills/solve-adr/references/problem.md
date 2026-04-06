@@ -13,11 +13,11 @@ Self-contained reference for solving a problem. Read this file when the user has
 ```
 1. Intake — capture problem, constraints, stakeholders, enumerate decisions needed
    ↓
-2. Author — batch-delegate all decisions to /author-adr in a single invocation
+2. Author — load /author-adr context and run its procedure for all decisions
    ↓
 3. Triage — review returned ADRs, route evaluation-checkpoint-paused ones to /prototype-adr
    ↓
-4. Implement — group accepted ADRs, delegate to /implement-adr
+4. Implement — group accepted ADRs, load /implement-adr and run its procedure
    ↓
 5. Report — summarize what was implemented, what remains
 ```
@@ -70,9 +70,9 @@ If no worksheet exists:
 
 4. **Confirm the problem statement** — "Does this capture the problem accurately?"
 
-## Step 2: Author (Batch Delegation)
+## Step 2: Author
 
-Delegate all decisions to `/author-adr` in a single invocation. Author-adr handles the full A-0 → A-5 lifecycle for each ADR — solve-adr's role is handoff, not per-decision orchestration.
+Load `/author-adr` context and run its procedure for all decisions in a single invocation. The `skill: "author-adr"` call loads author-adr's SKILL.md into the current conversation — the orchestrating agent executes author-adr's procedure itself. There is no separate agent; solve-adr IS author-adr during this phase.
 
 ### What to provide
 
@@ -103,7 +103,7 @@ For each decision in the list, author-adr runs its full procedure:
 5. Converges on a decision, drafts Decision + Consequences, renames the ADR, transitions to Proposed
 6. Reviews and revises the ADR (A-3 → A-4 → A-5)
 
-Author-adr may process these sequentially or batch internally — that's its concern, not solve-adr's.
+Author-adr may process these sequentially or batch internally — the ordering is at the agent's discretion.
 
 ### After author-adr returns
 

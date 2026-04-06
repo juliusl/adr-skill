@@ -127,6 +127,9 @@ Per ADR-0032, a draft worksheet captures the author's original intent and workfl
    - **Create workflow** (user arrives with direction) — fill the worksheet **before** populating Context/Options. The user provides the framing upfront.
    - **Solve workflow** (user arrives with a problem) — fill the worksheet **after** the problem intake conversation. The agent drafts the worksheet from the conversation and the user confirms/adjusts.
 4. **Hand off** — after the worksheet is filled, proceed to [Creating an ADR](#creating-an-adr). The create workflow reads the worksheet for grounding (see [references/create.md](references/create.md)).
+
+**Autonomous low-uncertainty merge:** In autonomous mode with low uncertainty (Tolerance: Risk Low, Improvisation Low), A-1 and A-2 may be merged into a single pass. The worksheet still appears in Comments, but is written alongside the ADR body — not in a separate step. The worksheet's value scales with uncertainty; low-uncertainty problems don't benefit from a separate round-trip.
+
 **Comments area evolution:** The `## Comments` section holds both the Draft Worksheet (pre-decision intent) and Revision Q&A entries (post-review dialogue). The Draft Worksheet always appears first, before any revision Q&A entries.
 ### A-2: Create
 #### Creating an ADR

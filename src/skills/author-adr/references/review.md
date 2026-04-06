@@ -103,6 +103,8 @@ For each stated consequence or pro/con:
 
 If the ADR has many consequences, you may group related ones and ask about them together rather than one at a time — but never skip this step entirely.
 
+**Autonomous mode:** When reviewing in autonomous mode (no interactive user), the reviewer assesses consequence plausibility on its own. Flag any assertion scored as speculative with an inline note (e.g., `<!-- Unverified: [reason] -->`). These become items for the user to verify before the ADR reaches Accepted status. The reviewer cannot confirm real-world accuracy — it can only flag assertions that lack cited evidence or use unqualified absolutes.
+
 ### Step 5: Review Checklist
 
 Answer each question:
