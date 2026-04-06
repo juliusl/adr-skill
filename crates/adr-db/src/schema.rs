@@ -9,5 +9,6 @@ diesel::table! {
         commit_sha -> Text,
         description -> Text,
         ingested_at -> Timestamp,
+        source_plan -> Text,
     }
 }
