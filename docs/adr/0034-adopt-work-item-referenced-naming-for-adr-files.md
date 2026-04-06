@@ -1,7 +1,7 @@
 # 34. Adopt work-item-referenced naming for ADR files
 
 Date: 2026-04-05
-Status: Planned
+Status: Accepted
 Last Updated: 2026-04-05
 Links:
 - [ADR-0018: Unified format-based scripts](0018-replace-adr-tools-and-madr-tools-with-unified-format-based-scripts.md)
