@@ -53,7 +53,7 @@ Every decision gets an ADR — even mid-execution discoveries.
 - No ADRs exist → start at step 1 (intake)
 - ADRs exist but some are still TBD (not converged) → enter step 2 with remaining decisions
 - ADRs exist but some paused at Evaluation Checkpoint → enter step 3 (triage)
-- All ADRs are Proposed/reviewed but unimplemented → enter step 4 (implement)
+- All ADRs are Ready but unimplemented → enter step 4 (implement)
 - Some ADRs are Accepted, others remain → enter step 4 for the remaining ones
 - On resume, check for an existing `solve/<slug>` branch — if found and unmerged, checkout it before continuing
 
@@ -171,7 +171,7 @@ After author-adr returns, classify each ADR's state and take action:
 
 | ADR State | Action |
 |-----------|--------|
-| Proposed (reviewed, accepted) | Ready for implementation → step 4 |
+| Ready | Ready for implementation → step 4 |
 | Proposed (reviewed, needs revision) | Author-adr should have handled this — if not, re-invoke to complete A-4/A-5 |
 | Paused at Evaluation Checkpoint | Invoke `/prototype-adr` with the ADR's validation needs |
 | TBD (incomplete) | Re-invoke `/author-adr` to complete remaining decisions |
@@ -193,8 +193,8 @@ For ADRs paused at the Evaluation Checkpoint ("Pause for validation"):
 
 Keep a running list of all ADRs and their post-triage status:
 ```
-[ADR ref]: [title] — Proposed, ready for implementation
-[ADR ref]: [title] — Proposed, ready for implementation
+[ADR ref]: [title] — Ready, ready for implementation
+[ADR ref]: [title] — Ready, ready for implementation
 [ADR ref]: [title] — Paused, prototype needed for [validation need]
 ```
 
