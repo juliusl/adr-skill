@@ -16,7 +16,7 @@ Three distinct agent roles ensure no agent reviews its own work:
 |------|-------|----------------|
 | **Main executor** | The orchestrating agent | Generates the dev plan, coordinates execution, remediates QA findings |
 | **QA planner** | Separate general-purpose agent | Generates the QA plan (adversarial: "how could this go wrong?") |
-| **QA executor** | Separate general-purpose agent (per stage) | Validates completed stage code against QA checks |
+| **QA executor** | Separate general-purpose agent (per batch) | Validates completed stage(s) code against QA checks |
 
 The main executor must not write its own QA plan, and the agent that executes stage tasks must not QA its own work.
 
@@ -74,7 +74,7 @@ The main executor is responsible for triggering QA plan regeneration when a plan
 | QA-3c | Boundary test — classification decision rule |
 | QA-4 | QA Execution — stage boundary validation |
 | QA-4a | Enforcement — mandatory regardless of participation mode |
-| QA-4b | Stage Boundary Hook — spawn QA executor agent per stage |
+| QA-4b | Stage Boundary Hook — spawn QA executor agent per batch |
 | QA-4c | Documenting Accepted Findings — rationale for won't-fix items |
 | QA-4d | Backwards Compatibility — handle plans without QA plans |
 | QA-5 | Prompt Templates — prompts for QA planner and executor agents |
@@ -170,17 +170,27 @@ When classifying a finding, apply this test: **If this finding were a bug report
 
 QA execution at stage boundaries is **mandatory regardless of participation mode** — including autonomous mode. Generating a QA plan but skipping execution defeats the purpose of the QA separation principle. If QA execution is skipped for any stage, log the justification inline before proceeding. Skipping without justification is a workflow violation.
 
-In autonomous mode with multiple stages, the agent may merge adjacent stages to reduce the number of QA cycles (e.g., validate stages 1–2 together, then stages 3–4). This consolidates execution while preserving coverage. Skipping QA entirely is not an acceptable optimization.
+In autonomous mode with multiple stages, adjacent small-only stages may be batched for a single QA pass. The batching decision uses the plan's cost estimates (`[small]`/`[medium]`/`[heavy]`):
+
+| Condition | Action |
+|-----------|--------|
+| Stage contains any `[medium]` or `[heavy]` task | QA immediately |
+| Stage contains only `[small]` tasks and next stage is also all `[small]` | Defer — batch with subsequent stages |
+| Stage contains only `[small]` tasks and next stage has `[medium]`/`[heavy]` | QA immediately — validate batch before heavier work begins |
+| Final stage in the plan | QA immediately |
+| 3+ stages accumulated without QA | QA immediately — cap batch size |
+
+Batching consolidates QA execution while preserving coverage. Skipping QA entirely is not an acceptable optimization.
 
 ### QA-4b: Stage Boundary Hook
 
-During plan execution, after all tasks in a stage complete but before auto-commit:
+During plan execution, after all tasks in a stage complete, evaluate the batching decision (see QA-4a). When QA triggers:
 
 1. **Spawn a separate general-purpose QA executor agent** with:
-   - The QA plan's checks for the current stage
-   - The actual code changes made during the stage (diff or file list)
+   - The QA plan's checks for all stages in the current batch
+   - The actual code changes made during the batched stages (combined diff or file list)
    - This reference document for context
-2. **The QA executor reviews** the actual implementation against the QA checks.
+2. **The QA executor reviews** the actual implementation against the QA checks. The executor must report **PASS/FAIL per individual check** — summary-level verdicts without per-check evidence are insufficient.
 3. **If all checks pass** — mark them `[x]` in the QA plan, proceed to auto-commit.
 4. **If any check fails** — pause execution, report findings to the main executor, and request remediation before committing.
 
@@ -243,30 +253,31 @@ Write a QA plan using the qa-plan-template.md structure. For each stage:
 ### QA-5b: QA Executor Agent Prompt
 
 ```
-You are a QA executor agent. Review the actual implementation of a
-completed stage against the QA plan's checks.
+You are a QA executor agent. Review the actual implementation of
+completed stage(s) against the QA plan's checks.
 
-You must not have been the agent that executed the stage's tasks.
+You must not have been the agent that executed the tasks.
 
-## QA Checks for This Stage
+## QA Checks for This Batch
 
-[Insert the QA plan's checks for the current stage]
+[Insert the QA plan's checks for all stages in this batch]
 
 ## Code Changes
 
-[Insert diff or file list from the completed stage]
+[Insert combined diff or file list from the completed stage(s)]
 
 ## Instructions
 
-1. For each security check, verify against the actual code.
-2. For each UX check, verify against the actual code.
-3. Mark passing checks [x] in the QA plan.
-4. For failing checks, report the specific code/file and the violation.
-5. Apply the finding disposition rules to any new findings.
+1. For each numbered check, verify against the actual code.
+2. Report PASS or FAIL per individual check with specific evidence.
+3. Do not summarize multiple checks into a single verdict.
+4. Mark passing checks [x] in the QA plan.
+5. For failing checks, report the specific code/file and the violation.
+6. Apply the finding disposition rules to any new findings.
 
 ## Output Format
 
-- PASS/FAIL per check with specific evidence
+- PASS/FAIL per check with specific file and line evidence
 - Any new findings with disposition classification
-- Verdict: Stage Approved / Stage Needs Remediation
+- Verdict: Batch Approved / Batch Needs Remediation
 ```
