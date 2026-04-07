@@ -17,7 +17,7 @@ Orchestrate problem-solving end-to-end by delegating to companion skills: `/auth
 |----|--------|
 | P-1 | Every architectural decision gets an ADR — no silent decisions |
 | P-2 | Cross-skill invocation must use the `skill` tool exclusively |
-| P-3 | Never skip implementation when `auto_delegate = true` |
+| P-3 | Never skip implementation when `auto_delegate = true` — includes session management concerns |
 | P-4 | Triage all deferred QA findings before milestone completion |
 
 ### P-1: Every architectural decision gets an ADR
@@ -35,7 +35,10 @@ Never read, load, or inline another skill's SKILL.md, references, or assets dire
 When `auto_delegate = true`, implement accepted ADRs via `/implement-adr` — do not skip implementation based on any framing of the output:
 - Not the user's framing (e.g., "design", "explore")
 - Not the agent's own rationalization (e.g., "these are just documentation files", "simple enough to do directly")
+- Not session management concerns (e.g., "this will be extensive", "let me check session state", "deferring to a future session"). The plan, commits, and QA checkpoints exist to handle long sessions — the process architecture already solves the context problem
 - Skill files (SKILL.md, references/, eval_queries.json) are executable agent instructions, not passive documentation — changes carry the same risk as code changes and require the full `/implement-adr` pipeline
+
+**Enforcement:** When step 4 (Implement) completes and the report is generated, check: did `/implement-adr` actually run for every Ready ADR? If any Ready ADR was not delegated, this is a P-3 violation. Log the violation and invoke `/implement-adr` before proceeding to step 5.
 
 ### P-4: Triage all deferred QA findings before milestone completion
 
