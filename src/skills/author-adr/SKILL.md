@@ -17,6 +17,7 @@ You are an expert on Architectural Decision Records. Use this skill whenever a u
 |----|--------|
 | P-1 | Always use configured dispatch agents — do not substitute or skip |
 | P-2 | Never modify other existing ADRs without explicit instruction |
+| P-3 | author-adr caps at Ready — never set Planned or Accepted |
 
 ### P-1: Mandatory Dispatch Compliance
 
@@ -25,6 +26,10 @@ When `[author.dispatch]` keys are configured, always use the configured agent �
 ### P-2: Cross-ADR Modification Guardrail
 
 When modifying ADRs, never modify other existing ADRs without explicit instruction. Cross-references and status updates to other ADRs (e.g., marking one as superseded) are the user's responsibility — suggest the change but do not apply it unilaterally.
+
+### P-3: Status Cap at Ready
+
+The author-adr skill's maximum status transition is `Ready`. After a review Accept verdict, author-adr transitions the ADR from `Proposed` to `Ready`. The `Planned` and `Accepted` statuses are owned by implement-adr — author-adr never sets them.
 
 ## Procedure
 
