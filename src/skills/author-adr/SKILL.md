@@ -131,8 +131,8 @@ editor = "interactive"       # Agent for editorial decisions (default: user)
 ```
 | Hook | Default | Role | Instructions |
 |------|---------|------|-------------|
-| `review` | `"general-purpose"` | Reviewer | Receives `review.md` as prompt |
-| `editor` | `"interactive"` | Editor | Receives `revise.md` as prompt |
+| `review` | `"general-purpose"` | Reviewer | Receives `polish.md` — executes Review Phase (R-1 through R-6) |
+| `editor` | `"interactive"` | Editor | Receives `polish.md` — executes Revision Phase (V-1 through V-6) |
 **Contract: same instructions, configurable executor.** Each hook dispatches the same reference instructions regardless of which agent is configured. The custom agent's persona shapes HOW it applies the instructions (which findings it prioritizes, how it weighs tradeoffs), not WHAT it checks.
 The `"interactive"` value is a reserved keyword meaning "prompt the user directly." Any other value is treated as an agent reference (e.g., a custom `.agent.md` persona).
 **Graceful fallback:** If a configured agent reference cannot be resolved at runtime, fall back to the default value for that hook and warn the user.
@@ -197,20 +197,20 @@ Read [references/create.md](references/create.md) for the full creation workflow
    If the user agrees, proceed to [Reviewing an ADR](#reviewing-an-adr).
 **Problem-solving workflows:** For problem-first workflows (exploring options before committing to a solution), use `/solve-adr` instead. It orchestrates across `/author-adr`, `/prototype-adr`, and `/implement-adr`.
 ### A-3: Review
-Read [references/review.md](references/review.md) for the full structured review process. Use it as a prompt for the configured review agent (see [Agent Dispatch](#agent-dispatch-authordispatch)). By default this is a general-purpose agent; a custom agent can be configured via `[author.dispatch].review`.
+Read [references/polish.md](references/polish.md) for the full quality loop process. Direct the review agent to the Review Phase section (steps R-1 through R-6). By default this is a general-purpose agent; a custom agent can be configured via `[author.dispatch].review`.
 The review process covers:
 1. **Implementability check** — verify the 6 implementability criteria
 2. **Fallacy scan** — check against 7 architectural decision-making fallacies
 3. **Anti-pattern check** — scan for 11 ADR creation anti-patterns
 4. **Consequence validation** — interactively verify stated consequences with the user
 5. **7-point checklist** — structured quality assessment
-6. **Verdict** — Accept, Revise, or Rethink
-7. **Accept-with-suggestions** — if the verdict is Accept but includes minor suggestions, dispatch the editor agent for a lightweight polish pass (see `review.md` §Accept-with-Suggestions). If no editor agent is configured, present suggestions to the user as optional improvements.
+6. **Verdict** — Accept (→ Ready status), Revise, or Rethink
+7. **Accept-with-suggestions** — if the verdict is Accept but includes minor suggestions, dispatch the editor agent for a lightweight polish pass (see polish.md §R-6a). If no editor agent is configured, present suggestions to the user as optional improvements.
 8. **Revision handoff** — if the verdict is "Revise":
    - If `editor` is `"interactive"` (or absent): offer to interactively address the review comments. If the user agrees, proceed to [Revising an ADR](#revising-an-adr).
    - If `editor` is an agent reference: automatically proceed to [Revising an ADR](#revising-an-adr) — the configured editor agent stands in for the user during triage. Do not ask for permission; the delegated editor handles the review→revise loop.
 ### A-4: Revise
-Read [references/revise.md](references/revise.md) for the full interactive revision workflow. Use this after a review produces a "Revise" verdict. When `[author.dispatch].editor` is configured with an agent reference (not `"interactive"`), the configured editor agent stands in for the user during triage — see [Agent Dispatch](#agent-dispatch-authordispatch).
+Read [references/polish.md](references/polish.md) for the full quality loop process. Direct the editor agent to the Revision Phase section (steps V-1 through V-6). Use this after a review produces a "Revise" verdict. When `[author.dispatch].editor` is configured with an agent reference (not `"interactive"`), the configured editor agent stands in for the user during triage — see [Agent Dispatch](#agent-dispatch-authordispatch).
 The revision process covers:
 1. **Load review comments** — parse the structured review output into discrete revision items
 2. **Present each comment** — show findings one at a time with context
@@ -312,8 +312,7 @@ Use **Mermaid** for all diagrams. Diagrams are valuable when complex relationshi
 ## Deep References
 For detailed guidance beyond what is covered above, consult these references on-demand:
 - [references/create.md](references/create.md) — full ADR creation workflow with significance assessment, readiness checks, and anti-patterns
-- [references/review.md](references/review.md) — structured review process with implementability checks, fallacy scan, and verdict format
-- [references/revise.md](references/revise.md) — interactive revision workflow for addressing review comments after a Revise verdict
+- [references/polish.md](references/polish.md) — complete quality loop: review, verdict, revision, re-review
 - [references/manage.md](references/manage.md) — status transitions, superseding, linking, splitting, and guardrails
 - [references/templates.md](references/templates.md) — template details and selection guide
 - [references/tooling.md](references/tooling.md) — unified script architecture and command reference
