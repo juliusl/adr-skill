@@ -191,7 +191,7 @@ During plan execution, after all tasks in a stage complete, evaluate the batchin
    - The actual code changes made during the batched stages (combined diff or file list)
    - This reference document for context
 2. **The QA executor reviews** the actual implementation against the QA checks. The executor must report **PASS/FAIL per individual check** — summary-level verdicts without per-check evidence are insufficient.
-3. **If all checks pass** — mark them `[x]` in the QA plan, proceed to auto-commit.
+3. **If all checks pass** — mark them `[x]` in the QA plan and update the Recommendations table: set each finding's Status from `Open` to `✅ Resolved` when the corresponding verification passed. Proceed to auto-commit.
 4. **If any check fails** — pause execution, report findings to the main executor, and request remediation before committing.
 
 ### QA-4c: Documenting Accepted Findings
