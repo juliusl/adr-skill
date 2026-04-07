@@ -14,13 +14,13 @@ back into the ADR lifecycle as empirical evidence.
 
 | ID | Step | Mandatory | Description |
 |----|------|-----------|-------------|
-| P-0 | Locate ADRs | Yes | Find ADRs, extract prototype objectives from Evaluation Checkpoint |
-| P-1 | Select Isolation | Yes | Choose experiment backend from config or profile |
-| P-2 | Environment Setup | Yes | Set up isolated experiment environment |
-| P-3 | Run Experiments | Yes | Execute each objective, record observations as JSONL |
-| P-4 | Report Findings | Yes | Summarize results, assess confidence, propose ADR updates |
-| P-5 | Teardown | Yes | Clean up experiment environment |
-| P-6 | Feed Back | Yes | Update ADR status/checkpoints with findings |
+| E-0 | Locate ADRs | Yes | Find ADRs, extract prototype objectives from Evaluation Checkpoint |
+| E-1 | Select Isolation | Yes | Choose experiment backend from config or profile |
+| E-2 | Environment Setup | Yes | Set up isolated experiment environment |
+| E-3 | Run Experiments | Yes | Execute each objective, record observations as JSONL |
+| E-4 | Report Findings | Yes | Summarize results, assess confidence, propose ADR updates |
+| E-5 | Teardown | Yes | Clean up experiment environment |
+| E-6 | Feed Back | Yes | Update ADR status/checkpoints with findings |
 
 **If a mandatory step is skipped, log the justification inline before proceeding.** Skipping without justification is a workflow violation.
 
@@ -54,7 +54,7 @@ If the file or directory is missing, use built-in defaults. Do not fail when con
 
 **Project-scoped procedures:** Projects can define experiment-specific procedures as multi-line strings in `.adr/preferences.toml`. When a `procedure` key exists under a `[prototype.*]` table, read it and follow the instructions during the experiment. The procedure is project-specific — it is not interpreted by the skill, it is followed as written.
 
-### P-0: Locate ADRs
+### E-0: Locate ADRs
 1. Check for `docs/adr/` directory. If missing, recommend `author-adr` first.
 2. Read the specified ADR(s).
 3. Extract **prototype objectives** from:
@@ -63,7 +63,7 @@ If the file or directory is missing, use built-in defaults. Do not fail when con
    - Per-option **Strengths/Weaknesses** that contain unvalidated claims
 4. If no objectives are found, inform the user and offer to help identify what
    needs validation.
-### P-1: Select Isolation
+### E-1: Select Isolation
 Choose the environment for running experiments. The backend determines
 isolation level and available tooling.
 | Backend | Isolation Level | Dependencies | Best For |
@@ -77,7 +77,7 @@ isolation level and available tooling.
 3. Otherwise, default to `worktree` (lowest dependency)
 4. Verify the selected backend is available (e.g., check for container runtime)
 5. Fall back gracefully if unavailable
-### P-2: Environment Setup
+### E-2: Environment Setup
 Set up the isolated experiment environment using the selected backend.
 **Worktree backend:**
 ```bash
@@ -91,7 +91,7 @@ container.
 and apply environment configuration. See [Profile Format](references/profiles.md).
 **Open-system scenarios:** If the profile declares `requires = "user-intervention"`,
 switch to interactive mode — pause at each checkpoint for user action.
-### P-3: Run Experiments
+### E-3: Run Experiments
 Execute each prototype objective as a discrete experiment:
 1. **State the objective** — what question is this experiment answering?
 2. **Describe the method** — what steps will be taken?
@@ -103,7 +103,7 @@ Execute each prototype objective as a discrete experiment:
 {"objective": "Validate awk parsing", "result": "pass", "notes": "Parsed 5/5 plan files correctly"}
 {"objective": "Measure plan growth", "result": "data", "value": {"5_tasks": "2.1KB", "10_tasks": "4.3KB", "15_tasks": "6.8KB"}}
 ```
-### P-4: Report Findings
+### E-4: Report Findings
 After all experiments complete:
 1. **Summarize findings** — present results for each prototype objective
 2. **Assess confidence** — does the evidence support the decision?
@@ -114,7 +114,7 @@ After all experiments complete:
    - Update option Strengths/Weaknesses with empirical data
    - Add evidence to the Context section
    - Revise consequences if findings contradict stated outcomes
-### P-5: Teardown
+### E-5: Teardown
 Clean up the experiment environment:
 - **Automatic teardown** (default): remove worktree, stop container
 - **Manual teardown**: inform the user the environment is still available
@@ -122,7 +122,7 @@ Clean up the experiment environment:
 # Worktree cleanup
 git worktree remove .prototype/<adr-number>
 ```
-### P-6: Feed Back
+### E-6: Feed Back
 1. If findings validate the decision → update Evaluation Checkpoint assessment
    to `Proceed` and offer to transition status from `Prototype` → `Proposed`
 2. If findings invalidate → keep status at `Prototype`, recommend revisions
