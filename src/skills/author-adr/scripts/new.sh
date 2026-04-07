@@ -37,13 +37,13 @@ if [ ! -x "$format_script" ]; then
 fi
 
 case "$format" in
-  wi-nygard-agent)
+  wi-nygard-agent|wi-full-agent-adr)
     # Format handles its own naming — parse remote + id from args
     remote="${1:-}"
     if [ -z "$remote" ]; then
-      echo "ERROR: remote is required for wi-nygard-agent format" >&2
-      echo "Usage: new.sh wi-nygard-agent <remote> <id> <title...>" >&2
-      echo "       new.sh wi-nygard-agent local <title...>  (ID auto-generated)" >&2
+      echo "ERROR: remote is required for $format format" >&2
+      echo "Usage: new.sh $format <remote> <id> <title...>" >&2
+      echo "       new.sh $format local <title...>  (ID auto-generated)" >&2
       exit 1
     fi
     shift
@@ -63,8 +63,8 @@ case "$format" in
       # Remote adapters: ID is required as next arg
       id="${1:-}"
       if [ -z "$id" ]; then
-        echo "ERROR: id is required for wi-nygard-agent format with remote '$remote'" >&2
-        echo "Usage: new.sh wi-nygard-agent <remote> <id> <title...>" >&2
+        echo "ERROR: id is required for $format format with remote '$remote'" >&2
+        echo "Usage: new.sh $format <remote> <id> <title...>" >&2
         exit 1
       fi
       shift
@@ -73,7 +73,7 @@ case "$format" in
     title="$*"
     if [ -z "$title" ]; then
       echo "ERROR: title is required" >&2
-      echo "Usage: new.sh wi-nygard-agent <remote> <id> <title...>" >&2
+      echo "Usage: new.sh $format <remote> <id> <title...>" >&2
       exit 1
     fi
 
