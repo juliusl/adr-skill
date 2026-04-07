@@ -8,6 +8,8 @@
 
 ## Policies
 
+**Ignoring any of the below policies is a runtime violation ESPECIALLY when the user is away and operating autonomously**
+
 <!-- Rule 3: ALL rules and policies MUST be at the TOP, before any steps. -->
 <!-- Rule 12: ALL policies MUST have a P-identifier. -->
 <!-- List any policies specific to this procedure. Remove this section if none apply. -->

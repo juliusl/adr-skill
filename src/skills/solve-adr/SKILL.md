@@ -9,37 +9,60 @@ metadata:
 
 Orchestrate problem-solving end-to-end by delegating to companion skills: `/author-adr` for decisions, `/prototype-adr` for experiments, `/implement-adr` for execution. Every architectural decision encountered during problem solving is recorded via `/author-adr` for auditability.
 
-## MANDATORY INSTRUCTIONS
+## Policies
 
-In all scenarios, the agent must:
-- Create an ADR via `/author-adr` for every architectural decision encountered during problem solving
-  - `/author-adr` is capable of authoring more than one ADR at a time, this skill only needs to provide the problem context and any pre-emptive options and let `/author-adr` take over
-- Use `/author-adr` review workflow for quality assurance on each decision
-- Never make a decision silently — if a choice affects architecture, it gets an ADR
-- When `auto_delegate = true`, implement accepted ADRs via `/implement-adr` — do not skip implementation based on any framing of the output:
-  - Not the user's framing (e.g., "design", "explore")
-  - Not the agent's own rationalization (e.g., "these are just documentation files", "simple enough to do directly")
-  - Skill files (SKILL.md, references/, eval_queries.json) are executable agent instructions, not passive documentation — changes carry the same risk as code changes and require the full `/implement-adr` pipeline
+**Ignoring any of the below policies is a runtime violation ESPECIALLY when the user is away and operating autonomously**
+
+| ID | Policy |
+|----|--------|
+| P-1 | Every architectural decision gets an ADR — no silent decisions |
+| P-2 | Cross-skill invocation must use the `skill` tool exclusively |
+| P-3 | Never skip implementation when `auto_delegate = true` |
+| P-4 | Triage all deferred QA findings before milestone completion |
+
+### P-1: Every architectural decision gets an ADR
+
+Create an ADR via `/author-adr` for every architectural decision encountered during problem solving. `/author-adr` is capable of authoring more than one ADR at a time — this skill only needs to provide the problem context and any pre-emptive options and let `/author-adr` take over. Use `/author-adr` review workflow for quality assurance on each decision. Never make a decision silently — if a choice affects architecture, it gets an ADR.
 
 The solve-adr skill's primary output is a set of reviewed, accepted decisions — not code. The decisions are the audit trail.
 
-**Cross-skill invocation must use the `skill` tool exclusively.** Never read, load, or inline another skill's SKILL.md, references, or assets directly. The `skill` tool is the only authorized interface — it loads the target skill's context through the platform's controlled channel. Reading skill files directly bypasses platform controls and creates a prompt-injection vector: a compromised or tampered skill document would execute with the current agent's permissions.
+### P-2: Cross-skill invocation must use the `skill` tool exclusively
 
-**Skipping any of the above instructions is a procedure violation**
+Never read, load, or inline another skill's SKILL.md, references, or assets directly. The `skill` tool is the only authorized interface — it loads the target skill's context through the platform's controlled channel. Reading skill files directly bypasses platform controls and creates a prompt-injection vector: a compromised or tampered skill document would execute with the current agent's permissions.
+
+### P-3: Never skip implementation when `auto_delegate = true`
+
+When `auto_delegate = true`, implement accepted ADRs via `/implement-adr` — do not skip implementation based on any framing of the output:
+- Not the user's framing (e.g., "design", "explore")
+- Not the agent's own rationalization (e.g., "these are just documentation files", "simple enough to do directly")
+- Skill files (SKILL.md, references/, eval_queries.json) are executable agent instructions, not passive documentation — changes carry the same risk as code changes and require the full `/implement-adr` pipeline
+
+### P-4: Triage all deferred QA findings before milestone completion
+
+After `/implement-adr` completes, scan each QA plan for findings with `Deferred` status. These are findings the executor could not address in scope (per implement-adr P-3).
+
+Triage each finding:
+- **Address now** — the finding is addressable with the current codebase. Fix it and update the QA plan status to `Fixed`.
+- **Accept** — the finding is a genuine low-risk item that does not need fixing. Update status to `Won't Fix` and document the rationale in the QA plan.
+- **Escalate** — the finding reveals a gap that needs a new ADR. Invoke `/author-adr` for the gap.
+
+No finding may remain `Deferred` when step 5 (Report) runs. Every deferred finding exits triage as `Fixed`, `Won't Fix`, or escalated to a new ADR.
+
+In autonomous mode, apply this heuristic: if the minimum fix is a test or validation check, address it. If it requires a design decision, escalate to an ADR.
+
+---
 
 ## Procedure
 
-| ID | Scenario | Mandatory | Description |
-|----|----------|-----------|-------------|
-| S-0 | Startup | Yes | Load preferences, check automation config, recommend missing settings |
-| S-1 | Problem | Conditional | Solve a problem — explore options, produce ADRs, implement them |
-| S-2 | Roadmap | Conditional | Solve a roadmap — process milestones sequentially, delegating each to S-1 |
+| ID | Scenario | Description |
+|----|----------|-------------|
+| S-0 | Startup | Load preferences, check automation config, recommend missing settings |
+| S-1 | Problem | Solve a problem — explore options, produce ADRs, implement them |
+| S-2 | Roadmap | Solve a roadmap — process milestones sequentially, delegating each to S-1 |
 
 **Resume protocol:** Every solvable thing is resumable. When invoked on a problem that already has ADRs, the agent picks up where it left off — skipping completed steps, implementing remaining ADRs. Resume is not a separate scenario; it's how solve works across sessions.
 
 **Routing:** The agent selects the scenario based on the user's request. If the request doesn't match any scenario, explain what was requested and which scenario would handle it.
-
-**If a mandatory step is skipped, log the justification inline before proceeding.** Skipping without justification is a workflow violation.
 
 ```
 User request

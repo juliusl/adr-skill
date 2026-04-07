@@ -50,7 +50,7 @@ Items 5–7 are the **observability check**: a stage that produces unverifiable 
 - **Not a replacement for dev acceptance criteria** — dev criteria verify "does it work," QA verifies "can it break." Test-gap findings supplement dev criteria, they don't replace them.
 - **Not a comprehensive security audit** — it catches common vulnerability patterns, not sophisticated attacks.
 - **Not blocking plan generation** — the QA plan is generated after plan approval, not during.
-- **Not limited to checking** — the QA planner can recommend new work (tasks, features, documentation) when test-gap analysis reveals blind spots. Recommendations are surfaced to the main executor for scheduling, gated by the finding eligibility test.
+- **Not limited to checking** — the QA planner can recommend new work (tasks, features, documentation) when test-gap analysis reveals blind spots. Recommendations are surfaced to the main executor for remediation, classified by the finding disposition rules.
 
 ## Regeneration on Plan Revision
 
@@ -68,10 +68,10 @@ The main executor is responsible for triggering QA plan regeneration when a plan
 | QA-1c | Output — qa-plan.md file structure |
 | QA-2 | Test-Gap Analysis — find blind spots in dev acceptance criteria |
 | QA-2a | Example — illustrates a test gap |
-| QA-3 | Finding Eligibility Gate — classify findings as quality concerns vs preferences |
-| QA-3a | Eligible for scheduling (quality concerns) |
-| QA-3b | Not eligible — defer to follow-up iterations (preferences) |
-| QA-3c | Boundary case — UX-grounded design feedback |
+| QA-3 | Finding Disposition — classify findings and determine remediation approach |
+| QA-3a | Quality concerns — remediate before finalization |
+| QA-3b | Low-severity findings — remediate with minimal implementation |
+| QA-3c | Boundary test — classification decision rule |
 | QA-4 | QA Execution — stage boundary validation |
 | QA-4a | Enforcement — mandatory regardless of participation mode |
 | QA-4b | Stage Boundary Hook — spawn QA executor agent per stage |
@@ -111,7 +111,7 @@ The QA planner receives:
 3. **For each stage, generate checks** in two categories:
    - **Security** — apply the [6-item security checklist](#security-checklist) to the stage's specific tasks, interfaces, and data flows.
    - **UX (crash prevention and observability)** — apply the [7-item UX checklist](#ux-checklist), with particular attention to observability gaps (items 5–7).
-4. **Classify findings** using the [QA-3: Finding Eligibility Gate](#qa-3-finding-eligibility-gate).
+4. **Classify findings** using the [QA-3: Finding Disposition](#qa-3-finding-disposition).
 5. **Write the QA plan** to `docs/plans/<range>.<revision>.qa-plan.md` alongside the main plan. Use the [QA plan template](../assets/templates/qa-plan-template.md). Present all findings in a single flat Recommendations table with a Classification column — do not split into separate subsections.
 
 ### QA-1c: Output
@@ -119,7 +119,7 @@ The QA planner receives:
 A `qa-plan.md` file with:
 - Per-stage security and UX checks (checkboxes)
 - Test-gap findings with concrete examples
-- A flat Recommendations table classifying each finding as quality concern or preference
+- A flat Recommendations table classifying each finding as quality concern or low-severity
 
 ## QA-2: Test-Gap Analysis
 
@@ -137,30 +137,32 @@ The dev plan for an `ingest` command has acceptance criteria:
 
 Test-gap analysis reveals: these tests verify ingest *works*, but there's no test for *verifying ingested data*. If the data is silently corrupted (wrong columns, truncated values), all dev tests pass. QA recommends a view/inspection capability to close the observability gap.
 
-## QA-3: Finding Eligibility Gate
+## QA-3: Finding Disposition
 
-Not all QA findings justify scheduling new work. The QA planner and executor must distinguish between quality concerns and preferences.
+All QA findings must be addressed. The QA planner classifies findings to guide the remediation approach, not to filter out work.
 
-### QA-3a: Eligible for scheduling (quality concerns)
+### QA-3a: Quality concerns — remediate before finalization
 
 - Security vulnerabilities — injection, credential exposure, permission issues
 - Crash-inducing gaps — unhandled errors, resource leaks, missing validation
+- Data integrity gaps — silent data loss, missing validation on write paths, incorrect state transitions
 - Observability gaps — no way to verify that a stage's output is correct
 - UX violations — output format that prevents the intended audience from using the tool effectively
+- Regression risk — missing tests for known failure modes or edge cases the code handles implicitly
 
-### QA-3b: Not eligible — defer to follow-up iterations (preferences)
+Quality concerns must be remediated before the milestone is marked complete. "Eligible for scheduling" means "is scheduled" — not "may be scheduled later."
 
-- Aesthetic or ergonomic suggestions — "this should have a fancy table view"
-- Feature requests beyond the minimum needed to close the quality concern
-- Opinions about implementation approach that don't affect security or UX
+### QA-3b: Low-severity findings — remediate with minimal implementation
 
-### QA-3c: The boundary case — UX-grounded design feedback
+- Cosmetic improvements that don't affect correctness (e.g., output formatting)
+- Edge cases handled by dependencies but lacking explicit regression tests
+- Hardening measures for unlikely scenarios
 
-A QA finding that *looks* like a preference may actually be a quality concern when it affects the intended user's ability to use the tool. Example: if a pipeline tool only supports formatted table output (not pipeable), a QA finding saying "this should be awk-friendly" is a legitimate UX concern — the output format violates the tool's design intent.
+Low-severity findings are addressed with the minimum implementation that closes the gap. If a finding cannot be addressed in the current scope, it must be deferred per P-3 in the SKILL.md policies — logged in the QA plan and surfaced to solve-adr for triage.
 
-**The test:** Does the finding affect a user's ability to accomplish the task the tool was designed for, or does it just make the tool nicer? If the former, it's a quality concern. If the latter, it's a preference.
+### QA-3c: Boundary test
 
-The minimum implementation that closes the quality concern is what gets scheduled — iteration handles the rest.
+When classifying a finding, apply this test: **If this finding were a bug report from a user, would it be closed as "won't fix"?** If no — it's a quality concern. If yes — it's low-severity, but still gets the minimum fix.
 
 ## QA-4: QA Execution
 
@@ -217,9 +219,9 @@ You must generate a QA plan for the following implementation plan.
 
 [Insert Test-Gap Analysis section from this reference]
 
-## Finding Eligibility
+## Finding Disposition
 
-[Insert Finding Eligibility Gate section from this reference]
+[Insert Finding Disposition section from this reference]
 
 ## Source Material
 
@@ -235,7 +237,7 @@ Write a QA plan using the qa-plan-template.md structure. For each stage:
 1. Apply the security checklist (6 items)
 2. Apply the UX checklist (7 items)
 3. Note any test-gap findings
-4. Classify all findings using the eligibility gate
+4. Classify all findings using the disposition rules
 ```
 
 ### QA-5b: QA Executor Agent Prompt
@@ -260,11 +262,11 @@ You must not have been the agent that executed the stage's tasks.
 2. For each UX check, verify against the actual code.
 3. Mark passing checks [x] in the QA plan.
 4. For failing checks, report the specific code/file and the violation.
-5. Apply the finding eligibility gate to any new findings.
+5. Apply the finding disposition rules to any new findings.
 
 ## Output Format
 
 - PASS/FAIL per check with specific evidence
-- Any new findings with eligibility classification
+- Any new findings with disposition classification
 - Verdict: Stage Approved / Stage Needs Remediation
 ```

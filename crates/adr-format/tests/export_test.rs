@@ -139,6 +139,34 @@ fn export_snapshot() {
 }
 
 #[test]
+fn export_is_idempotent() {
+    let dir = tempfile::tempdir().unwrap();
+    let adr_dir = dir.path().join("docs/adr");
+    fs::create_dir_all(&adr_dir).unwrap();
+
+    let adr = build_test_adr();
+    let toml_str = serialize_adr(&adr).unwrap();
+    fs::write(adr_dir.join("gh-42-use-postgresql.toml"), &toml_str).unwrap();
+
+    let adr_meta = dir.path().join(".adr");
+    fs::create_dir_all(&adr_meta).unwrap();
+    fs::write(adr_meta.join("adr-dir"), adr_dir.to_string_lossy().as_ref()).unwrap();
+
+    let binary = env!("CARGO_BIN_EXE_adr-format");
+    let run = || {
+        Command::new(binary)
+            .current_dir(dir.path())
+            .args(["export", "gh", "42"])
+            .output()
+            .expect("failed to run")
+    };
+
+    let out1 = run();
+    let out2 = run();
+    assert_eq!(out1.stdout, out2.stdout, "export is not idempotent");
+}
+
+#[test]
 fn export_omits_empty_work_item() {
     let dir = tempfile::tempdir().unwrap();
     let adr_dir = dir.path().join("docs/adr");

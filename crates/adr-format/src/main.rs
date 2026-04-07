@@ -97,6 +97,13 @@ fn validate_id(id: &str) -> Result<(), String> {
     Ok(())
 }
 
+fn validate_dir(dir: &str) -> Result<(), String> {
+    if dir.contains("..") {
+        return Err(format!("directory '{}' contains '..' — path traversal not allowed", dir));
+    }
+    Ok(())
+}
+
 fn slugify(s: &str) -> String {
     s.to_lowercase()
         .chars()
@@ -151,6 +158,7 @@ fn find_adr_file(dir: &str, remote: &str, id: &str) -> Result<String, String> {
 fn cmd_new(remote: &str, id: &str, title: &str, dir: &str) -> Result<(), String> {
     validate_remote(remote)?;
     validate_id(id)?;
+    validate_dir(dir)?;
     if title.is_empty() {
         return Err("title is required".to_string());
     }
@@ -186,6 +194,13 @@ fn cmd_new(remote: &str, id: &str, title: &str, dir: &str) -> Result<(), String>
 }
 
 fn cmd_init(dir: &str) -> Result<(), String> {
+    validate_dir(dir)?;
+
+    let seed_file = format!("{}/0001-record-architecture-decisions.toml", dir);
+    if Path::new(&seed_file).exists() {
+        return Err("ADR directory already initialized.".to_string());
+    }
+
     fs::create_dir_all(dir).map_err(|e| e.to_string())?;
 
     if dir != "docs/adr" {
@@ -290,8 +305,13 @@ fn cmd_rename(remote: &str, id: &str, new_title: &str) -> Result<(), String> {
     adr.meta.last_updated = today();
 
     let toml_str = serialize_adr(&adr).map_err(|e| e.to_string())?;
-    fs::write(&old_path, &toml_str).map_err(|e| e.to_string())?;
-    fs::rename(&old_path, &new_path).map_err(|e| e.to_string())?;
+    // Atomic: write new file first, then remove old — never lose data
+    let tmp_path = format!("{}.tmp", new_path);
+    fs::write(&tmp_path, &toml_str).map_err(|e| e.to_string())?;
+    fs::rename(&tmp_path, &new_path).map_err(|e| e.to_string())?;
+    if old_path != new_path {
+        fs::remove_file(&old_path).map_err(|e| e.to_string())?;
+    }
 
     let old_name = Path::new(&old_path).file_name().unwrap().to_string_lossy();
     let new_name = Path::new(&new_path).file_name().unwrap().to_string_lossy();
@@ -318,8 +338,14 @@ fn cmd_status(remote: Option<&str>, id: Option<&str>, new_status: Option<&str>) 
                 }
                 Some(status) => {
                     adr.meta.status = status.to_string();
+                    if let Err(errors) = adr.validate() {
+                        return Err(errors.iter().map(|e| e.to_string()).collect::<Vec<_>>().join("; "));
+                    }
                     let toml_str = serialize_adr(&adr).map_err(|e| e.to_string())?;
-                    fs::write(&file_path, toml_str).map_err(|e| e.to_string())?;
+                    // Atomic write: temp file then rename
+                    let tmp_path = format!("{}.tmp", file_path);
+                    fs::write(&tmp_path, toml_str).map_err(|e| e.to_string())?;
+                    fs::rename(&tmp_path, &file_path).map_err(|e| e.to_string())?;
                     let name = Path::new(&file_path).file_name().unwrap().to_string_lossy();
                     println!("Updated: {} → {}", name, status);
                     Ok(())

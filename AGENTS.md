@@ -80,6 +80,9 @@ All policies are listed here with identifiers. Detailed descriptions follow in t
 | P-13 | Rust Tooling | Cargo workspace in `crates/`, `make build-tools` |
 | P-13a | Working on adr-db | Prerequisites, migrations, tests |
 | P-14 | Evaluating Skill Description | Use `eval_queries.json` to validate trigger reliability |
+| P-15 | Installed Skills | Never modify `~/.copilot/skills/` — test against repo source |
+| P-16 | Broken Makefile Targets | Stop and fix broken Makefile targets before proceeding |
+| P-17 | Autonomy Directives | Never take shortcuts when a procedure or plan has been established |
 
 ---
 
@@ -361,3 +364,20 @@ should-not-trigger) for testing whether the skill's `description` field
 triggers reliably. See the
 <a href="https://agentskills.io/skill-creation/optimizing-descriptions">agentskills.io optimization guide</a>
 for the evaluation workflow.
+
+## P-15: Installed Skills
+
+Files under `~/.copilot/skills/` are platform-managed. Agents **must not**
+create, modify, or delete files in that directory.
+
+When testing changes to skill scripts, Makefiles, or templates, run tests
+against the repo source copy at `src/skills/<skill>/`, not the installed
+copy.
+
+## P-16: Broken Makefile Targets Policy
+
+ALWAYS, when encountering a broken makefile target, STOP and fix the target before proceeding. A broken target is always in scope and ignoring it creates technical debt.
+
+## P-17: Autonomy Directives
+
+When operating autonomously, **NEVER** take shortcuts when a procedure or plan has been established. Resource constraints or session length are not valid reasons to skip procedures. Procedures are in place to safe-guard autonomously generated code.

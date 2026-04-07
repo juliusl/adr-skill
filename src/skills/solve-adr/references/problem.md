@@ -46,7 +46,7 @@ Every decision gets an ADR — even mid-execution discoveries.
    ↓
 4. Implement — group accepted ADRs, load /implement-adr and run its procedure
    ↓
-5. Report — summarize what was implemented, what remains
+5. Report — triage deferred QA findings (P-4), summarize what was implemented
 ```
 
 **On resume:** The agent evaluates the problem's current state and enters the lifecycle at the right point:
@@ -261,7 +261,7 @@ For each group in order:
 
 ## Step 5: Report
 
-After all groups complete (or execution stops), stay on the feature branch and report:
+After all groups complete (or execution stops), triage any deferred QA findings per P-4 in SKILL.md, then stay on the feature branch and report:
 
 ```markdown
 ## Problem: [topic]

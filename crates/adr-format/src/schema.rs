@@ -14,6 +14,7 @@ const VALID_STATUSES: &[&str] = &[
 
 /// Top-level ADR document in wi-full-agent-adr TOML format.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[serde(deny_unknown_fields)]
 pub struct Adr {
     pub meta: Meta,
     pub context: Section,
@@ -236,8 +237,11 @@ impl Adr {
         }
 
         // Work item format validation (if non-empty)
-        if !self.meta.work_item.is_empty() && !self.meta.work_item.contains('#') {
-            errors.push(ValidationError::InvalidWorkItem(self.meta.work_item.clone()));
+        if !self.meta.work_item.is_empty() {
+            let parts: Vec<&str> = self.meta.work_item.splitn(2, '#').collect();
+            if parts.len() != 2 || parts[0].is_empty() || parts[1].is_empty() {
+                errors.push(ValidationError::InvalidWorkItem(self.meta.work_item.clone()));
+            }
         }
 
         if errors.is_empty() {
@@ -479,5 +483,68 @@ mod tests {
         let err = result.unwrap_err();
         let msg = err.to_string();
         assert!(msg.contains("docs/adr/test.toml"), "error should include file path: {}", msg);
+    }
+
+    #[test]
+    fn work_item_empty_remote_rejected() {
+        let mut adr = sample_adr();
+        adr.meta.work_item = "#42".to_string();
+        assert!(adr.validate().is_err());
+    }
+
+    #[test]
+    fn work_item_empty_id_rejected() {
+        let mut adr = sample_adr();
+        adr.meta.work_item = "gh#".to_string();
+        assert!(adr.validate().is_err());
+    }
+
+    #[test]
+    fn work_item_empty_string_valid() {
+        let mut adr = sample_adr();
+        adr.meta.work_item = String::new();
+        assert!(adr.validate().is_ok());
+    }
+
+    #[test]
+    fn malformed_toml_unclosed_multiline_string() {
+        let input = r#"
+[meta]
+title = """unclosed
+"#;
+        let result = parse_adr(input, "test-unclosed.toml");
+        assert!(result.is_err());
+        let msg = result.unwrap_err().to_string();
+        assert!(msg.contains("test-unclosed.toml"));
+    }
+
+    #[test]
+    fn malformed_toml_bare_equals() {
+        let input = "= no key here\n";
+        let result = parse_adr(input, "test-bare.toml");
+        assert!(result.is_err());
+        let msg = result.unwrap_err().to_string();
+        assert!(msg.contains("test-bare.toml"));
+    }
+
+    #[test]
+    fn malformed_toml_invalid_escape() {
+        let input = r#"
+[meta]
+title = "bad \q escape"
+"#;
+        let result = parse_adr(input, "test-escape.toml");
+        assert!(result.is_err());
+        let msg = result.unwrap_err().to_string();
+        assert!(msg.contains("test-escape.toml"));
+    }
+
+    #[test]
+    fn unknown_top_level_field_rejected() {
+        let adr = sample_adr();
+        let mut toml_str = serialize_adr(&adr).unwrap();
+        toml_str.push_str("\n[unknown_section]\nfoo = \"bar\"\n");
+        let result = parse_adr(&toml_str, "test-unknown.toml");
+        assert!(result.is_err(), "unknown top-level field should be rejected");
     }
 }

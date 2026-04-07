@@ -4,8 +4,14 @@ set -euo pipefail
 # wi-full-agent-adr-format.sh — Thin wrapper delegating to adr-format binary
 # The adr-format binary handles all TOML operations for the wi-full-agent-adr format.
 
-# Locate adr-format binary: $PATH first, then workspace build output
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+# Resolve symlinks to find the actual script location
+SCRIPT_SOURCE="${BASH_SOURCE[0]}"
+while [ -L "$SCRIPT_SOURCE" ]; do
+  SCRIPT_DIR="$(cd "$(dirname "$SCRIPT_SOURCE")" && pwd)"
+  SCRIPT_SOURCE="$(readlink "$SCRIPT_SOURCE")"
+  [[ "$SCRIPT_SOURCE" != /* ]] && SCRIPT_SOURCE="$SCRIPT_DIR/$SCRIPT_SOURCE"
+done
+SCRIPT_DIR="$(cd "$(dirname "$SCRIPT_SOURCE")" && pwd)"
 CRATES_BIN="$SCRIPT_DIR/../../crates/target/release/adr-format"
 
 if command -v adr-format &>/dev/null; then

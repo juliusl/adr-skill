@@ -8,23 +8,48 @@ metadata:
 # Implement ADR — From Decisions to Plans
 You are an expert at turning Architectural Decision Records into structured, actionable implementation plans. You bridge the gap between _what was decided_ and _how to build it_.
 This skill consumes ADRs produced by the `author-adr` skill (or any Nygard/MADR-formatted ADR) and generates a `plan.md` with staged tasks, test criteria, cost estimates, and full traceability back to the source decisions.
+
+## Policies
+
+**Ignoring any of the below policies is a runtime violation ESPECIALLY when the user is away and operating autonomously**
+
+| ID | Policy |
+|----|--------|
+| P-1 | Never skip QA Validation when operating autonomously |
+| P-2 | Avoid shortcuts or cost-cutting measures when operating autonomously |
+| P-3 | All QA findings must be addressed or triaged for deferral |
+
+### P-1: Never skip QA Validation when operating autonomously
+
+The QA plans are safeguards for autonomous changes to the repo. They are put in place for a specific reason. Resource constraints are not valid reasons for taking shortcuts.
+
+### P-2: Avoid shortcuts or cost-cutting measures when operating autonomously
+
+The user is aware of the costs when starting an autonomous workflow. It is not up to the agent to decide when a session is too expensive. Do not invent shortcuts, follow procedure.
+
+### P-3: All QA findings must be addressed or triaged for deferral
+
+Every QA finding is addressed by default. The agent does not get to classify findings as "preferences" and skip them.
+
+If a finding genuinely cannot be addressed in the current scope, it requires explicit triage: log the finding with its rationale in the QA plan's Recommendations table with status `Deferred`, and surface it to solve-adr for triage at the milestone boundary. Solve-adr decides whether deferred findings block milestone completion or carry forward.
+
+---
+
 ## Procedure
 
-| ID | Step | Mandatory | Description |
-|----|------|-----------|-------------|
-| I-0 | Locate ADRs | Yes | Find ADRs, load preferences, stop if none exist |
-| I-1 | Read and Analyze | Yes | Extract status, decision, consequences, quality strategy |
-| I-2 | Gap Detection | Yes | Check for missing decisions that block planning |
-| I-3 | Generate Plan | Yes | Build plan.md with stages, tasks, criteria |
-| I-4 | Plan Review | Yes | Sub-agent reviews plan against ADR requirements |
-| I-4b | QA Plan Generation | Yes | Separate sub-agent generates qa-plan.md |
-| I-5 | Update ADR Status | Yes | Transition source ADRs to Planned |
-| I-6 | Participation Check | Yes | Load or prompt for participation mode and auto-commit |
-| I-7 | Execute Plan | Yes | Run tasks per participation mode |
-| I-7b | QA Validation (per stage) | Yes | Sub-agent validates each completed stage against QA plan |
-| I-8 | Finalize | Yes | Update ADR status to Accepted, append implementation summary |
-
-**If a mandatory step is skipped, log the justification inline before proceeding.** Skipping without justification is a workflow violation.
+| ID | Step | Description |
+|----|------|-------------|
+| I-0 | Locate ADRs | Find ADRs, load preferences, stop if none exist |
+| I-1 | Read and Analyze | Extract status, decision, consequences, quality strategy |
+| I-2 | Gap Detection | Check for missing decisions that block planning |
+| I-3 | Generate Plan | Build plan.md with stages, tasks, criteria |
+| I-4 | Plan Review | Sub-agent reviews plan against ADR requirements |
+| I-4b | QA Plan Generation | Separate sub-agent generates qa-plan.md |
+| I-5 | Update ADR Status | Transition source ADRs to Planned |
+| I-6 | Participation Check | Load or prompt for participation mode and auto-commit |
+| I-7 | Execute Plan | Run tasks per participation mode |
+| I-7b | QA Validation (per stage) | Sub-agent validates each completed stage against QA plan |
+| I-8 | Finalize | Update ADR status to Accepted, append implementation summary |
 
 ## Assets
 
@@ -185,7 +210,7 @@ Read the [Plan Review Protocol](references/plan-review.md) for the full reviewer
 The review is mandatory — a prototype found gaps in ~24% of checks (49 total).
 ### I-4b: QA Plan Generation
 After the plan-reviewer approves the plan (Step 4), spawn a **separate general-purpose agent** to generate the QA plan. The main executor must not write its own QA plan — this is the same separation principle that prevents developers from writing their own QA test plans.
-Read the [QA Planning Protocol](references/qa-planning.md) for the full QA planner prompt, procedural checklists (6 security + 7 UX items), test-gap analysis, and finding eligibility gate.
+Read the [QA Planning Protocol](references/qa-planning.md) for the full QA planner prompt, procedural checklists (6 security + 7 UX items), test-gap analysis, and finding disposition rules.
 
 **Sequencing constraint:** The QA planner must receive the **approved, post-revision plan** — not the pre-review draft. Do not dispatch the QA planner until I-4 plan review completes and all revisions are applied. Parallel dispatch of I-4 and I-4b is a workflow violation — the QA planner would validate a stale plan.
 
@@ -413,7 +438,7 @@ awk -f <skill-root>/scripts/extract-summary.awk docs/plans/NNNN.0.plan.md
 For detailed guidance beyond what is covered above, consult these references on-demand:
 - **[Planning Practices](references/planning-practices.md)** — Stage decomposition principles, gap detection heuristics, scoping rules.
 - **[Plan Review Protocol](references/plan-review.md)** — Plan-reviewer sub-agent checklist, iteration protocol, and prompt template.
-- **[QA Planning Protocol](references/qa-planning.md)** — QA plan generation, procedural checklists (security + UX), test-gap analysis, finding eligibility gate, and agent prompt templates.
+- **[QA Planning Protocol](references/qa-planning.md)** — QA plan generation, procedural checklists (security + UX), test-gap analysis, finding disposition rules, and agent prompt templates.
 - **[Testing Guidelines](references/testing-guidelines.md)** — Full testing taxonomy with examples for each code context category.
 - **[Cost Estimation](references/cost-estimation.md)** — Calibration examples, edge cases, and guidance for mixed-size tasks.
 - **[Asset Index](assets/index.md)** — Curated index of all available assets and templates.
