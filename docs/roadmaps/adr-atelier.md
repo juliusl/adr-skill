@@ -1,29 +1,31 @@
-# adr-atelier roadmap
+# adr-atelier Roadmap
 
-A Rust based local browser based tool that can explore, manage, and orchestrate adr based development based on adr-db-lib and the high-level agent skills. Integrates w/ the local agent via acp (agent client protocol) via the agent-client-protocol crate.
+This document provides a roadmap of milestones for `adr-atelier`.
 
-The tool should be able to handle multiple project directories since each adr.db is stored in each directory.
+`adr-atelier` will be a Rust based tool that can explore, manage, and orchestrate adr based development based on adr-db-lib and the high-level agent skills.
 
 ## Features
+- Based on a new agent forward adr template "wi-full-agent-adr" format
 - Explore and Navigate ADR's stored in each project w/ a wiki-like experience, where referenced ADR's and items can be navigated to, and the review/revise dialouge chain is transparent
 - Manage ADR workflows by updating status's when checkpoints are met, and kick off orchestration sessions w/ the /solve-adr skill by accessing the local ACP server
 - Review implementation history by viewing task status, qa findings, and commit diffs
 - Configure project preferences from a single portal
-- Based on a new agent forward adr template "wi-full-agent-adr" format
 
 ## Constraints
 - Single binary "adr-atelier" that launches the server and handles all data fetching tasks
 - Binary should use "cap-std" for safe file handling
 - Binary should be cautious about user-input to defend against prompt injection and database injection to be secure from the ground up
+- The tool should be able to handle multiple project directories since each adr.db is stored in each directory
+- Integration w/ the local agent should be done via ACP (agent client protocol) using the `agent-client-protocol` crate
 
-## Roadmap
+## Milestones
 
-This roadmap is a list of milestones. With each milestone are groups of user-stories and objectives that satisfy the milestone.
-
-Each item under a milestone are high-level goals, but do not completely describe, design, or explore the problem, however changes to items should be iterative or provide a clear benefit over the original item.
+Each milestone is a group of high-level goals, but do not completely describe, design, or explore the problem, however changes to items should be iterative or provide a clear benefit over the original item.
 If an item has a gap, then it should be clear signal that an additional ADR is needed to cover the gap.
 
-### Milestone 1
+This is meant to be a living document and will be adapt to reflect new findings, constraints, or requirements.
+
+### Milestone 1 <!-- status: complete -->
 - Add "wi-full-agent-adr" format which replaces "wi-nygard-agent-adr" format, See "Work-Item based full-agent ADR Format (wi-full-agent-adr)" section for details
 
 ### Milestone 2
