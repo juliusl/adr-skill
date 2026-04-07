@@ -101,7 +101,7 @@ All generated content (plans, QA plans, review findings, implementation summarie
 ### I-1: Read and Analyze
 1. Read the full content of each selected ADR.
 2. Extract the structured sections:
-   - **Status** — only proceed with `Prototype`, `Proposed`, `Accepted`, or `Planned` ADRs. Warn if status is `Deprecated` or `Superseded`.
+   - **Status** — only proceed with `Prototype`, `Proposed`, `Ready`, `Accepted`, or `Planned` ADRs. Warn if status is `Deprecated` or `Superseded`.
    - **Context** — understand the forces, constraints, and tensions.
    - **Decision** — identify the concrete commitments and design choices.
    - **Consequences** — note positive outcomes to preserve, negative outcomes to mitigate, and neutral observations.
@@ -221,12 +221,12 @@ Read the [QA Planning Protocol](references/qa-planning.md) for the full QA plann
 4. The QA planner writes `docs/plans/<range>.<revision>.qa-plan.md`.
 QA plan generation is mandatory — it runs for every plan, regardless of participation mode. There is no opt-out.
 ### I-5: Update ADR Status
-After generating the plan, update each source ADR whose status is `Prototype` or `Proposed` to `Planned`. This signals that the decision has been analyzed, decomposed into tasks, and is ready for implementation.
+After generating the plan, update each source ADR whose status is `Prototype`, `Proposed`, or `Ready` to `Planned`. This signals that the decision has been analyzed, decomposed into tasks, and is ready for implementation.
 **Guard rails:**
-- ADRs with status `Prototype` or `Proposed` are transitioned to `Planned`.
+- ADRs with status `Prototype`, `Proposed`, or `Ready` are transitioned to `Planned`.
 - ADRs that are already `Accepted`, `Planned`, `Deprecated`, or `Superseded` are left unchanged.
 - If an ADR has an unexpected status, warn the user and ask whether to proceed.
-The status update is performed by editing the ADR file's `## Status` section in-place, replacing `Prototype` or `Proposed` with `Planned`.
+The status update is performed by editing the ADR file's `## Status` section in-place, replacing `Prototype`, `Proposed`, or `Ready` with `Planned`.
 ### I-6: Participation Check
 After updating ADR statuses, determine how the user wants to participate during implementation.
 1. **Check for existing preference:** If `[implement].participation` was loaded from the config file in Step 0, apply it and inform the user: > Using participation mode: **Guided** (from preferences.toml). > Say "change mode" at any time to switch. Skip to the auto-commit check (item 5).
