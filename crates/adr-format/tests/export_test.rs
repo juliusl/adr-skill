@@ -9,6 +9,7 @@ fn build_test_adr() -> Adr {
             date: "2026-04-06".to_string(),
             status: "Accepted".to_string(),
             last_updated: "2026-04-06".to_string(),
+            identifier: "gh-42".to_string(),
             work_item: "gh#42".to_string(),
             links: vec!["ADR-0034".to_string(), "ADR-0037".to_string()],
         },
@@ -27,31 +28,32 @@ fn build_test_adr() -> Adr {
         ],
         evaluation_checkpoint: Checkpoint {
             assessment: "Proceed".to_string(),
-            all_options_evaluated: true,
-            decision_drivers_referenced: true,
-            no_experimentation_gaps: true,
-            decision_justified: false,
-            consequences_complete: false,
-            quality_strategy_reviewed: false,
-            links_populated: false,
+            items: vec![
+                CheckpointItem { label: "All options evaluated at comparable depth".to_string(), checked: true },
+                CheckpointItem { label: "Decision drivers are defined and referenced".to_string(), checked: true },
+                CheckpointItem { label: "No unacknowledged experimentation gaps".to_string(), checked: true },
+            ],
+            all_options_evaluated: None,
+            decision_drivers_referenced: None,
+            no_experimentation_gaps: None,
+            decision_justified: None,
+            consequences_complete: None,
+            quality_strategy_reviewed: None,
+            links_populated: None,
             validation_needs: String::new(),
             pre_review_notes: String::new(),
         },
-        decision: Section {
-            body: "We chose PostgreSQL for event storage.".to_string(),
+        decision: Decision {
+            chosen_option: Some(0),
+            justification: Some("We chose PostgreSQL for event storage.".to_string()),
+            body: None,
         },
         consequences: vec![
             Consequence { kind: "positive".to_string(), body: "Strong JSONB support.".to_string() },
             Consequence { kind: "negative".to_string(), body: "Requires running database.".to_string() },
             Consequence { kind: "neutral".to_string(), body: "Team has expertise.".to_string() },
         ],
-        deliverables: Some(Deliverables {
-            items: vec![DeliverableItem {
-                description: "Schema migration".to_string(),
-                done: false,
-                artifact: String::new(),
-            }],
-        }),
+        deliverables: None,
         quality_strategy: QualityStrategy {
             major_semantic_changes: false,
             minor_semantic_changes: true,
@@ -67,13 +69,19 @@ fn build_test_adr() -> Adr {
         },
         conclusion_checkpoint: Checkpoint {
             assessment: "Ready for review".to_string(),
-            all_options_evaluated: false,
-            decision_drivers_referenced: false,
-            no_experimentation_gaps: false,
-            decision_justified: true,
-            consequences_complete: true,
-            quality_strategy_reviewed: true,
-            links_populated: true,
+            items: vec![
+                CheckpointItem { label: "Decision justified (Y-statement or equivalent)".to_string(), checked: true },
+                CheckpointItem { label: "Consequences include positive, negative, and neutral outcomes".to_string(), checked: true },
+                CheckpointItem { label: "Quality Strategy reviewed".to_string(), checked: true },
+                CheckpointItem { label: "Links to related ADRs populated".to_string(), checked: true },
+            ],
+            all_options_evaluated: None,
+            decision_drivers_referenced: None,
+            no_experimentation_gaps: None,
+            decision_justified: None,
+            consequences_complete: None,
+            quality_strategy_reviewed: None,
+            links_populated: None,
             validation_needs: String::new(),
             pre_review_notes: String::new(),
         },
@@ -123,7 +131,8 @@ fn export_snapshot() {
     assert!(md.contains("### PostgreSQL"));
     assert!(md.contains("### SQLite"));
     assert!(md.contains("## Decision"));
-    assert!(md.contains("We chose PostgreSQL"));
+    assert!(md.contains("Chose **PostgreSQL** (Option 1)"));
+    assert!(md.contains("We chose PostgreSQL for event storage."));
     assert!(md.contains("## Consequences"));
     assert!(md.contains("**Positive:**"));
     assert!(md.contains("**Negative:**"));

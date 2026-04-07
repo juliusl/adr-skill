@@ -3,6 +3,7 @@ use crate::schema::*;
 /// Generate a default ADR template for the given remote, id, and title.
 pub fn generate_template(remote: &str, id: &str, title: &str, date: &str) -> Adr {
     let work_item = format!("{}#{}", remote, id);
+    let identifier = format!("{}-{}", remote, id);
     let display_title = format!("{}-{}. {}", remote, id, title);
 
     Adr {
@@ -11,6 +12,7 @@ pub fn generate_template(remote: &str, id: &str, title: &str, date: &str) -> Adr
             date: date.to_string(),
             status: "Prototype".to_string(),
             last_updated: date.to_string(),
+            identifier,
             work_item,
             links: Vec::new(),
         },
@@ -20,27 +22,28 @@ pub fn generate_template(remote: &str, id: &str, title: &str, date: &str) -> Adr
         options: Vec::new(),
         evaluation_checkpoint: Checkpoint {
             assessment: "[Proceed | Pause for validation | Skipped — <rationale>]".to_string(),
-            all_options_evaluated: false,
-            decision_drivers_referenced: false,
-            no_experimentation_gaps: false,
-            decision_justified: false,
-            consequences_complete: false,
-            quality_strategy_reviewed: false,
-            links_populated: false,
+            items: vec![
+                CheckpointItem { label: "All options evaluated at comparable depth".to_string(), checked: false },
+                CheckpointItem { label: "Decision drivers are defined and referenced in option analysis".to_string(), checked: false },
+                CheckpointItem { label: "No unacknowledged experimentation gaps".to_string(), checked: false },
+            ],
+            all_options_evaluated: None,
+            decision_drivers_referenced: None,
+            no_experimentation_gaps: None,
+            decision_justified: None,
+            consequences_complete: None,
+            quality_strategy_reviewed: None,
+            links_populated: None,
             validation_needs: String::new(),
             pre_review_notes: String::new(),
         },
-        decision: Section {
-            body: String::new(),
+        decision: Decision {
+            chosen_option: None,
+            justification: None,
+            body: None,
         },
         consequences: Vec::new(),
-        deliverables: Some(Deliverables {
-            items: vec![DeliverableItem {
-                description: "[Expected artifact or outcome]".to_string(),
-                done: false,
-                artifact: String::new(),
-            }],
-        }),
+        deliverables: None,
         quality_strategy: QualityStrategy {
             major_semantic_changes: false,
             minor_semantic_changes: false,
@@ -56,13 +59,19 @@ pub fn generate_template(remote: &str, id: &str, title: &str, date: &str) -> Adr
         },
         conclusion_checkpoint: Checkpoint {
             assessment: "[Ready for review | Needs work | Skipped — <rationale>]".to_string(),
-            all_options_evaluated: false,
-            decision_drivers_referenced: false,
-            no_experimentation_gaps: false,
-            decision_justified: false,
-            consequences_complete: false,
-            quality_strategy_reviewed: false,
-            links_populated: false,
+            items: vec![
+                CheckpointItem { label: "Decision justified (Y-statement or equivalent)".to_string(), checked: false },
+                CheckpointItem { label: "Consequences include positive, negative, and neutral outcomes".to_string(), checked: false },
+                CheckpointItem { label: "Quality Strategy reviewed".to_string(), checked: false },
+                CheckpointItem { label: "Links to related ADRs populated".to_string(), checked: false },
+            ],
+            all_options_evaluated: None,
+            decision_drivers_referenced: None,
+            no_experimentation_gaps: None,
+            decision_justified: None,
+            consequences_complete: None,
+            quality_strategy_reviewed: None,
+            links_populated: None,
             validation_needs: String::new(),
             pre_review_notes: String::new(),
         },

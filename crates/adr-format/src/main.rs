@@ -224,20 +224,28 @@ fn cmd_init(dir: &str) -> Result<(), String> {
         },
     ];
     adr.evaluation_checkpoint.assessment = "Proceed".to_string();
-    adr.evaluation_checkpoint.all_options_evaluated = true;
-    adr.evaluation_checkpoint.decision_drivers_referenced = true;
-    adr.evaluation_checkpoint.no_experimentation_gaps = true;
-    adr.decision.body = "We will use Architecture Decision Records, as described by Michael Nygard.".to_string();
+    adr.evaluation_checkpoint.items = vec![
+        adr_format::CheckpointItem { label: "All options evaluated at comparable depth".to_string(), checked: true },
+        adr_format::CheckpointItem { label: "Decision drivers are defined and referenced in option analysis".to_string(), checked: true },
+        adr_format::CheckpointItem { label: "No unacknowledged experimentation gaps".to_string(), checked: true },
+    ];
+    adr.decision = adr_format::Decision {
+        chosen_option: Some(1),
+        justification: Some("We will use Architecture Decision Records, as described by Michael Nygard.".to_string()),
+        body: None,
+    };
     adr.consequences = vec![adr_format::Consequence {
         kind: "positive".to_string(),
         body: "Decisions are documented and discoverable.".to_string(),
     }];
     adr.quality_strategy.backwards_compatible = true;
     adr.conclusion_checkpoint.assessment = "Ready for review".to_string();
-    adr.conclusion_checkpoint.decision_justified = true;
-    adr.conclusion_checkpoint.consequences_complete = true;
-    adr.conclusion_checkpoint.quality_strategy_reviewed = true;
-    adr.conclusion_checkpoint.links_populated = true;
+    adr.conclusion_checkpoint.items = vec![
+        adr_format::CheckpointItem { label: "Decision justified (Y-statement or equivalent)".to_string(), checked: true },
+        adr_format::CheckpointItem { label: "Consequences include positive, negative, and neutral outcomes".to_string(), checked: true },
+        adr_format::CheckpointItem { label: "Quality Strategy reviewed".to_string(), checked: true },
+        adr_format::CheckpointItem { label: "Links to related ADRs populated".to_string(), checked: true },
+    ];
     adr.deliverables = None;
 
     let file_path = format!("{}/0001-record-architecture-decisions.toml", dir);
@@ -458,11 +466,26 @@ fn cmd_export(remote: &str, id: &str) -> Result<(), String> {
         }
     }
 
-    if !adr.decision.body.is_empty() {
+    // Decision section — handle both new (chosen_option) and legacy (body) formats
+    let has_decision = adr.decision.chosen_option.is_some()
+        || adr.decision.body.as_ref().map_or(false, |b| !b.is_empty());
+    if has_decision {
         println!();
         println!("## Decision");
         println!();
-        println!("{}", adr.decision.body);
+        if let Some(idx) = adr.decision.chosen_option {
+            if let Some(opt) = adr.options.get(idx) {
+                println!("Chose **{}** (Option {})", opt.name, idx + 1);
+            }
+            if let Some(ref j) = adr.decision.justification {
+                if !j.is_empty() {
+                    println!();
+                    println!("{}", j);
+                }
+            }
+        } else if let Some(ref body) = adr.decision.body {
+            println!("{}", body);
+        }
     }
 
     let positive: Vec<_> = adr.consequences.iter().filter(|c| c.kind == "positive").collect();
