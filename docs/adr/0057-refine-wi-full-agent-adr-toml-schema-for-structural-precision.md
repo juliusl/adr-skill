@@ -1,7 +1,7 @@
 # 57. Refine wi-full-agent-adr TOML schema for structural precision
 
 Date: 2026-04-07
-Status: Planned
+Status: Accepted
 Last Updated: 2026-04-07
 Links: ADR-0051 (original TOML schema; partially supersedes design rule 3), ADR-0052 (Rust tooling), ADR-0053 (Markdown export)
 
