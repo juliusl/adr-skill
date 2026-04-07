@@ -67,7 +67,8 @@ The main executor is responsible for triggering QA plan regeneration when a plan
 | QA-1b | Process — 5-step generation procedure |
 | QA-1c | Output — qa-plan.md file structure |
 | QA-2 | Test-Gap Analysis — find blind spots in dev acceptance criteria |
-| QA-2a | Example — illustrates a test gap |
+| QA-2a | Example — observability gap |
+| QA-2b | Example — content preservation gap |
 | QA-3 | Finding Disposition — classify findings and determine remediation approach |
 | QA-3a | Quality concerns — remediate before finalization |
 | QA-3b | Low-severity findings — remediate with minimal implementation |
@@ -119,7 +120,7 @@ The QA planner receives:
 A `qa-plan.md` file with:
 - Per-stage security and UX checks (checkboxes)
 - Test-gap findings with concrete examples
-- A flat Recommendations table classifying each finding as quality concern or low-severity
+- A flat Recommendations table classifying each finding as quality concern or low-severity, with a Plan Ref column linking each finding to the plan task or acceptance criterion it supplements
 
 ## QA-2: Test-Gap Analysis
 
@@ -129,13 +130,19 @@ A test gap is any scenario where all dev acceptance criteria pass but the implem
 
 Test-gap findings may result in the QA planner recommending **new tasks or criteria** to be scheduled — the ADR is an incomplete design, and the implementation plan has leeway to make additions when it makes sense.
 
-### QA-2a: Example
+### QA-2a: Example — Observability Gap
 
 The dev plan for an `ingest` command has acceptance criteria:
 - "5 valid JSONL lines ingested, 5 rows in database"
 - "Malformed JSON lines produce error on stderr"
 
 Test-gap analysis reveals: these tests verify ingest *works*, but there's no test for *verifying ingested data*. If the data is silently corrupted (wrong columns, truncated values), all dev tests pass. QA recommends a view/inspection capability to close the observability gap.
+
+### QA-2b: Example — Content Preservation Gap
+
+The dev plan consolidates two source files into one. Acceptance criteria list enumerated items to preserve (e.g., "all N checklist items," "all M validation rules") as manual checkboxes.
+
+Test-gap analysis reveals: all checkboxes could be marked `[x]` with items missing — manual verification lacks a mechanical safety net. QA recommends a pre-delete extraction gate: before deleting source files, extract key item names (e.g., `grep` for each item); after creating the consolidated file, verify each name appears. This turns a manual checklist into a verifiable script.
 
 ## QA-3: Finding Disposition
 
