@@ -7,20 +7,22 @@ Self-contained reference for ADR management tasks. Read this file when the user 
 Every ADR has a status that tracks its progression:
 
 ```
-Prototype ──► Proposed ──► Accepted ──► Deprecated
-                              │              │
-                              └──► Superseded by ADR-NNNN
+Prototype ──► Proposed ──► Ready ──► Planned ──► Accepted ──► Deprecated
+                                                      │
+                                                      └──► Superseded by ADR-NNNN
 ```
 
 | Status | Meaning | When to Use |
 |--------|---------|-------------|
 | **Prototype** | Decision is drafted to drive immediate prototyping | Initial state for local agent-developer workflow |
 | **Proposed** | Decision is ready for team review | When submitting for PR-based review or stakeholder sign-off |
-| **Accepted** | Decision is agreed and ready for implementation | After stakeholder consensus or plan execution |
+| **Ready** | Decision is reviewed and approved — ready for implementation | After review Accept verdict |
+| **Planned** | Decision is decomposed into an implementation plan | When implement-adr generates a plan |
+| **Accepted** | Decision is fully implemented | After successful plan execution by implement-adr |
 | **Deprecated** | Decision is no longer relevant | When the problem it solved no longer exists |
 | **Superseded** | Decision is replaced by a newer ADR | When a new decision explicitly replaces this one |
 
-**Workflow note:** In the local agent-developer workflow, new ADRs start as `Prototype`. The author promotes to `Proposed` when the decision is ready for team review (e.g., before opening a PR). ADRs may also go directly from `Prototype` to `Planned` via the `implement-adr` skill if the author chooses to skip team review and proceed straight to implementation.
+**Workflow note:** In the local agent-developer workflow, new ADRs start as `Prototype`. The author promotes to `Proposed` when the decision is ready for team review (e.g., before opening a PR). ADRs that pass review transition to `Ready` before implementation. ADRs may also go directly from `Prototype` to `Planned` via the `implement-adr` skill if the author chooses to skip team review and proceed straight to implementation.
 
 ## Procedure
 
@@ -65,8 +67,9 @@ make -f <skill-root>/Makefile status NUM=3 STATUS=Deprecated
 **Rules:**
 - Only transition one status at a time per ADR.
 - Record the reason for status changes in the ADR's context or as a brief note below the status line when the change is non-obvious.
+- The `Ready` status is set by `author-adr` after a review Accept verdict. It signals the decision is reviewed and approved but not yet implemented. Only `Proposed` ADRs transition to `Ready`.
 - The `Accepted` status is set by the `implement-adr` skill after successful plan execution — `author-adr` does not transition ADRs to `Accepted`.
-- The `Planned` status is used by the `implement-adr` skill when an ADR has been decomposed into a plan but not yet fully implemented. Both `Prototype` and `Proposed` ADRs can transition to `Planned`.
+- The `Planned` status is used by the `implement-adr` skill when an ADR has been decomposed into a plan but not yet fully implemented. `Prototype`, `Proposed`, and `Ready` ADRs can transition to `Planned`.
 
 ## M-2: Superseding Decisions
 
