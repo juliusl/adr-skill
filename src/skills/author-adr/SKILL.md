@@ -218,6 +218,7 @@ This skill uses a unified script architecture via `ADR_AGENT_SKILL_FORMAT`:
 |--------|----------|-------------|
 | `nygard-agent` (default) | Nygard Agent | Agent-developer workflows, quality-aware decisions |
 | `wi-nygard-agent` | Nygard Agent (work-item) | Team workflows with work item traceability (ADR-0034) |
+| `wi-full-agent-adr` | TOML (full agent) | Automated workflows with mandatory checkpoints and typed schema (ADR-0051) |
 
 ### Cross-Reference Convention
 
@@ -225,6 +226,7 @@ This skill uses a unified script architecture via `ADR_AGENT_SKILL_FORMAT`:
 |--------|------------------|---------|
 | `nygard-agent` | `ADR-NNNN` | `ADR-0034` |
 | `wi-nygard-agent` | `ADR-{remote}-{id}` | `ADR-gh-42`, `ADR-ado-1234`, `ADR-local-a1b2c3d4` |
+| `wi-full-agent-adr` | `ADR-{remote}-{id}` | `ADR-gh-42`, `ADR-ado-1234`, `ADR-local-a1b2c3d4` |
 
 Both conventions coexist in mixed decision logs. Existing `ADR-NNNN` references are not migrated.
 ### Makefile Targets (Required)
@@ -247,6 +249,18 @@ make -f <skill-root>/Makefile new REMOTE=gh ID=42 TITLE="Use PostgreSQL"
 make -f <skill-root>/Makefile rename REMOTE=gh ID=42 TITLE="Use PostgreSQL"
 make -f <skill-root>/Makefile status REMOTE=gh ID=42 STATUS=Proposed
 ```
+
+```bash
+# TOML format (wi-full-agent-adr — requires adr-format binary, run make build-tools first):
+export ADR_AGENT_SKILL_FORMAT=wi-full-agent-adr
+
+make -f <skill-root>/Makefile new REMOTE=gh ID=42 TITLE="Use PostgreSQL"
+make -f <skill-root>/Makefile rename REMOTE=gh ID=42 TITLE="Use PostgreSQL"
+make -f <skill-root>/Makefile status REMOTE=gh ID=42 STATUS=Proposed
+
+# Export TOML ADR to Markdown:
+adr-format export gh 42
+```
 ### Escape Hatch: Direct Script Usage
 Only use direct scripts when the Makefile is unavailable. See [references/tooling.md](references/tooling.md) for full command docs:
 ```bash
@@ -262,6 +276,13 @@ new.sh wi-nygard-agent gh 42 "Use PostgreSQL"
 wi-nygard-agent-format.sh rename gh 42 "Use PostgreSQL"
 wi-nygard-agent-format.sh list
 wi-nygard-agent-format.sh status gh 42 Proposed
+
+# TOML format (wi-full-agent-adr — requires adr-format binary):
+new.sh wi-full-agent-adr gh 42 "Use PostgreSQL"
+adr-format list
+adr-format rename gh 42 "Use PostgreSQL"
+adr-format status gh 42 Proposed
+adr-format export gh 42
 ```
 ### Visualization
 Use **Mermaid** for all diagrams. Diagrams are valuable when complex relationships between processes or entities benefit from visual compression, but overuse can overload context — use sparingly. When comparing options, prefer **markdown tables** over diagrams. See [references/tooling.md](references/tooling.md) for guidelines and syntax patterns.
