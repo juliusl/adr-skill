@@ -2,59 +2,6 @@
 
 Instructions for agents and developers making changes to skills in this repo.
 
-## Directory Structure
-
-```
-adr-skills/
-├── AGENTS.md                    # This file — development guide
-├── README.md                    # Project overview
-├── Makefile                     # Dev targets (test, build-tools)
-├── eval_queries.json            # Trigger evaluation queries for description optimization
-├── crates/                      # Cargo workspace — Rust tooling (ADR-0028)
-│   ├── Cargo.toml               # Workspace root
-│   └── adr-db/                  # Plumbing CLI: JSONL → SQLite (ADR-0026, ADR-0027)
-│       ├── Cargo.toml
-│       ├── diesel.toml          # Diesel schema output config
-│       ├── migrations/          # Diesel SQL migrations
-│       └── src/                 # Rust source
-├── docs/adr/                    # Project-level ADRs (decisions about these skills)
-├── docs/plans/                  # Implementation plans generated from ADRs
-├── src/skills/
-│   ├── author-adr/              # Skill: create, review, manage ADRs
-│   │   ├── SKILL.md             # Skill entry point (spec-compliant frontmatter + instructions)
-│   │   ├── Makefile             # Downstream agent interface (init, new, list, etc.)
-│   │   ├── references/          # On-demand documentation loaded by the agent
-│   │   │   ├── create.md        # ADR creation workflow (significance, readiness, practices)
-│   │   │   ├── review.md        # ADR review process (ecADR, fallacies, anti-patterns)
-│   │   │   ├── manage.md        # ADR management (status, supersede, link, split)
-│   │   │   ├── templates.md     # Template selection guide (Nygard primary, MADR, Y-Statement)
-│   │   │   └── tooling.md       # Dual-format command reference + visualization guidance
-│   │   ├── assets/              # Static resources and templates
-│   │   │   ├── decisions/       # Bundled ADRs referenced by skill instructions
-│   │   │   └── templates/       # Ready-to-use ADR templates (Nygard, MADR, Y-Statement)
-│   │   └── scripts/
-│   │       ├── adr-tools-3.0.0/ # Nygard format (bundled, 22 tests)
-│   │       └── madr-tools/      # MADR format (custom, 9 tests)
-│   ├── implement-adr/           # Skill: turn ADRs into implementation plans
-│   │   ├── SKILL.md             # Skill entry point (spec-compliant frontmatter + instructions)
-│   │   ├── Makefile             # Downstream agent interface (list-adrs, show-template)
-│   │   ├── references/          # On-demand documentation loaded by the agent
-│   │   │   ├── planning-practices.md  # Stage decomposition, task scoping, gap detection
-│   │   │   ├── testing-guidelines.md  # Testing taxonomy by code context
-│   │   │   └── cost-estimation.md     # T-shirt sizing guide and calibration
-│   │   ├── assets/              # Static resources and templates
-│   │   │   ├── decisions/       # Bundled ADRs referenced by skill instructions
-│   │   │   └── templates/       # plan.md template
-│   │   └── scripts/             # Reserved for future tooling
-│   └── solve-adr/               # Skill: scenario-driven problem solving orchestrator
-│       ├── SKILL.md             # Skill entry point (scenario-based procedures)
-│       ├── Makefile             # Minimal — orchestrator has no scripts
-│       ├── references/          # On-demand documentation loaded by the agent
-│       │   ├── problem.md       # S-1 Problem Exploration workflow detail
-│       │   └── roadmap.md       # S-2 Roadmap workflow detail
-│       └── eval_queries.json    # Trigger evaluation queries for solve-adr
-```
-
 ## Policies
 
 All policies are listed here with identifiers. Detailed descriptions follow in the sections below.
