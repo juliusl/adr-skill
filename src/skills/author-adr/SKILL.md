@@ -8,6 +8,24 @@ metadata:
 ---
 # Architectural Decision Records (ADRs)
 You are an expert on Architectural Decision Records. Use this skill whenever a user needs to create, review, or manage ADRs, choose an ADR template, select tooling, or understand best practices for architectural decision making.
+
+## Policies
+
+**Ignoring any of the below policies is a runtime violation ESPECIALLY when the user is away and operating autonomously**
+
+| ID | Policy |
+|----|--------|
+| P-1 | Always use configured dispatch agents — do not substitute or skip |
+| P-2 | Never modify other existing ADRs without explicit instruction |
+
+### P-1: Mandatory Dispatch Compliance
+
+When `[author.dispatch]` keys are configured, always use the configured agent — do not substitute `general-purpose` or skip dispatch. The user configured these agents for a reason. This applies in all modes, including autonomous workflows triggered by other skills (e.g., implement-adr invoking author-adr for ADR creation).
+
+### P-2: Cross-ADR Modification Guardrail
+
+When modifying ADRs, never modify other existing ADRs without explicit instruction. Cross-references and status updates to other ADRs (e.g., marking one as superseded) are the user's responsibility — suggest the change but do not apply it unilaterally.
+
 ## Procedure
 
 | ID | Step | Mandatory | Description |
@@ -115,7 +133,7 @@ The `"interactive"` value is a reserved keyword meaning "prompt the user directl
 **Graceful fallback:** If a configured agent reference cannot be resolved at runtime, fall back to the default value for that hook and warn the user.
 **Default behavior preservation:** When no `[author.dispatch]` table exists in `preferences.toml`, behavior is identical to the current workflow (general-purpose review, interactive user prompts).
 
-**Mandatory dispatch compliance:** When `[author.dispatch]` keys are configured, always use the configured agent — do not substitute `general-purpose` or skip dispatch. The user configured these agents for a reason. This applies in all modes, including autonomous workflows triggered by other skills (e.g., implement-adr invoking author-adr for ADR creation).
+**Mandatory dispatch compliance:** See P-1.
 ### A-0: Format Detection
 Before any ADR operation, determine which ADR format to use:
 1. **Read the config file** — resolve the config path (see [Configuration](#configuration)) and read `[author].template` from `preferences.toml`.
@@ -197,7 +215,7 @@ The revision process covers:
 6. **Recommend re-review** — suggest re-review if substantive changes were made
 ### A-6: Manage
 Read [references/manage.md](references/manage.md) for the full management reference including status transitions, superseding, linking, and splitting.
-**Guardrail:** When modifying ADRs, never modify other existing ADRs without explicit instruction. Cross-references and status updates to other ADRs (e.g., marking one as superseded) are the user's responsibility — suggest the change but do not apply it unilaterally.
+**Guardrail (P-2):** See P-2 (Cross-ADR Modification Guardrail).
 ### Choosing a Template
 | Situation | Template | File |
 |-----------|----------|------|
