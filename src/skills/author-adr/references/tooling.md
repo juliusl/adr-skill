@@ -142,7 +142,7 @@ Use diagrams when they clarify structure that prose or tables cannot. Skip them 
 
 All diagrams should use **Mermaid** syntax. Mermaid renders natively in GitHub Markdown, most documentation platforms, and many editors.
 
-See [assets/mermaid-chart-examples.md](../assets/mermaid-chart-examples.md) for ADR-specific diagram patterns and general syntax reference.
+See assets/mermaid-chart-examples.md for ADR-specific diagram patterns and general syntax reference.
 
 ### Markdown Tables for Comparisons
 

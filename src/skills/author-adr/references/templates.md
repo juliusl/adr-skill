@@ -31,19 +31,19 @@ The **nygard-agent template** is the default format for ADRs created by this ski
 
 The original four-section format from Michael Nygard's 2011 article. Still supported for reading — `list` and `status` commands handle both inline `Status:` and `## Status` heading formats.
 
-**Template:** [nygard-template.md](../assets/templates/nygard-template.md) — with inline guidance: [gh-joelparkerhenderson-nygard-template.md](../assets/templates/gh-joelparkerhenderson-nygard-template.md)
+**Template:** nygard-template.md — with inline guidance: gh-joelparkerhenderson-nygard-template.md
 
 ---
 
 ## Alternative: MADR (Markdown Architectural Decision Records)
 
-MADR extends the Nygard format with structured tradeoff analysis. The name stands for decisions that *matter* (`[ˈmæɾɚ]`). MADR is the recommended template from the [adr GitHub organization](../assets/adr-github-io-madr.md).
+MADR extends the Nygard format with structured tradeoff analysis. The name stands for decisions that *matter* (`[ˈmæɾɚ]`). MADR is the recommended template from the adr GitHub organization.
 
-**Full template:** [madr-full-template.md](../assets/templates/madr-full-template.md)
-— official MADR 4.0.0 source: [gh-adr-madr-full-template.md](../assets/templates/gh-adr-madr-full-template.md)
+**Full template:** madr-full-template.md
+— official MADR 4.0.0 source: gh-adr-madr-full-template.md
 
-**Minimal template:** [madr-minimal-template.md](../assets/templates/madr-minimal-template.md)
-— official MADR 4.0.0 source: [gh-adr-madr-minimal-template.md](../assets/templates/gh-adr-madr-minimal-template.md)
+**Minimal template:** madr-minimal-template.md
+— official MADR 4.0.0 source: gh-adr-madr-minimal-template.md
 
 ### Key Features (Beyond Nygard)
 
@@ -72,16 +72,15 @@ MADR extends the Nygard format with structured tradeoff analysis. The name stand
 | MADR Full | Team wants structured tradeoff analysis with explicit option comparison |
 | MADR Minimal | Quick capture with considered options but less ceremony than full |
 
-For a section-by-section walkthrough, see the
-[MADR Template Primer](../assets/PRACTICES_NOTES.md#madr-template-primer).
+For a section-by-section walkthrough, see the MADR Template Primer (PRACTICES_NOTES.md).
 
 ---
 
 ## Alternative: Y-Statement
 
-A single-sentence format originated from the [Sustainable Architectural Decisions](../assets/zdun-sustainable-architectural-decisions.md) paper by Zdun et al.
+A single-sentence format originated from the Sustainable Architectural Decisions paper by Zdun et al.
 
-**Template:** [y-statement-template.md](../assets/templates/y-statement-template.md)
+**Template:** y-statement-template.md
 
 ### Short Form
 
@@ -118,4 +117,4 @@ A single-sentence format originated from the [Sustainable Architectural Decision
 
 ## Other Templates
 
-Many additional templates exist and are catalogued in [joelparkerhenderson's ADR guide](../assets/gh-joelparkerhenderson-adr.md), including Alexandrian, Business Case, Merson, Planguage, and Tyree-Akerman formats.
+Many additional templates exist and are catalogued in joelparkerhenderson's ADR guide, including Alexandrian, Business Case, Merson, Planguage, and Tyree-Akerman formats.

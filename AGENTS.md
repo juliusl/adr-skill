@@ -30,6 +30,7 @@ All policies are listed here with identifiers. Detailed descriptions follow in t
 | P-15 | Installed Skills | Never modify `~/.copilot/skills/` — test against repo source |
 | P-16 | Broken Makefile Targets | Stop and fix broken Makefile targets before proceeding |
 | P-17 | Autonomy Directives | Never take shortcuts when a procedure or plan has been established |
+| P-18 | Broken References Policy | Stop and fix broken references before proceeding |
 
 ---
 
@@ -328,3 +329,7 @@ ALWAYS, when encountering a broken makefile target, STOP and fix the target befo
 ## P-17: Autonomy Directives
 
 When operating autonomously, **NEVER** take shortcuts when a procedure or plan has been established. Resource constraints or session length are not valid reasons to skip procedures. Procedures are in place to safe-guard autonomously generated code.
+
+## P-18: Broken References Policy
+
+`make check-refs` must pass clean — zero broken references. Pre-existing broken references are not exempt. If `check-refs` fails at any point during a session, stop and fix the broken references before proceeding. Treating broken references as "pre-existing" and moving on is a policy violation.

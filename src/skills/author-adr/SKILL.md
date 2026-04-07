@@ -225,10 +225,6 @@ Read [references/manage.md](references/manage.md) for the full management refere
 | Situation | Template | File |
 |-----------|----------|------|
 | Default (agent-developer workflow) | Nygard Agent | [nygard-agent-template.md](assets/templates/nygard-agent-template.md) |
-| Structured tradeoff analysis needed | MADR Full | [madr-full-template.md](assets/templates/madr-full-template.md) |
-| Quick capture, low ceremony | MADR Minimal | [madr-minimal-template.md](assets/templates/madr-minimal-template.md) |
-| Inline / single-sentence capture | Y-Statement | [y-statement-template.md](assets/templates/y-statement-template.md) |
-| Legacy projects using adr-tools | Standard Nygard | [nygard-template.md](assets/templates/nygard-template.md) |
 See [references/templates.md](references/templates.md) for full template details and guidance.
 ## Core Concepts
 An **Architectural Decision (AD)** is a justified design choice that addresses a functional or non-functional requirement that is architecturally significant.
