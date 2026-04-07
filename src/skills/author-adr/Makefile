@@ -38,14 +38,14 @@ init-data: ## Bootstrap .adr/ project-scoped directory
 	@echo "Initialized .adr/ project-scoped directory"
 
 new: ## Create a new ADR (TITLE="..." or REMOTE=local TITLE="..." or REMOTE=gh ID=42 TITLE="...")
-ifeq ($(ADR_AGENT_SKILL_FORMAT),wi-nygard-agent)
+ifneq (,$(filter wi-nygard-agent wi-full-agent-adr,$(ADR_AGENT_SKILL_FORMAT)))
 	$(ORCHESTRATOR) $(ADR_AGENT_SKILL_FORMAT) $(REMOTE) $(ID) $(TITLE)
 else
 	$(ORCHESTRATOR) $(ADR_AGENT_SKILL_FORMAT) $(TITLE)
 endif
 
 rename: ## Rename an ADR (NUM=N or REMOTE=gh ID=42 TITLE="New Title")
-ifeq ($(ADR_AGENT_SKILL_FORMAT),wi-nygard-agent)
+ifneq (,$(filter wi-nygard-agent wi-full-agent-adr,$(ADR_AGENT_SKILL_FORMAT)))
 	$(FORMAT_SCRIPT) rename $(REMOTE) $(ID) $(TITLE)
 else
 	$(FORMAT_SCRIPT) rename $(NUM) $(TITLE)
@@ -55,7 +55,7 @@ list: ## List all ADRs
 	$(FORMAT_SCRIPT) list
 
 status: ## Show or update ADR status (NUM=N or REMOTE=gh ID=42 [STATUS=Accepted])
-ifeq ($(ADR_AGENT_SKILL_FORMAT),wi-nygard-agent)
+ifneq (,$(filter wi-nygard-agent wi-full-agent-adr,$(ADR_AGENT_SKILL_FORMAT)))
 	$(FORMAT_SCRIPT) status $(REMOTE) $(ID) $(STATUS)
 else
 	$(FORMAT_SCRIPT) status $(NUM) $(STATUS)
