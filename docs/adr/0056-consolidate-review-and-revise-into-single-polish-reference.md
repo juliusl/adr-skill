@@ -1,7 +1,7 @@
 # 56. Consolidate review and revise into single polish reference
 
 Date: 2026-04-07
-Status: Ready
+Status: Planned
 Last Updated: 2026-04-07
 Links: ADR-0055 (Ready status — clarifies when review/revise applies in lifecycle)
 

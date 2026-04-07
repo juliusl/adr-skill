@@ -1,7 +1,7 @@
 # 55. Add Ready status to ADR lifecycle
 
 Date: 2026-04-07
-Status: Ready
+Status: Planned
 Last Updated: 2026-04-07
 Links: ADR-0054 (policy organization — previous workflow set Accepted prematurely)
 
