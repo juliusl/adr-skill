@@ -10,6 +10,11 @@ Design and run controlled experiments to test architectural decisions. Gather ev
 This skill consumes ADRs produced by the `author-adr` skill, reads prototype
 objectives from the Evaluation Checkpoint's "Validation needs" section, and executes experiments in isolated environments. Findings feed
 back into the ADR lifecycle as empirical evidence.
+
+## Policies
+
+No cross-cutting policies. All enforcement is step-specific.
+
 ## Procedure
 
 | ID | Step | Mandatory | Description |
