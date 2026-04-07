@@ -1,7 +1,7 @@
 # 53. Define TOML-to-Markdown export for wi-full-agent-adr
 
 Date: 2026-04-06
-Status: Planned
+Status: Accepted
 Last Updated: 2026-04-06
 Links: ADR-0051 (TOML schema), ADR-0052 (format tooling), ADR-0017 (nygard-agent template), ADR-0034 (work-item naming)
 

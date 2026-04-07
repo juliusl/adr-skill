@@ -1,7 +1,7 @@
 # 51. Define wi-full-agent-adr TOML schema
 
 Date: 2026-04-06
-Status: Planned
+Status: Accepted
 Last Updated: 2026-04-06
 Links: ADR-0017 (nygard-agent template), ADR-0034 (work-item naming), ADR-0037 (deliverables section), ADR-0038 (lifecycle orchestration), ADR-0052 (tooling implementation), ADR-0053 (Markdown export)
 

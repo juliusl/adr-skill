@@ -1,7 +1,7 @@
 # 52. Implement wi-full-agent-adr format tooling in Rust
 
 Date: 2026-04-06
-Status: Planned
+Status: Accepted
 Last Updated: 2026-04-06
 Links: ADR-0051 (TOML schema), ADR-0018 (unified format scripts), ADR-0022 (implementability criteria / experimentation tolerance), ADR-0026 (Rust CLI precedent), ADR-0028 (Rust tooling workspace), ADR-0053 (Markdown export)
 
