@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # wi-nygard-agent-format.sh — Work-item-referenced ADR format script
-# Naming: {remote}-{id}-{slug}.md (ADR-0034)
+# Naming: {adapter}-{id}-{slug}.md (ADR-0034, ADR-0062)
 # Template body reuses nygard-agent template (ADR-0017)
 # Subcommands: new, init, list, rename, status, lifecycle
 
@@ -48,7 +48,7 @@ detect_adapter_from_url() {
     *github.com*) printf 'gh' ;;
     *dev.azure.com*|*visualstudio.com*) printf 'ado' ;;
     *)
-      echo "ERROR: Could not detect adapter type for URL '$url'. Supported hosts: github.com, dev.azure.com." >&2
+      echo "ERROR: Could not detect adapter type for URL '$url'. Supported hosts: github.com, dev.azure.com. For other forges, a future configuration mechanism will allow explicit adapter mapping." >&2
       return 1
       ;;
   esac
@@ -60,8 +60,12 @@ detect_adapter_from_url() {
 detect_adapter() {
   local remote="$1"
 
-  # Testing seam: allow tests to override detection
+  # Testing seam: allow tests to override detection (testing only)
   if [ -n "${ADR_TEST_ADAPTER:-}" ]; then
+    case "$ADR_TEST_ADAPTER" in
+      gh|ado|gitea|local) ;;
+      *) echo "ERROR: ADR_TEST_ADAPTER='$ADR_TEST_ADAPTER' is not a known adapter type" >&2; return 1 ;;
+    esac
     printf '%s' "$ADR_TEST_ADAPTER"
     return 0
   fi
@@ -116,17 +120,17 @@ parse_date() {
 # --- Template ---
 
 generate_template() {
-  local remote="$1" id="$2" title="$3"
+  local adapter="$1" id="$2" title="$3"
   local date
   date=$(adr_date)
 
   cat <<EOF
-# ${remote}-${id}. ${title}
+# ${adapter}-${id}. ${title}
 
 Date: ${date}
 Status: Prototype
 Last Updated: ${date}
-Work-Item: ${remote}#${id}
+Work-Item: ${adapter}#${id}
 Links:
 
 ## Context
@@ -211,7 +215,7 @@ cmd_new() {
   slug=$(slugify "$title")
   local file="$dir/${adapter}-${id}-${slug}.md"
 
-  # Check for any existing ADR with same remote-id (different slug is still a duplicate)
+  # Check for any existing ADR with same adapter-id (different slug is still a duplicate)
   for existing in "$dir"/${adapter}-${id}-*.md; do
     if [ -f "$existing" ]; then
       echo "ERROR: ADR for ${adapter}-${id} already exists: $existing" >&2

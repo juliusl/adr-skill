@@ -187,8 +187,8 @@ fn today() -> String {
     })
 }
 
-fn find_adr_file(dir: &str, remote: &str, id: &str) -> Result<String, String> {
-    let prefix = format!("{}-{}-", remote, id);
+fn find_adr_file(dir: &str, adapter: &str, id: &str) -> Result<String, String> {
+    let prefix = format!("{}-{}-", adapter, id);
     let dir_path = Path::new(dir);
     if !dir_path.is_dir() {
         return Err(format!("ADR directory not found: {}", dir));
@@ -200,7 +200,7 @@ fn find_adr_file(dir: &str, remote: &str, id: &str) -> Result<String, String> {
             return Ok(entry.path().to_string_lossy().to_string());
         }
     }
-    Err(format!("ADR {}-{} not found in {}", remote, id, dir))
+    Err(format!("ADR {}-{} not found in {}", adapter, id, dir))
 }
 
 fn cmd_new(remote: &str, id: &str, title: &str, dir: &str) -> Result<(), String> {

@@ -12,7 +12,7 @@ ADO SSH: ado
 ADO VS: ado
 GitHub ssh://: gh
 === unknown host ===
-ERROR: Could not detect adapter type for URL 'https://gitlab.example.com/org/repo'. Supported hosts: github.com, dev.azure.com.
+ERROR: Could not detect adapter type for URL 'https://gitlab.example.com/org/repo'. Supported hosts: github.com, dev.azure.com. For other forges, a future configuration mechanism will allow explicit adapter mapping.
 === ADR_TEST_ADAPTER seam ===
 docs/adr/0001-record-architecture-decisions.md
 docs/adr/gh-99-seam-test.md

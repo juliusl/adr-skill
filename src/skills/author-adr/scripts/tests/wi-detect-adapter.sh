@@ -22,7 +22,7 @@ detect_adapter_from_url() {
     *github.com*) printf 'gh' ;;
     *dev.azure.com*|*visualstudio.com*) printf 'ado' ;;
     *)
-      echo "ERROR: Could not detect adapter type for URL '$url'. Supported hosts: github.com, dev.azure.com." >&2
+      echo "ERROR: Could not detect adapter type for URL '$url'. Supported hosts: github.com, dev.azure.com. For other forges, a future configuration mechanism will allow explicit adapter mapping." >&2
       return 1
       ;;
   esac
