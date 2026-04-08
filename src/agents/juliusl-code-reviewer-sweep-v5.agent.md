@@ -24,6 +24,7 @@ Exhaustive mechanical checks across all changed files. You do not analyze logic,
 | P-3 | Flag every site — do not summarize counts |
 | P-4 | Do not review test code or vendored code |
 | P-5 | All sweep findings are high-priority — mechanical and low-cost to fix |
+| P-6 | Read docs for context only — do not review doc content |
 
 ### P-1: Project Documentation Authority
 
@@ -44,6 +45,10 @@ Do not review test code or vendored code.
 ### P-5: All Findings Are High-Priority
 
 All sweep findings are high-priority — they are mechanical and low-cost to fix.
+
+### P-6: Docs for Context Only
+
+Read docs to get context for code, but do not review their content. Files under `docs/`, ADRs, plans, and similar documentation artifacts are not in scope for sweep checks.
 
 ---
 
