@@ -110,7 +110,7 @@ code_review = "juliusl-code-reviewer-v1"
 
 | Key | Default | Description |
 |-----|---------|-------------|
-| `code_review` | `""` (skip) | Accepts a string (single reviewer) or array of strings (multiple reviewers dispatched in parallel). A bare string is normalized to a single-element list. Empty strings and whitespace-only entries are filtered out. When the resulting list is empty, C-1 is skipped. When non-empty, each agent is dispatched via the `task` tool to review all changes on the solve branch. If a configured agent cannot be resolved at runtime, warn and skip that agent. |
+| `code_review` | `""` (skip) | Accepts a string (single reviewer) or array of strings (multiple reviewers dispatched in parallel). A bare string is normalized to a single-element list. Empty strings and whitespace-only entries are filtered out. When the resulting list is empty, C-2 is skipped. When non-empty, each agent is dispatched via the `task` tool to review all changes on the solve branch. If a configured agent cannot be resolved at runtime, warn and skip that agent. |
 
 **Project-scoped** (`.adr/preferences.toml`):
 ```toml
@@ -150,7 +150,7 @@ Run this before every scenario.
    > - `auto_delegate = false` — ask before invoking /implement-adr
    >
    > Save these defaults?
-4. **Load dispatch config** — read `[author.dispatch]` keys (`review`, `editor`) for downstream `/author-adr` calls. Read `[solve.dispatch]` keys (`code_review`) for optional code review dispatch in C-1. Normalize `code_review` to a list: if it's a string, wrap in a single-element list. Filter out empty or whitespace-only entries. If the resulting list is empty, C-1 will be skipped.
+4. **Load dispatch config** — read `[author.dispatch]` keys (`review`, `editor`) for downstream `/author-adr` calls. Read `[solve.dispatch]` keys (`code_review`) for optional code review dispatch in C-2. Normalize `code_review` to a list: if it's a string, wrap in a single-element list. Filter out empty or whitespace-only entries. If the resulting list is empty, C-2 will be skipped.
 5. **Pre-flight check** — before proceeding to any scenario, verify the environment:
    - `git status --porcelain` — warn if the working tree is dirty (branching in S-1 requires a clean tree)
    - `make test` — run the test suite to establish a clean baseline. If tests fail, note pre-existing failures so they aren't mistaken for regressions during implementation.
@@ -198,7 +198,7 @@ solve-adr creates a feature branch to isolate its output from the user's working
 
 **Base branch:** Branching from current HEAD is intentional. The user controls what base the solve branch starts from by checking out the desired branch before invoking solve-adr.
 
-**Branch name and base branch storage:** The branch name and the base branch (the branch checked out when the solve branch was created) are maintained in the conversation/session state. On resume, the agent retrieves both from session context. The base branch is used by C-1 (Code Review) to compute the cumulative diff.
+**Branch name and base branch storage:** The branch name and the base branch (the branch checked out when the solve branch was created) are maintained in the conversation/session state. On resume, the agent retrieves both from session context. The base branch is used by C-2 (Code Review) to compute the cumulative diff.
 
 **Cross-skill invocation points:**
 - **Step 2** — invoke `/author-adr` via the `skill` tool with the full list of decisions and problem context. The `skill` tool loads author-adr's context through the platform — do not read skill files directly.
@@ -236,33 +236,37 @@ C. Conclusion — code review, QA triage, report (defined in SKILL.md)
 
 ## Conclusion
 
-After either S-1 or S-2 completes its implementation steps, run the conclusion sequence. These steps apply to any solve branch regardless of which scenario created it.
+After either S-1 or S-2 completes its implementation steps, run the conclusion sequence. These steps apply to any solve type regardless of which scenario created it.
 
 ```
-C-1 Code Review (optional) → C-2 QA Triage → C-3 Report
+C-1 QA Triage → C-2 Code Review (optional) → C-3 Report
 ```
 
 | ID | Step | Description |
 |----|------|-------------|
-| C-1 | Code Review (optional) | Dispatch configured reviewer(s) to review branch diff |
-| C-1a | Entry condition | Check normalized `code_review` list from S-0 |
-| C-1b | Base branch detection | Retrieve base branch from session state, compute merge-base |
-| C-1c | Agent dispatch | Invoke all configured reviewers in parallel via `task` tool |
-| C-1d | Triage findings | Consolidate findings from all reviewers, fix all valid findings |
-| C-1e | Re-review | Re-dispatch all reviewers to verify triage results |
-| C-1f | Gate | Block C-2 until all reviewers accept or no high-priority findings remain |
-| C-2 | QA Triage | Triage deferred QA findings per P-4 |
+| C-1 | QA Triage | Triage deferred QA findings per P-4 |
+| C-2 | Code Review (optional) | Dispatch configured reviewer(s) to review branch diff |
+| C-2a | Entry condition | Check normalized `code_review` list from S-0 |
+| C-2b | Base branch detection | Retrieve base branch from session state, compute merge-base |
+| C-2c | Agent dispatch | Invoke all configured reviewers in parallel via `task` tool |
+| C-2d | Triage findings | Consolidate findings from all reviewers, fix all valid findings |
+| C-2e | Re-review | Re-dispatch all reviewers to verify triage results |
+| C-2f | Gate | Block C-3 until all reviewers accept or no high-priority findings remain |
 | C-3 | Report | Summarize branch, completion status, remaining work |
 
-### C-1: Code Review (Optional)
+### C-1: QA Triage
 
-After all implementation completes, optionally dispatch configured code review agent(s) to review the cumulative diff of the solve branch against its base.
+Triage deferred QA findings per P-4. No finding may remain `Deferred` when C-3 runs.
 
-**C-1a: Entry condition** — Check the normalized `code_review` list from S-0. If the list is empty (absent, all entries empty or whitespace-only), skip C-1 and proceed to C-2. Log: "C-1 skipped — no code review agents configured."
+### C-2: Code Review (Optional)
 
-**C-1b: Base branch detection** — Retrieve the base branch from session state (recorded in Step 1b of problem.md). Compute the merge-base: `git merge-base HEAD <base-branch>`. If unavailable (e.g., resume from a prior session or the roadmap flow where S-2 created the branch), fall back to deriving it: `git log --oneline --decorate` to find the branch the solve branch diverged from, or use `git merge-base HEAD main` as a last resort.
+After all implementation and QA triage completes, optionally dispatch configured code review agent(s) to review the cumulative diff of the solve branch against its base. Running code review after QA triage ensures reviewers see the final diff including any QA fixes.
 
-**C-1c: Agent dispatch** — Invoke each configured reviewer in parallel via separate `task` tool calls. Each reviewer receives the same prompt:
+**C-2a: Entry condition** — Check the normalized `code_review` list from S-0. If the list is empty (absent, all entries empty or whitespace-only), skip C-2 and proceed to C-3. Log: "C-2 skipped — no code review agents configured."
+
+**C-2b: Base branch detection** — Retrieve the base branch from session state (recorded in Step 1b of problem.md). Compute the merge-base: `git merge-base HEAD <base-branch>`. If unavailable (e.g., resume from a prior session or the roadmap flow where S-2 created the branch), fall back to deriving it: `git log --oneline --decorate` to find the branch the solve branch diverged from, or use `git merge-base HEAD main` as a last resort.
+
+**C-2c: Agent dispatch** — Invoke each configured reviewer in parallel via separate `task` tool calls. Each reviewer receives the same prompt:
 
 ```
 Review the cumulative diff of the `<branch>` branch against its base `<base-branch>` in the repository at `<repo-path>`.
@@ -281,19 +285,15 @@ Focus on: security, logic errors, consistency between definitions and implementa
 Do NOT flag: formatting preferences, test coverage gaps already tracked in QA plans.
 ```
 
-If a configured agent cannot be resolved at runtime, warn and skip that agent. If all agents fail to resolve, skip C-1.
+If a configured agent cannot be resolved at runtime, warn and skip that agent. If all agents fail to resolve, skip C-2.
 
-**C-1d: Triage findings** — Consolidate findings from all reviewers into a single list. Deduplicate equivalent findings (same file, same issue, similar recommendation) — when findings overlap, keep the more detailed version. When findings conflict, the triage actor resolves. For each finding, determine if it is valid. Fix all valid findings on the solve branch. If a finding is not valid, document the rejection rationale in the triage response passed to C-1e — the reviewer will evaluate whether the rejection is justified. If a valid finding cannot be fixed in the current scope, create a follow-up item (issue, work item, or roadmap note) so the finding is not lost. Priority levels (high, medium, nit) guide the reviewer's verdict in C-1e, not the triage actor's willingness to fix. All valid findings are fixed regardless of priority.
+**C-2d: Triage findings** — Consolidate findings from all reviewers into a single list. Deduplicate equivalent findings (same file, same issue, similar recommendation) — when findings overlap, keep the more detailed version. When findings conflict, the triage actor resolves. For each finding, determine if it is valid. Fix all valid findings on the solve branch. If a finding is not valid, document the rejection rationale in the triage response passed to C-2e — the reviewer will evaluate whether the rejection is justified. If a valid finding cannot be fixed in the current scope, create a follow-up item (issue, work item, or roadmap note) so the finding is not lost. Priority levels (high, medium, nit) guide the reviewer's verdict in C-2e, not the triage actor's willingness to fix. All valid findings are fixed regardless of priority. Deduplication is for the triage actor's own work — preserve each reviewer's original unmodified findings for C-2e.
 
-**C-1e: Re-review** — After triage, re-dispatch all configured reviewers in parallel to verify the fixes. The re-review is adversarial — each reviewer checks whether findings were properly addressed, identifies regressions, and produces new findings if warranted. Each reviewer uses priority levels from the original review to determine their verdict. Pass the original findings and triage results to each reviewer so they can evaluate the response.
+**C-2e: Re-review** — After triage, re-dispatch all configured reviewers in parallel to verify the fixes. The re-review is adversarial — each reviewer checks whether findings were properly addressed, identifies regressions, and produces new findings if warranted. Each reviewer uses priority levels from the original review to determine their verdict. Pass each reviewer their own original unmodified findings alongside the triage results — this preserves provenance so each reviewer can match their findings to the triage response without relying on the deduplicated list.
 
-**C-1f: Gate** — Check all re-review verdicts:
-- **All reviewers accepted** → proceed to C-2.
-- **Any reviewer says "Wait for Reviewer"** → high-priority findings remain. In autonomous mode, address the remaining findings and re-dispatch C-1e (one retry). If still unresolved, pause for user intervention. In guided mode, present findings to the user.
-
-### C-2: QA Triage
-
-Triage deferred QA findings per P-4. No finding may remain `Deferred` when C-3 runs.
+**C-2f: Gate** — Check all re-review verdicts:
+- **All reviewers accepted** → proceed to C-3.
+- **Any reviewer says "Wait for Reviewer"** → high-priority findings remain. In autonomous mode, address the remaining findings and re-dispatch C-2e (one retry). If still unresolved, pause for user intervention. In guided mode, present findings to the user.
 
 ### C-3: Report
 
