@@ -171,6 +171,8 @@ Read [references/problem.md](references/problem.md) for the full workflow detail
    ↓
 4. Implement — group accepted ADRs, load /implement-adr and run its procedure
    ↓
+4d. Code Review — dispatch configured agent to review branch diff (optional)
+   ↓
 5. Report — summarize what was implemented, what remains
 ```
 
@@ -192,7 +194,7 @@ solve-adr creates a feature branch to isolate its output from the user's working
 
 **Base branch:** Branching from current HEAD is intentional. The user controls what base the solve branch starts from by checking out the desired branch before invoking solve-adr.
 
-**Branch name storage:** The branch name is maintained in the conversation/session state. On resume, the agent retrieves the branch name from session context or re-derives it from the problem statement.
+**Branch name and base branch storage:** The branch name and the base branch (the branch checked out when the solve branch was created) are maintained in the conversation/session state. On resume, the agent retrieves both from session context. The base branch is used by Step 4d to compute the cumulative diff for code review.
 
 **Cross-skill invocation points:**
 - **Step 2** — invoke `/author-adr` via the `skill` tool with the full list of decisions and problem context. The `skill` tool loads author-adr's context through the platform — do not read skill files directly.
