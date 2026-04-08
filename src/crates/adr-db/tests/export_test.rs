@@ -247,3 +247,62 @@ fn export_omits_empty_consequences() {
     assert!(!md.contains("**Negative:**"));
     assert!(!md.contains("**Neutral:**"));
 }
+
+#[test]
+fn new_with_git_remote_creates_correct_filename() {
+    let dir = setup_git_repo("origin", "https://github.com/test/repo.git");
+    let adr_dir = dir.path().join("docs/adr");
+
+    let binary = env!("CARGO_BIN_EXE_adr-db");
+    let output = Command::new(binary)
+        .current_dir(dir.path())
+        .env("ADR_DATE", "2026-04-08")
+        .args(["author", "new", "origin", "99", "Test ADR", adr_dir.to_str().unwrap()])
+        .output()
+        .expect("failed to run");
+
+    assert!(output.status.success(), "new failed: {}", String::from_utf8_lossy(&output.stderr));
+
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    assert!(stdout.contains("gh-99-test-adr.toml"), "Expected gh-99 prefix, got: {}", stdout);
+
+    // Verify file content
+    let content = fs::read_to_string(adr_dir.join("gh-99-test-adr.toml")).unwrap();
+    assert!(content.contains("work_item = \"gh#99\""));
+}
+
+#[test]
+fn new_with_local_works_without_git_repo() {
+    let dir = tempfile::tempdir().unwrap();
+    let adr_dir = dir.path().join("docs/adr");
+
+    let binary = env!("CARGO_BIN_EXE_adr-db");
+    let output = Command::new(binary)
+        .current_dir(dir.path())
+        .env("ADR_DATE", "2026-04-08")
+        .args(["author", "new", "local", "abc123", "Local Test", adr_dir.to_str().unwrap()])
+        .output()
+        .expect("failed to run");
+
+    assert!(output.status.success(), "new failed: {}", String::from_utf8_lossy(&output.stderr));
+
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    assert!(stdout.contains("local-abc123-local-test.toml"), "Expected local prefix, got: {}", stdout);
+}
+
+#[test]
+fn new_with_nonexistent_remote_errors() {
+    let dir = setup_git_repo("origin", "https://github.com/test/repo.git");
+    let adr_dir = dir.path().join("docs/adr");
+
+    let binary = env!("CARGO_BIN_EXE_adr-db");
+    let output = Command::new(binary)
+        .current_dir(dir.path())
+        .args(["author", "new", "nonexistent", "1", "Test", adr_dir.to_str().unwrap()])
+        .output()
+        .expect("failed to run");
+
+    assert!(!output.status.success());
+    let stderr = String::from_utf8(output.stderr).unwrap();
+    assert!(stderr.contains("not found"), "Expected 'not found' error, got: {}", stderr);
+}
