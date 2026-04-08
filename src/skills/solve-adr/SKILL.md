@@ -173,7 +173,7 @@ Read [references/problem.md](references/problem.md) for the full workflow detail
    ↓
 3. Triage — review returned ADRs, route evaluation-checkpoint-paused ones to /prototype-adr
    ↓
-4. Implement — group accepted ADRs, load /implement-adr and run its procedure
+4. Implement — delegate all Ready ADRs to /implement-adr in a single batch
    ↓
 C. Conclusion — code review, QA triage, report (defined in SKILL.md)
 ```
@@ -204,7 +204,7 @@ solve-adr creates a feature branch to isolate its output from the user's working
 - **Step 2** — invoke `/author-adr` via the `skill` tool with the full list of decisions and problem context. The `skill` tool loads author-adr's context through the platform — do not read skill files directly.
 - **Step 3** — invoke `/prototype-adr` for any ADR that paused at its Evaluation Checkpoint
 - **Step 3** — re-invoke `/author-adr` to complete convergence on validated ADRs
-- **Step 4** — invoke `/implement-adr` for each group (multi-ADR batch)
+- **Step 4** — invoke `/implement-adr` with all Ready ADRs in a single batch
 
 ### S-2: Roadmap
 
