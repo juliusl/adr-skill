@@ -1,3 +1,3 @@
 [workspace]
-members = ["adr-db", "adr-db-lib", "adr-format"]
+members = ["adr-db", "adr-db-lib"]
 resolver = "2"

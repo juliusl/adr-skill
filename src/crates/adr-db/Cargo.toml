@@ -2,7 +2,7 @@
 name = "adr-db"
 version = "0.1.0"
 edition = "2021"
-description = "Plumbing CLI for ingesting JSONL data into a local SQLite database"
+description = "CLI for ADR management — format operations, JSONL ingestion, and SQLite persistence"
 
 [dependencies]
 adr-db-lib = { path = "../adr-db-lib" }

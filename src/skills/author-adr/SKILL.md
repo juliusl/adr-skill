@@ -270,7 +270,7 @@ make -f <skill-root>/Makefile status REMOTE=gh ID=42 STATUS=Proposed
 ```
 
 ```bash
-# TOML format (wi-full-agent-adr — requires adr-format binary, run make build-tools first):
+# TOML format (wi-full-agent-adr — requires adr-db binary, run make build-tools first):
 export ADR_AGENT_SKILL_FORMAT=wi-full-agent-adr
 
 make -f <skill-root>/Makefile new REMOTE=gh ID=42 TITLE="Use PostgreSQL"
@@ -278,7 +278,7 @@ make -f <skill-root>/Makefile rename REMOTE=gh ID=42 TITLE="Use PostgreSQL"
 make -f <skill-root>/Makefile status REMOTE=gh ID=42 STATUS=Proposed
 
 # Export TOML ADR to Markdown:
-adr-format export gh 42
+adr-db format export gh 42
 ```
 ### Escape Hatch: Direct Script Usage
 Only use direct scripts when the Makefile is unavailable. See [references/tooling.md](references/tooling.md) for full command docs:
@@ -296,12 +296,12 @@ wi-nygard-agent-format.sh rename gh 42 "Use PostgreSQL"
 wi-nygard-agent-format.sh list
 wi-nygard-agent-format.sh status gh 42 Proposed
 
-# TOML format (wi-full-agent-adr — requires adr-format binary):
+# TOML format (wi-full-agent-adr — requires adr-db binary):
 new.sh wi-full-agent-adr gh 42 "Use PostgreSQL"
-adr-format list
-adr-format rename gh 42 "Use PostgreSQL"
-adr-format status gh 42 Proposed
-adr-format export gh 42
+adr-db format list
+adr-db format rename gh 42 "Use PostgreSQL"
+adr-db format status gh 42 Proposed
+adr-db format export gh 42
 ```
 ### Visualization
 Use **Mermaid** for all diagrams. Diagrams are valuable when complex relationships between processes or entities benefit from visual compression, but overuse can overload context — use sparingly. When comparing options, prefer **markdown tables** over diagrams. See [references/tooling.md](references/tooling.md) for guidelines and syntax patterns.

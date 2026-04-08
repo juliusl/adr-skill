@@ -33,17 +33,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "adr-format"
-version = "0.1.0"
-dependencies = [
- "clap",
- "serde",
- "serde_json",
- "tempfile",
- "toml 0.8.23",
-]
-
-[[package]]
 name = "anstream"
 version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
