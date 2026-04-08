@@ -1,7 +1,7 @@
 # 59. Add optional code review hook to solve-adr branch completion
 
 Date: 2026-04-07
-Status: Planned
+Status: Accepted
 Last Updated: 2026-04-07
 Links: ADR-0046 (feature branches), ADR-0031 (dispatch hooks)
 
