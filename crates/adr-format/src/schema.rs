@@ -5,6 +5,7 @@ use std::fmt;
 const VALID_STATUSES: &[&str] = &[
     "Prototype",
     "Proposed",
+    "Ready",
     "Planned",
     "Accepted",
     "Delivered",
@@ -441,6 +442,13 @@ mod tests {
         assert!(result.is_err());
         let errors = result.unwrap_err();
         assert!(errors.iter().any(|e| matches!(e, ValidationError::InvalidStatus(_))));
+    }
+
+    #[test]
+    fn ready_status_valid() {
+        let mut adr = sample_adr();
+        adr.meta.status = "Ready".to_string();
+        assert!(adr.validate().is_ok());
     }
 
     #[test]

@@ -12,7 +12,7 @@ while [ -L "$SCRIPT_SOURCE" ]; do
   [[ "$SCRIPT_SOURCE" != /* ]] && SCRIPT_SOURCE="$SCRIPT_DIR/$SCRIPT_SOURCE"
 done
 SCRIPT_DIR="$(cd "$(dirname "$SCRIPT_SOURCE")" && pwd)"
-CRATES_BIN="$SCRIPT_DIR/../../crates/target/release/adr-format"
+CRATES_BIN="$SCRIPT_DIR/../../../../crates/target/release/adr-format"
 
 if command -v adr-format &>/dev/null; then
   exec adr-format "$@"

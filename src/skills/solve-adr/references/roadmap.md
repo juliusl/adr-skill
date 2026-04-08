@@ -115,16 +115,16 @@ A roadmap follows this structure:
    ↓
 4. Solve — delegate milestone to S-1 Problem lifecycle
    ↓
-5. Update — record milestone completion status
+5. Update — record milestone completion status → more milestones? → loop to 3
    ↓
-6. Report — summarize roadmap progress
+C. Conclusion — code review, QA triage, report (defined in SKILL.md)
 ```
 
 **On resume:** The agent reads the roadmap file and checks milestone status markers:
 - No status markers → start at step 1 (load)
 - Some milestones marked complete → enter step 3 (select next)
 - A milestone is in-progress with existing ADRs → enter step 4 (solve, resume)
-- All milestones complete → report final status
+- All milestones complete → Conclusion
 
 | ID | Description |
 |----|-------------|
@@ -137,8 +137,7 @@ A roadmap follows this structure:
 | Step 4c | Two-level resume — milestone-level (S-2) + ADR-level (S-1) composition |
 | Step 4d | Session boundaries — handle session limits at milestone boundaries |
 | Step 5 | Update the roadmap file with milestone completion status markers |
-| Step 5a | Continuation — check for remaining milestones and loop or report |
-| Step 6 | Report roadmap progress — milestones, ADRs, current/next status |
+| Step 5a | Continuation — check for remaining milestones and loop or conclude |
 
 ## Step 1: Load
 
@@ -236,7 +235,7 @@ The milestone becomes S-1's problem input:
 3. **Decisions to enumerate** — each milestone objective becomes a candidate decision. Some objectives may merge into a single ADR; others may expand into multiple.
 4. **Additional context** — include relevant supplementary sections
 
-**Invoke S-1** — pass the constructed intake to the Problem lifecycle. S-1 runs its full lifecycle (Branch → Author → Triage → Implement → Report).
+**Invoke S-1** — pass the constructed intake to the Problem lifecycle. S-1 runs its full lifecycle (Branch → Author → Triage → Implement). Conclusion runs after all milestones complete (per Step 5a).
 
 ### Step 4b: Branch naming
 
@@ -297,31 +296,9 @@ After S-1 completes (or partially completes) a milestone, update the roadmap fil
 
 After updating, check if more milestones remain:
 - If yes → return to step 3 (select next milestone)
-- If no → proceed to step 6 (report)
+- If no → proceed to Conclusion (C-1 → C-2 → C-3) defined in SKILL.md
 
 In practice, each milestone is a substantial block of work. The agent typically completes one milestone per session and resumes in the next.
-
-## Step 6: Report
-
-After all milestones complete (or the session ends), report roadmap progress:
-
-```markdown
-## Roadmap: [project name]
-
-**File:** `[roadmap path]`
-**Branch:** `solve/[slug]/milestone-[N]` (if applicable)
-
-| # | Milestone | Status | ADRs | Result |
-|---|-----------|--------|------|--------|
-| 1 | Milestone 1 | Complete | ADR-NNNN, ADR-NNNN | ✅ |
-| 2 | Milestone 2 | Complete | ADR-NNNN | ✅ |
-| 3 | Milestone 3 | In-progress | ADR-NNNN | 🔄 Partial |
-| 4 | Milestone 4 | Pending | — | ⏳ |
-
-**Progress:** N of M milestones complete
-**Current:** Milestone N — [status detail]
-**Next:** Milestone N+1 — [first objective]
-```
 
 ---
 
@@ -336,6 +313,7 @@ S-2 Roadmap is an orchestration layer over S-1 Problem. It does not duplicate S-
 | Branching | `solve/<project>/milestone-<N>` | `solve/<problem-slug>` |
 | ADR authoring | Delegates to S-1 → author-adr | Invokes author-adr directly |
 | Implementation | Delegates to S-1 → implement-adr | Invokes implement-adr directly |
+| Conclusion | Shared — C-1, C-2, C-3 in SKILL.md | Shared — C-1, C-2, C-3 in SKILL.md |
 | Progress tracking | Milestone status markers in file | ADR status in decision log |
 | Resume granularity | Milestone level + S-1 ADR level | ADR level |
 

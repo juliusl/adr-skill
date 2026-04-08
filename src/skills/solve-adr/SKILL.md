@@ -49,7 +49,7 @@ Triage each finding:
 - **Accept** — the finding is a genuine low-risk item that does not need fixing. Update status to `Won't Fix` and document the rationale in the QA plan.
 - **Escalate** — the finding reveals a gap that needs a new ADR. Invoke `/author-adr` for the gap.
 
-No finding may remain `Deferred` when step 5 (Report) runs. Every deferred finding exits triage as `Fixed`, `Won't Fix`, or escalated to a new ADR.
+No finding may remain `Deferred` when C-3 (Report) runs. Every deferred finding exits triage as `Fixed`, `Won't Fix`, or escalated to a new ADR.
 
 In autonomous mode, apply this heuristic: if the minimum fix is a test or validation check, address it. If it requires a design decision, escalate to an ADR.
 
@@ -106,7 +106,7 @@ code_review = ""             # agent reference for optional code review before b
 
 | Key | Default | Description |
 |-----|---------|-------------|
-| `code_review` | `""` (skip) | Agent reference to dispatch for code review on the solve branch's cumulative diff before reporting. When absent, empty, or whitespace-only, Step 4d is skipped — no code review occurs. When set to a valid agent reference (e.g., `"juliusl-code-reviewer-v1"`), the agent is dispatched via the `task` tool to review all changes on the solve branch. If the configured agent cannot be resolved at runtime, warn and skip Step 4d. |
+| `code_review` | `""` (skip) | Agent reference to dispatch for code review on the solve branch's cumulative diff before reporting. When absent, empty, or whitespace-only, C-1 is skipped — no code review occurs. When set to a valid agent reference (e.g., `"juliusl-code-reviewer-v1"`), the agent is dispatched via the `task` tool to review all changes on the solve branch. If the configured agent cannot be resolved at runtime, warn and skip C-1. |
 
 **Project-scoped** (`.adr/preferences.toml`):
 ```toml
@@ -146,7 +146,7 @@ Run this before every scenario.
    > - `auto_delegate = false` — ask before invoking /implement-adr
    >
    > Save these defaults?
-4. **Load dispatch config** — read `[author.dispatch]` keys (`review`, `editor`) for downstream `/author-adr` calls. Read `[solve.dispatch]` keys (`code_review`) for optional code review dispatch in Step 4d. If `code_review` is absent, empty, or whitespace-only, Step 4d will be skipped.
+4. **Load dispatch config** — read `[author.dispatch]` keys (`review`, `editor`) for downstream `/author-adr` calls. Read `[solve.dispatch]` keys (`code_review`) for optional code review dispatch in C-1. If `code_review` is absent, empty, or whitespace-only, C-1 will be skipped.
 5. **Pre-flight check** — before proceeding to any scenario, verify the environment:
    - `git status --porcelain` — warn if the working tree is dirty (branching in S-1 requires a clean tree)
    - `make test` — run the test suite to establish a clean baseline. If tests fail, note pre-existing failures so they aren't mistaken for regressions during implementation.
@@ -171,12 +171,10 @@ Read [references/problem.md](references/problem.md) for the full workflow detail
    ↓
 4. Implement — group accepted ADRs, load /implement-adr and run its procedure
    ↓
-4d. Code Review — dispatch configured agent to review branch diff (optional)
-   ↓
-5. Report — summarize what was implemented, what remains
+C. Conclusion — code review, QA triage, report (defined in SKILL.md)
 ```
 
-**On resume:** The agent evaluates the problem's current state and enters the lifecycle at the right point. No ADRs → step 1. ADRs exist but unreviewed → step 2. All ADRs reviewed but unimplemented → step 4. Some Accepted, others remain → step 4 for remaining. On resume, check for an existing `solve/<slug>` branch — if found and unmerged, checkout it and continue.
+**On resume:** The agent evaluates the problem's current state and enters the lifecycle at the right point. No ADRs → step 1. ADRs exist but unreviewed → step 2. All ADRs reviewed but unimplemented → step 4. Some Accepted, others remain → step 4 for remaining. All Accepted, implementation complete → Conclusion. On resume, check for an existing `solve/<slug>` branch — if found and unmerged, checkout it and continue.
 
 ### Branch Management
 
@@ -187,7 +185,7 @@ solve-adr creates a feature branch to isolate its output from the user's working
 **Branch lifecycle:**
 1. **Create** — after Step 1 (intake), derive a slug from the problem statement (lowercase, hyphenated, max 50 chars). Create `solve/<slug>` from current HEAD: `git checkout -b solve/<slug>`.
 2. **Switch** — all subsequent work (authoring, triage, implementation) happens on this branch.
-3. **Complete** — after Step 5 (report), stay on the branch. The user reviews via PR and merges.
+3. **Complete** — after Conclusion (C-3), stay on the branch. The user reviews via PR and merges.
 4. **Resume** — on resume, if the branch exists and is unmerged, checkout it and continue. If the branch was already merged or deleted, the previous solve is complete — create a new branch with a `-2` suffix if the same slug is reused.
 
 **Branch naming:** `solve/<problem-slug>`. Example: `solve/caching-strategy-for-events`.
@@ -196,7 +194,7 @@ solve-adr creates a feature branch to isolate its output from the user's working
 
 **Base branch:** Branching from current HEAD is intentional. The user controls what base the solve branch starts from by checking out the desired branch before invoking solve-adr.
 
-**Branch name and base branch storage:** The branch name and the base branch (the branch checked out when the solve branch was created) are maintained in the conversation/session state. On resume, the agent retrieves both from session context. The base branch is used by Step 4d to compute the cumulative diff for code review.
+**Branch name and base branch storage:** The branch name and the base branch (the branch checked out when the solve branch was created) are maintained in the conversation/session state. On resume, the agent retrieves both from session context. The base branch is used by C-1 (Code Review) to compute the cumulative diff.
 
 **Cross-skill invocation points:**
 - **Step 2** — invoke `/author-adr` via the `skill` tool with the full list of decisions and problem context. The `skill` tool loads author-adr's context through the platform — do not read skill files directly.
@@ -221,16 +219,117 @@ Read [references/roadmap.md](references/roadmap.md) for the full workflow detail
    ↓
 4. Solve — delegate milestone to S-1 Problem lifecycle
    ↓
-5. Update — record milestone completion status
+5. Update — record milestone completion status → more milestones? → loop to 3
    ↓
-6. Report — summarize roadmap progress
+C. Conclusion — code review, QA triage, report (defined in SKILL.md)
 ```
 
-**On resume:** The agent reads the roadmap file and checks milestone status markers. No markers → step 1. Some milestones complete → step 3 (select next). A milestone in-progress with ADRs → step 4 (solve, resume). All complete → step 6 (report).
+**On resume:** The agent reads the roadmap file and checks milestone status markers. No markers → step 1. Some milestones complete → step 3 (select next). A milestone in-progress with ADRs → step 4 (solve, resume). All complete → Conclusion.
 
 **Branch naming:** Roadmap-driven branches use `solve/<project-slug>/milestone-<N>` to distinguish from ad-hoc problem branches.
 
 **Composition:** S-2 wraps S-1. All mandatory safeguards (plan review, QA, ADR for every decision) flow through S-1 unchanged. S-2 does not duplicate S-1's logic — it orchestrates milestone selection and progress tracking.
+
+## Conclusion
+
+After either S-1 or S-2 completes its implementation steps, run the conclusion sequence. These steps apply to any solve branch regardless of which scenario created it.
+
+```
+C-1 Code Review (optional) → C-2 QA Triage → C-3 Report
+```
+
+| ID | Step | Description |
+|----|------|-------------|
+| C-1 | Code Review (optional) | Dispatch configured agent to review branch diff |
+| C-1a | Entry condition | Check `[solve.dispatch].code_review` from S-0 |
+| C-1b | Base branch detection | Retrieve base branch from session state, compute merge-base |
+| C-1c | Agent dispatch | Invoke code review agent via `task` tool with diff scope |
+| C-1d | Triage findings | Fix all valid findings on the solve branch |
+| C-1e | Re-review | Dispatch code review agent again to verify triage results |
+| C-1f | Gate | Block C-2 until reviewer accepts or no high-priority findings remain |
+| C-2 | QA Triage | Triage deferred QA findings per P-4 |
+| C-3 | Report | Summarize branch, completion status, remaining work |
+
+### C-1: Code Review (Optional)
+
+After all implementation completes, optionally dispatch a configured code review agent to review the cumulative diff of the solve branch against its base.
+
+**C-1a: Entry condition** — Check `[solve.dispatch].code_review` loaded during S-0. If absent, empty, or whitespace-only, skip C-1 and proceed to C-2. Log: "C-1 skipped — no code review agent configured."
+
+**C-1b: Base branch detection** — Retrieve the base branch from session state (recorded in Step 1b of problem.md or Step 4b of roadmap.md). Compute the merge-base: `git merge-base HEAD <base-branch>`. If unavailable (e.g., resume from a prior session), fall back to `git log --oneline --decorate` to derive the divergence point.
+
+**C-1c: Agent dispatch** — Invoke the configured agent via the `task` tool with the following prompt structure:
+
+```
+Review the cumulative diff of the `<branch>` branch against its base `<base-branch>` in the repository at `<repo-path>`.
+
+## Diff Scope
+The merge-base is `<merge-base-sha>`. Use `git --no-pager diff <merge-base>..HEAD` to see the full diff.
+
+## What was implemented
+<summary of implemented work — ADR titles, what each group delivered>
+
+## Project conventions
+The project's AGENTS.md is at `<repo-path>/AGENTS.md`. Read it for project-specific review conventions before reviewing.
+
+## Review instructions
+Focus on: security, logic errors, consistency between definitions and implementations, code quality, breaking changes.
+Do NOT flag: formatting preferences, test coverage gaps already tracked in QA plans.
+```
+
+If the agent cannot be resolved at runtime, warn and skip C-1.
+
+**C-1d: Triage findings** — Review every finding from the code review agent. For each finding, determine if it is valid. Fix all valid findings on the solve branch. If a finding is not valid, document why. The code review agent assigns priority levels (high, medium, nit) — these priority levels guide the reviewer's verdict in C-1e, not the triage actor's willingness to fix. All valid findings are fixed regardless of priority.
+
+**C-1e: Re-review** — After triage, dispatch the code review agent again to verify the fixes. The re-review is adversarial — the reviewer checks whether each finding was properly addressed, identifies any regressions introduced by the fixes, and produces new findings if warranted. The reviewer uses the priority levels from the original review to determine their verdict: if high-priority findings remain unaddressed, the verdict is "Wait for Reviewer." Pass the original findings and triage results to the reviewer so it can evaluate the response.
+
+**C-1f: Gate** — Check the re-review verdict:
+- **Accepted / Accepted with feedback** → proceed to C-2.
+- **Wait for Reviewer** → high-priority findings remain. In autonomous mode, address the remaining findings and re-dispatch C-1e (one retry). If still unresolved, pause for user intervention. In guided mode, present findings to the user.
+
+### C-2: QA Triage
+
+Triage deferred QA findings per P-4. No finding may remain `Deferred` when C-3 runs.
+
+### C-3: Report
+
+Stay on the feature branch and present the completion report in the format appropriate to the scenario.
+
+**S-1 (Problem) format:**
+
+```markdown
+## Problem: [topic]
+
+**Branch:** `solve/<slug>` — ready for PR review
+
+| Group | ADRs | Status | Result |
+|-------|------|--------|--------|
+| 1 | ADR-NNNN, ADR-NNNN | Accepted | ✅ Completed |
+| 2 | ADR-NNNN | Proposed | ⏳ Next up |
+
+**Completed:** N of M ADRs
+**Remaining:** [list]
+**Blocked:** None
+```
+
+**S-2 (Roadmap) format:**
+
+```markdown
+## Roadmap: [project name]
+
+**File:** `[roadmap path]`
+**Branch:** `solve/[slug]/milestone-[N]` (if applicable)
+
+| # | Milestone | Status | ADRs | Result |
+|---|-----------|--------|------|--------|
+| 1 | Milestone 1 | Complete | ADR-NNNN, ADR-NNNN | ✅ |
+| 2 | Milestone 2 | In-progress | ADR-NNNN | 🔄 Partial |
+| 3 | Milestone 3 | Pending | — | ⏳ |
+
+**Progress:** N of M milestones complete
+**Current:** Milestone N — [status detail]
+**Next:** Milestone N+1 — [first objective]
+```
 
 ## Cross-Skill Invocation
 

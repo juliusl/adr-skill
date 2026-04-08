@@ -415,7 +415,9 @@ fn cmd_lifecycle(remote: &str, id: &str, _auto: bool, _sync: bool) -> Result<(),
                 println!("  → In sync. No action needed.");
             } else {
                 println!("  → Recommended: Transition to {}", expected);
-                if !_auto {
+                if _auto {
+                    println!("  → --auto not yet implemented. Transition manually.");
+                } else {
                     println!("  Run with --auto to execute this transition.");
                 }
             }

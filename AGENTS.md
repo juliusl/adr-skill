@@ -221,7 +221,7 @@ From the [agentskills.io specification](https://agentskills.io/specification):
 Task-specific references live in `references/` (one file per workflow task):
 
 - `create.md` — ADR creation workflow
-- `review.md` — ADR review process
+- `polish.md` — ADR quality loop (review, verdict, revision, re-review)
 - `manage.md` — ADR management operations
 
 When modifying a reference file, keep it self-contained — each reference should
