@@ -23,7 +23,7 @@ test: ## Run all script tests (author-adr + implement-adr)
 	$(MAKE) -C $(IMPLEMENT_SKILL_DIR)/scripts clean check
 
 build-tools: ## Build Rust tooling (requires Rust toolchain)
-	cargo build --release --manifest-path $(CURDIR)/crates/Cargo.toml
+	cargo build --release --manifest-path $(CURDIR)/src/crates/Cargo.toml
 
 check-refs: ## Check for broken markdown references in all skills
 	@$(CURDIR)/scripts/check-refs $(AUTHOR_SKILL_DIR) $(IMPLEMENT_SKILL_DIR) $(PROTOTYPE_SKILL_DIR) $(SOLVE_SKILL_DIR)
