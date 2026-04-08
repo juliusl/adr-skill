@@ -24,7 +24,7 @@ All policies are listed here with identifiers. Detailed descriptions follow in t
 | P-12 | Modifying Scripts | Diff-based test validation for adr-tools and madr-tools |
 | P-12a | adr-tools (Nygard format) | Bundled third-party scripts, `make test-nygard` |
 | P-12b | madr-tools (MADR format) | Custom scripts, `make test-madr` |
-| P-13 | Rust Tooling | Cargo workspace in `crates/`, `make build-tools` |
+| P-13 | Rust Tooling | Cargo workspace in `src/crates/`, `make build-tools` |
 | P-13a | Working on adr-db | Prerequisites, migrations, tests |
 | P-14 | Evaluating Skill Description | Use `eval_queries.json` to validate trigger reliability |
 | P-15 | Installed Skills | Never modify `~/.copilot/skills/` — test against repo source |
@@ -264,15 +264,15 @@ To add a new test:
 make test-madr
 ```
 
-## P-13: Rust Tooling (crates/)
+## P-13: Rust Tooling (src/crates/)
 
-The `crates/` directory contains a Cargo workspace with Rust tooling. Currently
+The `src/crates/` directory contains a Cargo workspace with Rust tooling. Currently
 this includes `adr-db`, a plumbing CLI for ingesting JSONL data into SQLite.
 
 ### Building
 
 ```bash
-make build-tools    # cargo build --release in crates/
+make build-tools    # cargo build --release in src/crates/
 ```
 
 The `build-tools` target is independent of `make test` — contributors who only
@@ -289,7 +289,7 @@ work on shell scripts do not need Rust installed.
 
 **Creating a new migration:**
 ```bash
-cd crates/adr-db
+cd src/crates/adr-db
 DATABASE_URL="sqlite:///tmp/dev.db" diesel migration generate <name>
 # Edit migrations/<timestamp>_<name>/up.sql and down.sql
 DATABASE_URL="sqlite:///tmp/dev.db" diesel migration run

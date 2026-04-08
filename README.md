@@ -143,36 +143,36 @@ When using solve-adr for end-to-end workflows, it creates a `solve/<topic>` feat
 ```
 ├── AGENTS.md                         # Contributor guide
 ├── Makefile                          # Dev targets (test, validate, build-tools)
-├── crates/                           # Cargo workspace — Rust tooling
-│   ├── Cargo.toml                    # Workspace root
-│   └── adr-db/                       # Plumbing CLI: JSONL → SQLite persistence
-│       ├── Cargo.toml
-│       ├── diesel.toml               # Diesel schema output config
-│       ├── migrations/               # Diesel SQL migrations
-│       └── src/                      # Rust source (main, init, ingest, view, models, schema)
-├── docs/adr/                         # Project-level ADRs
-├── docs/plans/                       # Implementation plans generated from ADRs
-├── src/skills/
-│   ├── author-adr/                   # Skill: create, review, manage ADRs
-│   │   ├── SKILL.md                  # Skill entry point
-│   │   ├── Makefile                  # Downstream agent interface
-│   │   ├── references/               # On-demand docs (create, review, revise, manage)
-│   │   ├── assets/                   # Templates and static resources
-│   │   └── scripts/                  # Unified format-based scripts
-│   ├── solve-adr/                    # Skill: scenario-driven problem solving orchestrator
-│   │   ├── SKILL.md                  # Skill entry point (scenario-based procedures)
-│   │   ├── Makefile                  # Minimal — orchestrator has no scripts
-│   │   └── references/               # On-demand docs (S-1 Problem Exploration)
-│   ├── implement-adr/                # Skill: ADR → implementation plans
-│   │   ├── SKILL.md                  # Skill entry point
-│   │   ├── Makefile                  # Downstream agent interface
-│   │   ├── references/               # On-demand docs (planning, testing, cost, plan-review)
-│   │   └── assets/                   # Plan template, static resources
-│   └── prototype-adr/                # Skill: validate decisions via prototyping
-│       ├── SKILL.md                  # Skill entry point
-│       ├── Makefile                  # Downstream agent interface
-│       ├── references/               # On-demand docs (profiles, isolation, observation)
-│       └── assets/                   # Default profile template
+├── src/
+│   ├── agents/                       # Agent definition files
+│   ├── crates/                       # Cargo workspace — Rust tooling
+│   │   ├── Cargo.toml                # Workspace root
+│   │   └── adr-db/                   # Plumbing CLI: JSONL → SQLite persistence
+│   │       ├── Cargo.toml
+│   │       ├── diesel.toml           # Diesel schema output config
+│   │       ├── migrations/           # Diesel SQL migrations
+│   │       └── src/                  # Rust source (main, init, ingest, view, models, schema)
+│   └── skills/
+│       ├── author-adr/                   # Skill: create, review, manage ADRs
+│       │   ├── SKILL.md                  # Skill entry point
+│       │   ├── Makefile                  # Downstream agent interface
+│       │   ├── references/               # On-demand docs (create, review, revise, manage)
+│       │   ├── assets/                   # Templates and static resources
+│       │   └── scripts/                  # Unified format-based scripts
+│       ├── solve-adr/                    # Skill: scenario-driven problem solving orchestrator
+│       │   ├── SKILL.md                  # Skill entry point (scenario-based procedures)
+│       │   ├── Makefile                  # Minimal — orchestrator has no scripts
+│       │   └── references/               # On-demand docs (S-1 Problem Exploration)
+│       ├── implement-adr/                # Skill: ADR → implementation plans
+│       │   ├── SKILL.md                  # Skill entry point
+│       │   ├── Makefile                  # Downstream agent interface
+│       │   ├── references/               # On-demand docs (planning, testing, cost, plan-review)
+│       │   └── assets/                   # Plan template, static resources
+│       └── prototype-adr/                # Skill: validate decisions via prototyping
+│           ├── SKILL.md                  # Skill entry point
+│           ├── Makefile                  # Downstream agent interface
+│           ├── references/               # On-demand docs (profiles, isolation, observation)
+│           └── assets/                   # Default profile template
 ```
 
 ## Development
@@ -197,7 +197,7 @@ make dogfood-copilot      # installs both skills
 
 ### adr-db (Rust CLI)
 
-The `crates/adr-db/` directory contains a Rust binary for ingesting JSONL data into a local SQLite database. It serves as plumbing between skill JSONL producers and downstream consumers.
+The `src/crates/adr-db/` directory contains a Rust binary for ingesting JSONL data into a local SQLite database. It serves as plumbing between skill JSONL producers and downstream consumers.
 
 ```bash
 # Initialize the database
@@ -231,7 +231,7 @@ adr-db view task_summaries --no-header
 cargo install diesel_cli --no-default-features --features sqlite
 
 # Create a new migration
-cd crates/adr-db && DATABASE_URL="sqlite:///tmp/dev.db" diesel migration generate <name>
+cd src/crates/adr-db && DATABASE_URL="sqlite:///tmp/dev.db" diesel migration generate <name>
 ```
 
 Contributors who only work on shell scripts do not need Rust or `diesel_cli` installed.
