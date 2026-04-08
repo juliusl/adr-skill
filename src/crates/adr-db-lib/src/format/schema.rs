@@ -294,7 +294,7 @@ impl Adr {
         }
 
         // TODO: ADR-0057 design rule 3 — index stability enforcement.
-        // Once implemented in adr-format (ADR-0052), reject option reordering
+        // Once implemented (ADR-0052), reject option reordering
         // on ADRs with status != Prototype.
 
         if errors.is_empty() {

@@ -6,6 +6,7 @@ use clap::Subcommand;
 use adr_db_lib::{generate_template, parse_adr, serialize_adr};
 use adr_db_lib::format::schema::{AdrOption, CheckpointItem, Consequence, Decision};
 
+/// ADR format subcommand definitions (TOML document management).
 #[derive(Subcommand)]
 pub enum FormatCommands {
     /// Create a new ADR with work-item-referenced naming
@@ -508,6 +509,7 @@ fn cmd_export(remote: &str, id: &str) -> Result<(), String> {
     Ok(())
 }
 
+/// Dispatch a format subcommand, printing errors to stderr and exiting on failure.
 pub fn run_format(command: FormatCommands) {
     let result = match command {
         FormatCommands::New { remote, id, title, dir } => cmd_new(&remote, &id, &title, &dir),
