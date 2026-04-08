@@ -1,0 +1,14 @@
+[package]
+name = "adr-db-lib"
+version = "0.1.0"
+edition = "2021"
+description = "Shared database schema, models, and migration helpers for adr-db tooling"
+
+[dependencies]
+diesel = { version = "2", features = ["sqlite"] }
+diesel_migrations = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+ureq = { version = "2", features = ["json"] }
+
+[dev-dependencies]

@@ -1,9 +1,0 @@
-CREATE TABLE task_summaries (
-    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-    task_id TEXT NOT NULL,
-    status TEXT NOT NULL,
-    cost TEXT NOT NULL,
-    commit_sha TEXT NOT NULL DEFAULT '',
-    description TEXT NOT NULL DEFAULT '',
-    ingested_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
