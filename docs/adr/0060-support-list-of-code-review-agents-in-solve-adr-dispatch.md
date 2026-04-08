@@ -1,7 +1,7 @@
 # 60. Support list of code review agents in solve-adr dispatch
 
 Date: 2026-04-07
-Status: Planned
+Status: Accepted
 Last Updated: 2026-04-07
 Links: ADR-0059 (code review hook), ADR-0031 (dispatch hooks)
 
