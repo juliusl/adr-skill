@@ -2,14 +2,14 @@ use std::path::PathBuf;
 
 use clap::{Parser, Subcommand};
 
+mod author;
 mod fetch;
-mod format;
 mod ingest;
 mod view;
 
 #[derive(Parser)]
 #[command(name = "adr-db")]
-#[command(about = "CLI for ADR management — format operations, JSONL ingestion, and SQLite persistence")]
+#[command(about = "CLI for ADR management — authoring, JSONL ingestion, and SQLite persistence")]
 struct Cli {
     #[command(subcommand)]
     command: Commands,
@@ -57,10 +57,10 @@ enum Commands {
         /// Work item ID
         id: String,
     },
-    /// ADR format operations (TOML document management)
-    Format {
+    /// ADR authoring operations (TOML document management)
+    Author {
         #[command(subcommand)]
-        command: format::FormatCommands,
+        command: author::AuthorCommands,
     },
 }
 
@@ -104,8 +104,8 @@ fn main() {
                 std::process::exit(1);
             }
         }
-        Commands::Format { command } => {
-            format::run_format(command);
+        Commands::Author { command } => {
+            author::run_author(command);
         }
     }
 }

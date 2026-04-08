@@ -111,9 +111,9 @@ fn export_snapshot() {
     let binary = env!("CARGO_BIN_EXE_adr-db");
     let output = Command::new(binary)
         .current_dir(dir.path())
-        .args(["format", "export", "gh", "42"])
+        .args(["author", "export", "gh", "42"])
         .output()
-        .expect("failed to run adr-db format");
+        .expect("failed to run adr-db author");
 
     assert!(output.status.success(), "export failed: {}", String::from_utf8_lossy(&output.stderr));
 
@@ -165,7 +165,7 @@ fn export_is_idempotent() {
     let run = || {
         Command::new(binary)
             .current_dir(dir.path())
-            .args(["format", "export", "gh", "42"])
+            .args(["author", "export", "gh", "42"])
             .output()
             .expect("failed to run")
     };
@@ -196,7 +196,7 @@ fn export_omits_empty_work_item() {
     let binary = env!("CARGO_BIN_EXE_adr-db");
     let output = Command::new(binary)
         .current_dir(dir.path())
-        .args(["format", "export", "local", "0001"])
+        .args(["author", "export", "local", "0001"])
         .output()
         .expect("failed to run");
 
@@ -226,7 +226,7 @@ fn export_omits_empty_consequences() {
     let binary = env!("CARGO_BIN_EXE_adr-db");
     let output = Command::new(binary)
         .current_dir(dir.path())
-        .args(["format", "export", "gh", "42"])
+        .args(["author", "export", "gh", "42"])
         .output()
         .expect("failed to run");
 

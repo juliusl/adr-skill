@@ -6,9 +6,9 @@ use clap::Subcommand;
 use adr_db_lib::{generate_template, parse_adr, serialize_adr};
 use adr_db_lib::format::schema::{AdrOption, CheckpointItem, Consequence, Decision};
 
-/// ADR format subcommand definitions (TOML document management).
+/// ADR authoring subcommand definitions.
 #[derive(Subcommand)]
-pub enum FormatCommands {
+pub enum AuthorCommands {
     /// Create a new ADR with work-item-referenced naming
     New {
         /// Remote identifier (gh, ado, gitea, local)
@@ -509,21 +509,21 @@ fn cmd_export(remote: &str, id: &str) -> Result<(), String> {
     Ok(())
 }
 
-/// Dispatch a format subcommand, printing errors to stderr and exiting on failure.
-pub fn run_format(command: FormatCommands) {
+/// Dispatch an author subcommand, printing errors to stderr and exiting on failure.
+pub fn run_author(command: AuthorCommands) {
     let result = match command {
-        FormatCommands::New { remote, id, title, dir } => cmd_new(&remote, &id, &title, &dir),
-        FormatCommands::Init { dir } => {
+        AuthorCommands::New { remote, id, title, dir } => cmd_new(&remote, &id, &title, &dir),
+        AuthorCommands::Init { dir } => {
             let d = dir.unwrap_or_else(|| resolve_dir());
             cmd_init(&d)
         }
-        FormatCommands::List => cmd_list(),
-        FormatCommands::Rename { remote, id, new_title } => cmd_rename(&remote, &id, &new_title),
-        FormatCommands::Status { remote, id, new_status } => {
+        AuthorCommands::List => cmd_list(),
+        AuthorCommands::Rename { remote, id, new_title } => cmd_rename(&remote, &id, &new_title),
+        AuthorCommands::Status { remote, id, new_status } => {
             cmd_status(remote.as_deref(), id.as_deref(), new_status.as_deref())
         }
-        FormatCommands::Lifecycle { remote, id, auto, sync } => cmd_lifecycle(&remote, &id, auto, sync),
-        FormatCommands::Export { remote, id } => cmd_export(&remote, &id),
+        AuthorCommands::Lifecycle { remote, id, auto, sync } => cmd_lifecycle(&remote, &id, auto, sync),
+        AuthorCommands::Export { remote, id } => cmd_export(&remote, &id),
     };
 
     if let Err(e) = result {

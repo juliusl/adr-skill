@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# wi-full-agent-adr-format.sh — Thin wrapper delegating to adr-db format subcommand
+# wi-full-agent-adr-format.sh — Thin wrapper delegating to adr-db author subcommand
 # The adr-db binary handles all TOML operations via the 'format' subcommand.
 
 # Resolve symlinks to find the actual script location
@@ -15,7 +15,7 @@ SCRIPT_DIR="$(cd "$(dirname "$SCRIPT_SOURCE")" && pwd)"
 CRATES_BIN="$SCRIPT_DIR/../../../crates/target/release/adr-db"
 
 if command -v adr-db &>/dev/null; then
-  exec adr-db format "$@"
+  exec adr-db author "$@"
 elif [ -x "$CRATES_BIN" ]; then
   exec "$CRATES_BIN" format "$@"
 else
