@@ -192,7 +192,7 @@ Determine which milestone to work on next.
 1. If a milestone is in-progress → resume it (step 4, resume path)
 2. If no milestone is in-progress → select the first pending milestone
 3. If the user requests a specific milestone → select that one (validate it's not already complete)
-4. If all milestones are complete → skip to step 6 (report)
+4. If all milestones are complete → skip to Conclusion (C-1 → C-2 → C-3 in SKILL.md)
 
 **Milestone dependencies** are implicit in ordering — Milestone N should complete before Milestone N+1. The user can override this by requesting a specific milestone.
 
@@ -272,7 +272,7 @@ The two levels compose naturally because each uses independent state storage. S-
 ### Step 4d: Session boundaries
 
 A single milestone may exceed session limits. When this happens:
-1. S-1 reports its progress at the current group boundary
+1. S-1 reports its progress at the current task boundary
 2. S-2 records partial progress (milestone stays in-progress)
 3. The user resumes in a new session — S-2's survey step picks up where it left off
 
