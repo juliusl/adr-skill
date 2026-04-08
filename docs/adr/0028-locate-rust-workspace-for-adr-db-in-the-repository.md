@@ -1,11 +1,12 @@
 # 28. Locate Rust workspace for adr-db in the repository
 
 Date: 2026-04-04
-Status: Accepted
-Last Updated: 2026-04-04
+Status: Superseded by [ADR-0058](0058-relocate-cargo-workspace-from-crates-to-src-crates.md)
+Last Updated: 2026-04-07
 Links:
 - Amends [ADR-0026](0026-add-rust-cli-for-data-plumbing.md) (ADR-0026 specified `tools/` — this ADR re-evaluates the directory location)
 - Related to [ADR-0027](0027-use-diesel-with-sqlite-for-adr-db-persistence-layer.md) (Diesel migrations and `diesel.toml` must live relative to the workspace)
+- Superseded by [ADR-0058](0058-relocate-cargo-workspace-from-crates-to-src-crates.md) (relocates workspace from top-level `crates/` to `src/crates/`)
 
 ## Context
 
