@@ -256,7 +256,7 @@ After all implementation completes, optionally dispatch a configured code review
 
 **C-1a: Entry condition** — Check `[solve.dispatch].code_review` loaded during S-0. If absent, empty, or whitespace-only, skip C-1 and proceed to C-2. Log: "C-1 skipped — no code review agent configured."
 
-**C-1b: Base branch detection** — Retrieve the base branch from session state (recorded in Step 1b of problem.md or Step 4b of roadmap.md). Compute the merge-base: `git merge-base HEAD <base-branch>`. If unavailable (e.g., resume from a prior session), fall back to `git log --oneline --decorate` to derive the divergence point.
+**C-1b: Base branch detection** — Retrieve the base branch from session state (recorded in Step 1b of problem.md). Compute the merge-base: `git merge-base HEAD <base-branch>`. If unavailable (e.g., resume from a prior session or the roadmap flow where S-2 created the branch), fall back to deriving it: `git log --oneline --decorate` to find the branch the solve branch diverged from, or use `git merge-base HEAD main` as a last resort.
 
 **C-1c: Agent dispatch** — Invoke the configured agent via the `task` tool with the following prompt structure:
 
@@ -279,7 +279,7 @@ Do NOT flag: formatting preferences, test coverage gaps already tracked in QA pl
 
 If the agent cannot be resolved at runtime, warn and skip C-1.
 
-**C-1d: Triage findings** — Review every finding from the code review agent. For each finding, determine if it is valid. Fix all valid findings on the solve branch. If a finding is not valid, document why. The code review agent assigns priority levels (high, medium, nit) — these priority levels guide the reviewer's verdict in C-1e, not the triage actor's willingness to fix. All valid findings are fixed regardless of priority.
+**C-1d: Triage findings** — Review every finding from the code review agent. For each finding, determine if it is valid. Fix all valid findings on the solve branch. If a finding is not valid, document the rejection rationale in the triage response passed to C-1e — the reviewer will evaluate whether the rejection is justified. If a valid finding cannot be fixed in the current scope, create a follow-up item (issue, work item, or roadmap note) so the finding is not lost. The code review agent assigns priority levels (high, medium, nit) — these priority levels guide the reviewer's verdict in C-1e, not the triage actor's willingness to fix. All valid findings are fixed regardless of priority.
 
 **C-1e: Re-review** — After triage, dispatch the code review agent again to verify the fixes. The re-review is adversarial — the reviewer checks whether each finding was properly addressed, identifies any regressions introduced by the fixes, and produces new findings if warranted. The reviewer uses the priority levels from the original review to determine their verdict: if high-priority findings remain unaddressed, the verdict is "Wait for Reviewer." Pass the original findings and triage results to the reviewer so it can evaluate the response.
 
