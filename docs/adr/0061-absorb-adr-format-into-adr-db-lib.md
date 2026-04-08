@@ -1,7 +1,7 @@
 # 61. Absorb adr-format into adr-db-lib
 
 Date: 2026-04-08
-Status: Planned
+Status: Accepted
 Last Updated: 2026-04-08
 Links:
 - Related to [ADR-0028](0028-locate-rust-workspace-for-adr-db-in-the-repository.md) (original Rust workspace setup)
