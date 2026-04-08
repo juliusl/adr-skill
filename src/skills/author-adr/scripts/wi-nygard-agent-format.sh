@@ -617,7 +617,7 @@ cmd_lifecycle() {
 
   local trigger="lifecycle --auto"
   [ "$sync" -eq 1 ] && trigger="$trigger --sync"
-  log_lifecycle "$remote" "$id" "$adr_status" "$expected_adr_status" "$action" "$trigger"
+  log_lifecycle "$adapter" "$id" "$adr_status" "$expected_adr_status" "$action" "$trigger"
 
   echo "  → Updated: $(basename "$adr_file") → $expected_adr_status"
   echo "  → Logged to .adr/var/lifecycle.jsonl"

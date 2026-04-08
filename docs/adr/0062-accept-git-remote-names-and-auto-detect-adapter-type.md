@@ -1,7 +1,7 @@
 # 62. Accept git remote names and auto-detect adapter type
 
 Date: 2026-04-08
-Status: Planned
+Status: Accepted
 Last Updated: 2026-04-08
 Links:
 - [ADR-0034: Work-item-referenced naming](0034-adopt-work-item-referenced-naming-for-adr-files.md)
