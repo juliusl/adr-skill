@@ -1,7 +1,7 @@
 # 58. Relocate Cargo workspace from crates/ to src/crates/
 
 Date: 2026-04-07
-Status: Planned
+Status: Accepted
 Last Updated: 2026-04-07
 Links:
 - Supersedes [ADR-0028](0028-locate-rust-workspace-for-adr-db-in-the-repository.md) (ADR-0028 chose top-level `crates/` — this ADR relocates it under `src/`)
