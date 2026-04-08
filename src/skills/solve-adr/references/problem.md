@@ -126,7 +126,11 @@ If no worksheet exists:
 
 After intake, create a feature branch to isolate the solve workflow's output.
 
-1. **Check working tree** — run `git status --porcelain`. If there are uncommitted changes, warn the user and ask them to commit or stash. Do not proceed with a dirty working tree.
+**Already on a solve branch:** If the current branch is already a `solve/` branch (e.g., from a roadmap milestone via S-2), skip branch creation. Record the current branch name and its base branch in session state, then proceed to Step 2. Log: "Step 1b skipped — already on solve branch `<name>`."
+
+1. **Check working tree** — run `git status --porcelain`. If there are uncommitted changes:
+   - If the changes are from the current solve workflow's own prior work (e.g., defensive logging mid-milestone, previously committed ADRs now modified), this is safe — note the dirty files and proceed.
+   - If the changes are unrelated to the current solve, warn the user and ask them to commit or stash. Do not proceed with unrelated uncommitted changes.
 2. **Derive slug** — from the problem statement, generate a lowercase, hyphenated slug (max 50 chars). Store the slug in session state for resume discovery.
 3. **Check for existing branch** — run `git branch --list "solve/<slug>"`.
    - If the branch exists and is unmerged → this is a resume. Checkout the branch and skip to the appropriate lifecycle step.

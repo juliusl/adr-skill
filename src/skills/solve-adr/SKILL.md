@@ -182,6 +182,8 @@ Read [references/problem.md](references/problem.md) for the full workflow detail
 
 solve-adr creates a feature branch to isolate its output from the user's working branch. implement-adr remains branch-agnostic — it commits to whatever branch it's on.
 
+**Already on a solve branch:** If the current branch is already a `solve/` branch (e.g., from a roadmap milestone via S-2), skip branch creation. Record the branch context and proceed to Step 2.
+
 **Branch lifecycle:**
 1. **Create** — after Step 1 (intake), derive a slug from the problem statement (lowercase, hyphenated, max 50 chars). Create `solve/<slug>` from current HEAD: `git checkout -b solve/<slug>`.
 2. **Switch** — all subsequent work (authoring, triage, implementation) happens on this branch.
@@ -190,7 +192,7 @@ solve-adr creates a feature branch to isolate its output from the user's working
 
 **Branch naming:** `solve/<problem-slug>`. Example: `solve/caching-strategy-for-events`.
 
-**Dirty working tree guard:** Before creating the branch, check `git status --porcelain`. If the working tree has uncommitted changes, warn the user and ask them to commit or stash before proceeding. Do not stash automatically — that risks losing user work.
+**Dirty working tree guard:** Before creating the branch, check `git status --porcelain`. If the working tree has uncommitted changes from the current solve's own prior work (e.g., defensive logging mid-milestone), note them and proceed. If the changes are unrelated, warn the user and ask them to commit or stash. Do not stash automatically — that risks losing user work.
 
 **Base branch:** Branching from current HEAD is intentional. The user controls what base the solve branch starts from by checking out the desired branch before invoking solve-adr.
 

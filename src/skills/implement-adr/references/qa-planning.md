@@ -271,7 +271,18 @@ You must not have been the agent that executed the tasks.
 
 ## Code Changes
 
-[Insert combined diff or file list from the completed stage(s)]
+Provide the code changes using a diff-based summary to keep context
+focused. Include:
+1. The combined diff (`git diff <base>..HEAD` or per-stage diffs)
+2. A brief summary of what each stage changed and which files were affected
+3. For any check that requires broader file context beyond the diff,
+   include the full file content — do not hide context the executor
+   needs to validate a check
+
+Prefer diffs over full file reads. Only escalate to full file content
+when a check requires understanding surrounding code (e.g., verifying
+cross-reference consistency, validating a function's callers, or
+checking that a deleted section's content was preserved elsewhere).
 
 ## Instructions
 
