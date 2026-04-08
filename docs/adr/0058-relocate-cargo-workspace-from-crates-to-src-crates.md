@@ -1,7 +1,7 @@
 # 58. Relocate Cargo workspace from crates/ to src/crates/
 
 Date: 2026-04-07
-Status: Proposed
+Status: Planned
 Last Updated: 2026-04-07
 Links:
 - Supersedes [ADR-0028](0028-locate-rust-workspace-for-adr-db-in-the-repository.md) (ADR-0028 chose top-level `crates/` — this ADR relocates it under `src/`)
@@ -96,7 +96,7 @@ This supersedes ADR-0028. ADR-0028's analysis of `src/crates/` identified deeper
 2. Update `Makefile` — change `build-tools` target path from `crates/` to `src/crates/`
 3. Update `AGENTS.md` — all P-13 references from `crates/` to `src/crates/`
 4. Update `.gitignore` — adjust any `crates/`-specific patterns
-5. Update `src/skills/author-adr/scripts/wi-full-agent-adr-format.sh` — fix relative path to `adr-format` binary (line 15: `../../crates/` → `../../crates/` path recalculation after the move)
+5. Update `src/skills/author-adr/scripts/wi-full-agent-adr-format.sh` — fix relative path to `adr-format` binary (line 15: `../../../../crates/target/release/adr-format` → `../../../crates/target/release/adr-format` — one fewer parent traversal since `crates/` moves from repo root to `src/`)
 6. Update documentation references in `docs/` — historical plans and ADRs that reference `crates/` path (informational updates only; no semantic changes to past decisions)
 
 ### Resulting repo layout
@@ -195,3 +195,14 @@ After working with top-level `crates/` for a while, the split between `src/` and
 **Candidates:**
 1. Keep top-level `crates/` (status quo)
 2. Move to `src/crates/` (user's request)
+
+### Q&A Addendum — Review Round 1
+
+**Finding 1 (M): Migration step 5 shows identical from/to paths — Address**
+Step 5 had a copy-paste error showing `../../crates/` → `../../crates/` (identical paths). The actual script (`wi-full-agent-adr-format.sh` line 15) uses `../../../../crates/target/release/adr-format`. After the move, `crates/` becomes a sibling of `skills/` under `src/`, so the path drops one parent traversal: `../../../crates/target/release/adr-format`. Fixed the step to reflect the real change with full paths.
+
+**Finding 2 (L): ADR-0028 prematurely marked Superseded — Defer**
+Valid observation. ADR-0028 was marked `Superseded by ADR-0058` while ADR-0058 is still `Proposed`. The pre-review notes in this ADR already say "once accepted," which is the correct sequencing. However, P-2 (Cross-ADR Modification Guardrail) prevents modifying ADR-0028 in this session. The status correction should happen as a separate action — either revert ADR-0028 to its prior status now and re-apply when ADR-0058 is accepted, or apply the supersession as part of acceptance.
+
+**Finding 3 (L): Rubber Stamp signal from Draft Worksheet — Reject**
+Reviewer noted the user-requested decision for transparency but recommended no action. The analysis is genuine and balanced — both options were evaluated with strengths and weaknesses, and the decision drivers are grounded in lived experience with the current layout. No change needed.
