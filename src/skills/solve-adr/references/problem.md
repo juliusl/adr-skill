@@ -46,6 +46,8 @@ Every decision gets an ADR — even mid-execution discoveries.
    ↓
 4. Implement — group accepted ADRs, load /implement-adr and run its procedure
    ↓
+4d. Code Review — dispatch configured agent to review branch diff (optional)
+   ↓
 5. Report — triage deferred QA findings (P-4), summarize what was implemented
 ```
 
@@ -55,6 +57,7 @@ Every decision gets an ADR — even mid-execution discoveries.
 - ADRs exist but some paused at Evaluation Checkpoint → enter step 3 (triage)
 - All ADRs are Ready but unimplemented → enter step 4 (implement)
 - Some ADRs are Accepted, others remain → enter step 4 for the remaining ones
+- All ADRs Accepted, `[solve.dispatch].code_review` configured, code review not yet run → enter step 4d
 - On resume, check for an existing `solve/<slug>` branch — if found and unmerged, checkout it before continuing
 
 | ID | Description |
@@ -72,6 +75,12 @@ Every decision gets an ADR — even mid-execution discoveries.
 | Step 4a | Survey on resume — identify the problem's ADRs and partition |
 | Step 4b | Group for delegation — build dependency graph, minimize invocations |
 | Step 4c | Delegate — invoke `/implement-adr` per group, track progress |
+| Step 4d | Code Review (optional) — dispatch configured agent to review branch diff |
+| Step 4d-1 | Entry condition — check `[solve.dispatch].code_review` configuration |
+| Step 4d-2 | Base branch detection — retrieve stored base branch, compute merge-base |
+| Step 4d-3 | Agent dispatch — invoke code review agent via `task` tool with diff scope |
+| Step 4d-4 | Triage findings — address or accept findings by participation mode |
+| Step 4d-5 | Gate — block Step 5 if high-priority findings remain unaddressed |
 | Step 5 | Report — summarize branch, groups, completion status, remaining work |
 
 ## Step 1: Problem Intake
@@ -259,9 +268,59 @@ For each group in order:
 
 **Session boundaries:** When nearing limits, stop at the current group boundary. Report progress — the user resumes in a new session.
 
+## Step 4d: Code Review (Optional)
+
+After all implementation groups complete (Step 4c), optionally dispatch a configured code review agent to review the cumulative diff of the solve branch against its base.
+
+### Step 4d-1: Entry condition
+
+Check `[solve.dispatch].code_review` loaded during S-0. If absent, empty, or whitespace-only, skip Step 4d and proceed to Step 5. Log the skip: "Step 4d skipped — no code review agent configured."
+
+### Step 4d-2: Base branch detection
+
+Retrieve the base branch from session state (recorded in Step 1b). Compute the merge-base:
+
+```bash
+git merge-base HEAD <base-branch>
+```
+
+If the base branch is not available in session state (e.g., resume from a prior session), fall back to deriving it: check the branch the solve branch diverged from using `git log --oneline --decorate`. If the base branch resolves to a detached HEAD or commit SHA, use the SHA directly as the merge-base reference.
+
+### Step 4d-3: Agent dispatch
+
+Invoke the configured code review agent via the `task` tool:
+
+1. Compute the diff scope: all changes from merge-base to HEAD on the solve branch.
+2. Dispatch the agent with:
+   - The cumulative diff scope
+   - A summary of what was implemented (from Step 4c group results)
+   - The project's AGENTS.md (if present) for project-specific review conventions
+3. If the agent reference cannot be resolved at runtime, warn and skip Step 4d. Do not block the workflow on agent resolution failure.
+
+### Step 4d-4: Triage findings
+
+The code review agent produces findings at priority levels per its persona.
+
+**Autonomous mode:**
+- High-priority findings: address inline — fix and commit on the solve branch. Each remediation gets its own commit.
+- Medium-priority findings: accept with inline rationale logged in the conversation.
+- Nit findings: log and proceed.
+
+**Guided mode:**
+- Present all findings to the user grouped by priority.
+- The user decides which to address, accept, or defer for each finding.
+
+Duplicate or conflicting findings (overlapping with QA plan findings from implement-adr) are resolved by the triage actor. No automated deduplication — the triage actor (user or agent) makes the call.
+
+### Step 4d-5: Gate
+
+After triage, check whether high-priority findings remain unaddressed:
+- **All high-priority findings addressed or accepted** → proceed to Step 5.
+- **Unaddressed high-priority findings remain** → do not proceed to Step 5. Log the block and present the remaining findings to the user. In autonomous mode, re-attempt remediation once. If still unresolved, pause for user intervention.
+
 ## Step 5: Report
 
-After all groups complete (or execution stops), triage any deferred QA findings per P-4 in SKILL.md, then stay on the feature branch and report:
+After all groups complete and Step 4d completes or is skipped (unconfigured), triage any deferred QA findings per P-4 in SKILL.md, then stay on the feature branch and report:
 
 ```markdown
 ## Problem: [topic]
