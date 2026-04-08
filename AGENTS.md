@@ -298,7 +298,7 @@ DATABASE_URL="sqlite:///tmp/dev.db" diesel migration run
 
 **Running tests:**
 ```bash
-cd crates && cargo test
+cd src/crates && cargo test
 ```
 
 `diesel_cli` is required only for creating or modifying migrations, not for

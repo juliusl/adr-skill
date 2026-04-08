@@ -143,6 +143,9 @@ When using solve-adr for end-to-end workflows, it creates a `solve/<topic>` feat
 ```
 ├── AGENTS.md                         # Contributor guide
 ├── Makefile                          # Dev targets (test, validate, build-tools)
+├── docs/
+│   ├── adr/                          # Project-level ADRs
+│   └── plans/                        # Implementation plans generated from ADRs
 ├── src/
 │   ├── agents/                       # Agent definition files
 │   ├── crates/                       # Cargo workspace — Rust tooling
