@@ -99,14 +99,18 @@ participation = "guided"     # guided | autonomous
 auto_delegate = false        # automatically invoke /implement-adr after acceptance
 
 [solve.dispatch]
-code_review = ""             # agent reference for optional code review before branch RI
+# Single reviewer (backward-compatible):
+code_review = "juliusl-code-reviewer-v1"
+
+# Multiple reviewers (dispatched in parallel):
+# code_review = ["juliusl-code-reviewer-sweep-v5", "juliusl-code-reviewer-analytics-v5"]
 ```
 
 **`[solve.dispatch]` keys:**
 
 | Key | Default | Description |
 |-----|---------|-------------|
-| `code_review` | `""` (skip) | Agent reference to dispatch for code review on the solve branch's cumulative diff before reporting. When absent, empty, or whitespace-only, C-1 is skipped — no code review occurs. When set to a valid agent reference (e.g., `"juliusl-code-reviewer-v1"`), the agent is dispatched via the `task` tool to review all changes on the solve branch. If the configured agent cannot be resolved at runtime, warn and skip C-1. |
+| `code_review` | `""` (skip) | Accepts a string (single reviewer) or array of strings (multiple reviewers dispatched in parallel). A bare string is normalized to a single-element list. Empty strings and whitespace-only entries are filtered out. When the resulting list is empty, C-1 is skipped. When non-empty, each agent is dispatched via the `task` tool to review all changes on the solve branch. If a configured agent cannot be resolved at runtime, warn and skip that agent. |
 
 **Project-scoped** (`.adr/preferences.toml`):
 ```toml
@@ -146,7 +150,7 @@ Run this before every scenario.
    > - `auto_delegate = false` — ask before invoking /implement-adr
    >
    > Save these defaults?
-4. **Load dispatch config** — read `[author.dispatch]` keys (`review`, `editor`) for downstream `/author-adr` calls. Read `[solve.dispatch]` keys (`code_review`) for optional code review dispatch in C-1. If `code_review` is absent, empty, or whitespace-only, C-1 will be skipped.
+4. **Load dispatch config** — read `[author.dispatch]` keys (`review`, `editor`) for downstream `/author-adr` calls. Read `[solve.dispatch]` keys (`code_review`) for optional code review dispatch in C-1. Normalize `code_review` to a list: if it's a string, wrap in a single-element list. Filter out empty or whitespace-only entries. If the resulting list is empty, C-1 will be skipped.
 5. **Pre-flight check** — before proceeding to any scenario, verify the environment:
    - `git status --porcelain` — warn if the working tree is dirty (branching in S-1 requires a clean tree)
    - `make test` — run the test suite to establish a clean baseline. If tests fail, note pre-existing failures so they aren't mistaken for regressions during implementation.
