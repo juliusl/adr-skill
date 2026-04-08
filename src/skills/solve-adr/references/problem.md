@@ -131,7 +131,8 @@ After intake, create a feature branch to isolate the solve workflow's output.
 3. **Check for existing branch** — run `git branch --list "solve/<slug>"`.
    - If the branch exists and is unmerged → this is a resume. Checkout the branch and skip to the appropriate lifecycle step.
    - If the branch exists but was already merged or deleted remotely → the previous solve is complete. Append `-2` (or next available suffix) to the slug.
-4. **Create and checkout** — `git checkout -b solve/<slug>`.
+4. **Record base branch** — before creating the solve branch, record the current branch as the base branch in session state: `git rev-parse --abbrev-ref HEAD`. If this returns `HEAD` (detached HEAD state), warn the user and record the current commit SHA (`git rev-parse HEAD`) as the base reference instead. The base branch is used by Step 4d to compute the cumulative diff for code review.
+5. **Create and checkout** — `git checkout -b solve/<slug>`.
 
 All subsequent steps (author, triage, implement, report) operate on this branch. After the report step, stay on the branch — the user reviews via PR and merges.
 
