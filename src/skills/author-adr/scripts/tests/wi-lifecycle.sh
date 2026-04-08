@@ -1,5 +1,6 @@
 #!/bin/bash
 # Test: lifecycle subcommand — state mapping, recommendation, auto-execute
+export ADR_TEST_ADAPTER=gh
 SCRIPT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 
 # Set up ADR + cached work item

@@ -1,0 +1,20 @@
+=== extract_host ===
+SSH: github.com
+HTTPS: github.com
+SSH-scheme: github.com
+ADO: dev.azure.com
+Case: github.com
+=== detect_adapter_from_url ===
+GitHub SSH: gh
+GitHub HTTPS: gh
+ADO HTTPS: ado
+ADO SSH: ado
+ADO VS: ado
+GitHub ssh://: gh
+=== unknown host ===
+ERROR: Could not detect adapter type for URL 'https://gitlab.example.com/org/repo'. Supported hosts: github.com, dev.azure.com.
+=== ADR_TEST_ADAPTER seam ===
+docs/adr/0001-record-architecture-decisions.md
+docs/adr/gh-99-seam-test.md
+File created: docs/adr/gh-99-seam-test.md
+yes

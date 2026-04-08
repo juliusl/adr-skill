@@ -26,16 +26,58 @@ adr_date() {
   echo "${ADR_DATE:-$(date +%Y-%m-%d)}"
 }
 
-# Validate remote against allowlist
-validate_remote() {
-  local remote="$1"
-  case "$remote" in
-    gh|ado|gitea|local) return 0 ;;
+# Extract host from a git URL (SSH shorthand, ssh://, or https://)
+extract_host() {
+  local url="$1"
+  # SSH shorthand: git@host:path
+  if printf '%s' "$url" | grep -q '^git@'; then
+    printf '%s' "$url" | sed 's/^git@//; s/:.*//' | tr '[:upper:]' '[:lower:]'
+    return
+  fi
+  # Scheme-based: https://host/path or ssh://git@host/path
+  printf '%s' "$url" | sed 's|.*://||; s|.*@||; s|/.*||; s|:.*||' | tr '[:upper:]' '[:lower:]'
+}
+
+# Detect adapter type from a git remote URL
+detect_adapter_from_url() {
+  local url="$1"
+  local host
+  host=$(extract_host "$url")
+
+  case "$host" in
+    *github.com*) printf 'gh' ;;
+    *dev.azure.com*|*visualstudio.com*) printf 'ado' ;;
     *)
-      echo "ERROR: unknown remote '$remote'. Allowed: gh, ado, gitea, local" >&2
-      exit 1
+      echo "ERROR: Could not detect adapter type for URL '$url'. Supported hosts: github.com, dev.azure.com." >&2
+      return 1
       ;;
   esac
+}
+
+# Detect adapter type from a git remote name or 'local' keyword.
+# If ADR_TEST_ADAPTER is set, return its value (testing seam).
+# Echoes adapter type to stdout. Returns 1 on failure.
+detect_adapter() {
+  local remote="$1"
+
+  # Testing seam: allow tests to override detection
+  if [ -n "${ADR_TEST_ADAPTER:-}" ]; then
+    printf '%s' "$ADR_TEST_ADAPTER"
+    return 0
+  fi
+
+  if [ "$remote" = "local" ]; then
+    printf 'local'
+    return 0
+  fi
+
+  local url
+  url=$(git remote get-url "$remote" 2>/dev/null) || {
+    echo "ERROR: git remote '$remote' not found. Run 'git remote -v' to list available remotes." >&2
+    return 1
+  }
+
+  detect_adapter_from_url "$url"
 }
 
 # Validate id: alphanumeric and hyphens only, no empty, no path separators
@@ -156,7 +198,8 @@ cmd_new() {
 
   local remote="$1" id="$2" title="$3" dir="$4"
 
-  validate_remote "$remote"
+  local adapter
+  adapter=$(detect_adapter "$remote") || exit 1
   validate_id "$id"
 
   if [ -z "$title" ]; then
@@ -166,17 +209,17 @@ cmd_new() {
 
   local slug
   slug=$(slugify "$title")
-  local file="$dir/${remote}-${id}-${slug}.md"
+  local file="$dir/${adapter}-${id}-${slug}.md"
 
   # Check for any existing ADR with same remote-id (different slug is still a duplicate)
-  for existing in "$dir"/${remote}-${id}-*.md; do
+  for existing in "$dir"/${adapter}-${id}-*.md; do
     if [ -f "$existing" ]; then
-      echo "ERROR: ADR for ${remote}-${id} already exists: $existing" >&2
+      echo "ERROR: ADR for ${adapter}-${id} already exists: $existing" >&2
       exit 1
     fi
   done
 
-  generate_template "$remote" "$id" "$title" > "$file"
+  generate_template "$adapter" "$id" "$title" > "$file"
   echo "$file"
 }
 
@@ -349,23 +392,24 @@ cmd_rename() {
   shift 2
   local new_title="$*"
 
-  validate_remote "$remote"
+  local adapter
+  adapter=$(detect_adapter "$remote") || exit 1
   validate_id "$id"
 
   local slug
   slug=$(slugify "$new_title")
 
   local old_file=""
-  for f in "$dir"/${remote}-${id}-*.md; do
+  for f in "$dir"/${adapter}-${id}-*.md; do
     [ -f "$f" ] && old_file="$f" && break
   done
 
   if [ -z "$old_file" ]; then
-    echo "ERROR: ADR ${remote}-${id} not found in $dir" >&2
+    echo "ERROR: ADR ${adapter}-${id} not found in $dir" >&2
     exit 1
   fi
 
-  local new_file="$dir/${remote}-${id}-${slug}.md"
+  local new_file="$dir/${adapter}-${id}-${slug}.md"
 
   if [ "$old_file" = "$new_file" ]; then
     echo "No rename needed: $(basename "$old_file")"
@@ -380,7 +424,7 @@ cmd_rename() {
   # Update heading — use awk to avoid sed metacharacter issues
   local today
   today=$(adr_date)
-  local new_heading="# ${remote}-${id}. ${new_title}"
+  local new_heading="# ${adapter}-${id}. ${new_title}"
 
   awk -v heading="$new_heading" 'NR==1 { print heading; next } { print }' "$old_file" > "${old_file}.tmp"
   mv "${old_file}.tmp" "$old_file"
@@ -415,16 +459,17 @@ cmd_status() {
   fi
 
   local remote="$1" id="$2"
-  validate_remote "$remote"
+  local adapter
+  adapter=$(detect_adapter "$remote") || exit 1
   validate_id "$id"
 
   local file=""
-  for f in "$dir"/${remote}-${id}-*.md; do
+  for f in "$dir"/${adapter}-${id}-*.md; do
     [ -f "$f" ] && file="$f" && break
   done
 
   if [ -z "$file" ]; then
-    echo "ERROR: ADR ${remote}-${id} not found in $dir" >&2
+    echo "ERROR: ADR ${adapter}-${id} not found in $dir" >&2
     exit 1
   fi
 
@@ -498,19 +543,20 @@ cmd_lifecycle() {
     shift
   done
 
-  validate_remote "$remote"
+  local adapter
+  adapter=$(detect_adapter "$remote") || exit 1
   validate_id "$id"
 
   local dir
   dir=$(resolve_dir)
 
   local adr_file=""
-  for f in "$dir"/${remote}-${id}-*.md; do
+  for f in "$dir"/${adapter}-${id}-*.md; do
     [ -f "$f" ] && adr_file="$f" && break
   done
 
   if [ -z "$adr_file" ]; then
-    echo "ERROR: ADR ${remote}-${id} not found in $dir" >&2
+    echo "ERROR: ADR ${adapter}-${id} not found in $dir" >&2
     exit 1
   fi
 
@@ -524,10 +570,10 @@ cmd_lifecycle() {
   adr_status=$(parse_status "$adr_file")
 
   local cached_wi
-  cached_wi=$(lookup_work_item "$remote" "$id" 2>/dev/null || true)
+  cached_wi=$(lookup_work_item "$adapter" "$id" 2>/dev/null || true)
 
   if [ -z "$cached_wi" ]; then
-    echo "No cached work item for ${remote}-${id}."
+    echo "No cached work item for ${adapter}-${id}."
     echo "Current ADR status: $adr_status"
     return 0
   fi
