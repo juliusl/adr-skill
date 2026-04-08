@@ -97,7 +97,16 @@ This skill reads preferences from two scopes:
 [solve]
 participation = "guided"     # guided | autonomous
 auto_delegate = false        # automatically invoke /implement-adr after acceptance
+
+[solve.dispatch]
+code_review = ""             # agent reference for optional code review before branch RI
 ```
+
+**`[solve.dispatch]` keys:**
+
+| Key | Default | Description |
+|-----|---------|-------------|
+| `code_review` | `""` (skip) | Agent reference to dispatch for code review on the solve branch's cumulative diff before reporting. When absent, empty, or whitespace-only, Step 4d is skipped — no code review occurs. When set to a valid agent reference (e.g., `"juliusl-code-reviewer-v1"`), the agent is dispatched via the `task` tool to review all changes on the solve branch. If the configured agent cannot be resolved at runtime, warn and skip Step 4d. |
 
 **Project-scoped** (`.adr/preferences.toml`):
 ```toml
