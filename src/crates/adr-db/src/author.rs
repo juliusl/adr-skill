@@ -11,7 +11,7 @@ use adr_db_lib::format::schema::{AdrOption, CheckpointItem, Consequence, Decisio
 pub enum AuthorCommands {
     /// Create a new ADR with work-item-referenced naming
     New {
-        /// Remote identifier (gh, ado, gitea, local)
+        /// Git remote name (e.g., origin) or 'local' for offline use
         remote: String,
         /// Work item ID (alphanumeric)
         id: String,
@@ -29,7 +29,7 @@ pub enum AuthorCommands {
     List,
     /// Rename an ADR file and update heading
     Rename {
-        /// Remote identifier
+        /// Git remote name (e.g., origin) or 'local' for offline use
         remote: String,
         /// Work item ID
         id: String,
@@ -38,7 +38,7 @@ pub enum AuthorCommands {
     },
     /// Show or update ADR status
     Status {
-        /// Remote identifier
+        /// Git remote name (e.g., origin) or 'local' for offline use
         remote: Option<String>,
         /// Work item ID
         id: Option<String>,
@@ -47,7 +47,7 @@ pub enum AuthorCommands {
     },
     /// Check or execute lifecycle transition
     Lifecycle {
-        /// Remote identifier
+        /// Git remote name (e.g., origin) or 'local' for offline use
         remote: String,
         /// Work item ID
         id: String,
@@ -60,25 +60,81 @@ pub enum AuthorCommands {
     },
     /// Export ADR as Markdown to stdout
     Export {
-        /// Remote identifier
+        /// Git remote name (e.g., origin) or 'local' for offline use
         remote: String,
         /// Work item ID
         id: String,
     },
 }
 
-const VALID_REMOTES: &[&str] = &["gh", "ado", "gitea", "local"];
+/// Extract the host portion from a git URL.
+///
+/// Handles SSH (`git@host:path`), `ssh://` (`ssh://git@host/path`),
+/// and HTTPS (`https://host/path`) formats.
+fn extract_host(url: &str) -> String {
+    // SSH shorthand: git@github.com:org/repo.git
+    if let Some(rest) = url.strip_prefix("git@") {
+        if let Some(host) = rest.split(':').next() {
+            return host.to_lowercase();
+        }
+    }
+    // Scheme-based: https://host/path or ssh://git@host/path
+    if let Some(rest) = url.split("://").nth(1) {
+        let after_userinfo = if let Some(pos) = rest.find('@') {
+            &rest[pos + 1..]
+        } else {
+            rest
+        };
+        if let Some(host) = after_userinfo.split('/').next() {
+            // Strip port if present
+            return host.split(':').next().unwrap_or(host).to_lowercase();
+        }
+    }
+    url.to_lowercase()
+}
 
-fn validate_remote(remote: &str) -> Result<(), String> {
-    if VALID_REMOTES.contains(&remote) {
-        Ok(())
+/// Detect the adapter type from a git remote URL.
+fn detect_adapter_from_url(url: &str) -> Result<String, String> {
+    let host = extract_host(url);
+    if host.contains("github.com") {
+        Ok("gh".to_string())
+    } else if host.contains("dev.azure.com") || host.contains("visualstudio.com") {
+        Ok("ado".to_string())
     } else {
         Err(format!(
-            "unknown remote '{}'. Allowed: {}",
-            remote,
-            VALID_REMOTES.join(", ")
+            "Could not detect adapter type for URL '{}'. \
+             Supported hosts: github.com, dev.azure.com. \
+             For other forges, a future configuration mechanism \
+             will allow explicit adapter mapping.",
+            url
         ))
     }
+}
+
+/// Detect the adapter type from a git remote name or the `local` keyword.
+///
+/// If `remote` is `"local"`, returns `"local"` immediately.
+/// Otherwise, runs `git remote get-url <remote>` and matches the URL
+/// against known host patterns.
+fn detect_adapter(remote: &str) -> Result<String, String> {
+    if remote == "local" {
+        return Ok("local".to_string());
+    }
+
+    let output = std::process::Command::new("git")
+        .args(["remote", "get-url", remote])
+        .output()
+        .map_err(|e| format!("failed to run git: {}", e))?;
+
+    if !output.status.success() {
+        return Err(format!(
+            "git remote '{}' not found. Run 'git remote -v' to list available remotes.",
+            remote
+        ));
+    }
+
+    let url = String::from_utf8_lossy(&output.stdout).trim().to_string();
+    detect_adapter_from_url(&url)
 }
 
 fn validate_id(id: &str) -> Result<(), String> {
@@ -148,7 +204,7 @@ fn find_adr_file(dir: &str, remote: &str, id: &str) -> Result<String, String> {
 }
 
 fn cmd_new(remote: &str, id: &str, title: &str, dir: &str) -> Result<(), String> {
-    validate_remote(remote)?;
+    let adapter = detect_adapter(remote)?;
     validate_id(id)?;
     validate_dir(dir)?;
     if title.is_empty() {
@@ -156,9 +212,9 @@ fn cmd_new(remote: &str, id: &str, title: &str, dir: &str) -> Result<(), String>
     }
 
     let slug = slugify(title);
-    let file_path = format!("{}/{}-{}-{}.toml", dir, remote, id, slug);
+    let file_path = format!("{}/{}-{}-{}.toml", dir, adapter, id, slug);
 
-    let prefix = format!("{}-{}-", remote, id);
+    let prefix = format!("{}-{}-", adapter, id);
     if Path::new(dir).is_dir() {
         for entry in fs::read_dir(dir).map_err(|e| e.to_string())? {
             let entry = entry.map_err(|e| e.to_string())?;
@@ -166,7 +222,7 @@ fn cmd_new(remote: &str, id: &str, title: &str, dir: &str) -> Result<(), String>
             if name.starts_with(&prefix) && name.ends_with(".toml") {
                 return Err(format!(
                     "ADR for {}-{} already exists: {}",
-                    remote,
+                    adapter,
                     id,
                     entry.path().display()
                 ));
@@ -177,7 +233,7 @@ fn cmd_new(remote: &str, id: &str, title: &str, dir: &str) -> Result<(), String>
     fs::create_dir_all(dir).map_err(|e| e.to_string())?;
 
     let date = today();
-    let adr = generate_template(remote, id, title, &date);
+    let adr = generate_template(&adapter, id, title, &date);
     let toml_str = serialize_adr(&adr).map_err(|e| e.to_string())?;
     fs::write(&file_path, toml_str).map_err(|e| e.to_string())?;
     println!("{}", file_path);
@@ -282,13 +338,13 @@ fn cmd_list() -> Result<(), String> {
 }
 
 fn cmd_rename(remote: &str, id: &str, new_title: &str) -> Result<(), String> {
-    validate_remote(remote)?;
+    let adapter = detect_adapter(remote)?;
     validate_id(id)?;
 
     let dir = resolve_dir();
-    let old_path = find_adr_file(&dir, remote, id)?;
+    let old_path = find_adr_file(&dir, &adapter, id)?;
     let slug = slugify(new_title);
-    let new_path = format!("{}/{}-{}-{}.toml", dir, remote, id, slug);
+    let new_path = format!("{}/{}-{}-{}.toml", dir, adapter, id, slug);
 
     if old_path == new_path {
         println!("No rename needed: {}", Path::new(&old_path).file_name().unwrap().to_string_lossy());
@@ -300,7 +356,7 @@ fn cmd_rename(remote: &str, id: &str, new_title: &str) -> Result<(), String> {
 
     let content = fs::read_to_string(&old_path).map_err(|e| e.to_string())?;
     let mut adr = parse_adr(&content, &old_path).map_err(|e| e.to_string())?;
-    adr.meta.title = format!("{}-{}. {}", remote, id, new_title);
+    adr.meta.title = format!("{}-{}. {}", adapter, id, new_title);
     adr.meta.last_updated = today();
 
     let toml_str = serialize_adr(&adr).map_err(|e| e.to_string())?;
@@ -323,9 +379,9 @@ fn cmd_status(remote: Option<&str>, id: Option<&str>, new_status: Option<&str>) 
     match (remote, id) {
         (None, _) | (_, None) => cmd_list(),
         (Some(r), Some(i)) => {
-            validate_remote(r)?;
+            let adapter = detect_adapter(r)?;
             validate_id(i)?;
-            let file_path = find_adr_file(&dir, r, i)?;
+            let file_path = find_adr_file(&dir, &adapter, i)?;
             let content = fs::read_to_string(&file_path).map_err(|e| e.to_string())?;
             let mut adr = parse_adr(&content, &file_path).map_err(|e| e.to_string())?;
 
@@ -353,17 +409,17 @@ fn cmd_status(remote: Option<&str>, id: Option<&str>, new_status: Option<&str>) 
 }
 
 fn cmd_lifecycle(remote: &str, id: &str, _auto: bool, _sync: bool) -> Result<(), String> {
-    validate_remote(remote)?;
+    let adapter = detect_adapter(remote)?;
     validate_id(id)?;
 
     let dir = resolve_dir();
-    let file_path = find_adr_file(&dir, remote, id)?;
+    let file_path = find_adr_file(&dir, &adapter, id)?;
     let content = fs::read_to_string(&file_path).map_err(|e| e.to_string())?;
     let adr = parse_adr(&content, &file_path).map_err(|e| e.to_string())?;
 
     let cache_path = ".adr/var/work-items.jsonl";
     if !Path::new(cache_path).exists() {
-        println!("No cached work item for {}-{}.", remote, id);
+        println!("No cached work item for {}-{}.", adapter, id);
         println!("Current ADR status: {}", adr.meta.status);
         return Ok(());
     }
@@ -372,7 +428,7 @@ fn cmd_lifecycle(remote: &str, id: &str, _auto: bool, _sync: bool) -> Result<(),
     let mut wi_state = None;
     for line in cache_content.lines() {
         if let Ok(val) = serde_json::from_str::<serde_json::Value>(line) {
-            if val.get("remote").and_then(|v| v.as_str()) == Some(remote)
+            if val.get("remote").and_then(|v| v.as_str()) == Some(&adapter)
                 && val.get("id").and_then(|v| v.as_str()) == Some(id)
             {
                 wi_state = val.get("state").and_then(|v| v.as_str()).map(|s| s.to_string());
@@ -382,7 +438,7 @@ fn cmd_lifecycle(remote: &str, id: &str, _auto: bool, _sync: bool) -> Result<(),
 
     match wi_state {
         None => {
-            println!("No cached work item for {}-{}.", remote, id);
+            println!("No cached work item for {}-{}.", adapter, id);
             println!("Current ADR status: {}", adr.meta.status);
         }
         Some(state) => {
@@ -415,11 +471,11 @@ fn cmd_lifecycle(remote: &str, id: &str, _auto: bool, _sync: bool) -> Result<(),
 }
 
 fn cmd_export(remote: &str, id: &str) -> Result<(), String> {
-    validate_remote(remote)?;
+    let adapter = detect_adapter(remote)?;
     validate_id(id)?;
 
     let dir = resolve_dir();
-    let file_path = find_adr_file(&dir, remote, id)?;
+    let file_path = find_adr_file(&dir, &adapter, id)?;
     let content = fs::read_to_string(&file_path).map_err(|e| e.to_string())?;
     let adr = parse_adr(&content, &file_path).map_err(|e| e.to_string())?;
 
@@ -529,5 +585,92 @@ pub fn run_author(command: AuthorCommands) {
     if let Err(e) = result {
         eprintln!("ERROR: {}", e);
         std::process::exit(1);
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_detect_adapter_local() {
+        assert_eq!(detect_adapter("local").unwrap(), "local");
+    }
+
+    #[test]
+    fn test_github_ssh_url() {
+        assert_eq!(detect_adapter_from_url("git@github.com:org/repo.git").unwrap(), "gh");
+    }
+
+    #[test]
+    fn test_github_https_url() {
+        assert_eq!(detect_adapter_from_url("https://github.com/org/repo").unwrap(), "gh");
+    }
+
+    #[test]
+    fn test_github_https_with_port() {
+        assert_eq!(detect_adapter_from_url("https://github.com:443/org/repo").unwrap(), "gh");
+    }
+
+    #[test]
+    fn test_ado_https_url() {
+        assert_eq!(detect_adapter_from_url("https://dev.azure.com/org/project/_git/repo").unwrap(), "ado");
+    }
+
+    #[test]
+    fn test_ado_ssh_url() {
+        assert_eq!(detect_adapter_from_url("git@ssh.dev.azure.com:v3/org/project/repo").unwrap(), "ado");
+    }
+
+    #[test]
+    fn test_ado_visualstudio_url() {
+        assert_eq!(detect_adapter_from_url("https://org.visualstudio.com/project/_git/repo").unwrap(), "ado");
+    }
+
+    #[test]
+    fn test_ssh_scheme_github_url() {
+        assert_eq!(detect_adapter_from_url("ssh://git@github.com/org/repo").unwrap(), "gh");
+    }
+
+    #[test]
+    fn test_unknown_host_returns_error() {
+        let result = detect_adapter_from_url("https://gitlab.example.com/org/repo");
+        assert!(result.is_err());
+        let err = result.unwrap_err();
+        assert!(err.contains("Could not detect adapter type"), "Error was: {}", err);
+        assert!(err.contains("gitlab.example.com"), "Error was: {}", err);
+    }
+
+    #[test]
+    fn test_unknown_host_returns_error_custom() {
+        let result = detect_adapter_from_url("https://code.example.com/org/repo");
+        assert!(result.is_err());
+        let err = result.unwrap_err();
+        assert!(err.contains("Could not detect adapter type"), "Error was: {}", err);
+    }
+
+    #[test]
+    fn test_extract_host_ssh() {
+        assert_eq!(extract_host("git@github.com:org/repo.git"), "github.com");
+    }
+
+    #[test]
+    fn test_extract_host_https() {
+        assert_eq!(extract_host("https://github.com/org/repo"), "github.com");
+    }
+
+    #[test]
+    fn test_extract_host_ssh_scheme() {
+        assert_eq!(extract_host("ssh://git@github.com/org/repo"), "github.com");
+    }
+
+    #[test]
+    fn test_extract_host_with_port() {
+        assert_eq!(extract_host("https://github.com:443/org/repo"), "github.com");
+    }
+
+    #[test]
+    fn test_extract_host_case_insensitive() {
+        assert_eq!(extract_host("https://GitHub.COM/org/repo"), "github.com");
     }
 }

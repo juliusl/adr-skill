@@ -90,28 +90,42 @@ fn build_test_adr() -> Adr {
     }
 }
 
+/// Set up a temp directory as a git repo with a configured remote.
+/// Returns the temp dir. The `remote_name` remote points to `remote_url`.
+fn setup_git_repo(remote_name: &str, remote_url: &str) -> tempfile::TempDir {
+    let dir = tempfile::tempdir().unwrap();
+    Command::new("git")
+        .args(["init", "--quiet"])
+        .current_dir(dir.path())
+        .output()
+        .expect("git init failed");
+    Command::new("git")
+        .args(["remote", "add", remote_name, remote_url])
+        .current_dir(dir.path())
+        .output()
+        .expect("git remote add failed");
+    dir
+}
+
 #[test]
 fn export_snapshot() {
-    let dir = tempfile::tempdir().unwrap();
+    let dir = setup_git_repo("origin", "https://github.com/test/repo.git");
     let adr_dir = dir.path().join("docs/adr");
     fs::create_dir_all(&adr_dir).unwrap();
 
-    // Write a fully populated TOML ADR
     let adr = build_test_adr();
     let toml_str = serialize_adr(&adr).unwrap();
     let adr_path = adr_dir.join("gh-42-use-postgresql.toml");
     fs::write(&adr_path, &toml_str).unwrap();
 
-    // Write .adr/adr-dir to point to our test directory
     let adr_meta = dir.path().join(".adr");
     fs::create_dir_all(&adr_meta).unwrap();
     fs::write(adr_meta.join("adr-dir"), adr_dir.to_string_lossy().as_ref()).unwrap();
 
-    // Run export via the binary
     let binary = env!("CARGO_BIN_EXE_adr-db");
     let output = Command::new(binary)
         .current_dir(dir.path())
-        .args(["author", "export", "gh", "42"])
+        .args(["author", "export", "origin", "42"])
         .output()
         .expect("failed to run adr-db author");
 
@@ -149,7 +163,7 @@ fn export_snapshot() {
 
 #[test]
 fn export_is_idempotent() {
-    let dir = tempfile::tempdir().unwrap();
+    let dir = setup_git_repo("origin", "https://github.com/test/repo.git");
     let adr_dir = dir.path().join("docs/adr");
     fs::create_dir_all(&adr_dir).unwrap();
 
@@ -165,7 +179,7 @@ fn export_is_idempotent() {
     let run = || {
         Command::new(binary)
             .current_dir(dir.path())
-            .args(["author", "export", "gh", "42"])
+            .args(["author", "export", "origin", "42"])
             .output()
             .expect("failed to run")
     };
@@ -183,7 +197,6 @@ fn export_omits_empty_work_item() {
 
     let mut adr = build_test_adr();
     adr.meta.work_item = String::new();
-    // Need to use local remote for empty work_item
     adr.meta.title = "local-0001. Test".to_string();
     let toml_str = serialize_adr(&adr).unwrap();
     let adr_path = adr_dir.join("local-0001-test.toml");
@@ -206,12 +219,11 @@ fn export_omits_empty_work_item() {
 
 #[test]
 fn export_omits_empty_consequences() {
-    let dir = tempfile::tempdir().unwrap();
+    let dir = setup_git_repo("origin", "https://github.com/test/repo.git");
     let adr_dir = dir.path().join("docs/adr");
     fs::create_dir_all(&adr_dir).unwrap();
 
     let mut adr = build_test_adr();
-    // Keep only positive consequences — negative and neutral should be omitted
     adr.consequences = vec![
         Consequence { kind: "positive".to_string(), body: "Good thing.".to_string() },
     ];
@@ -226,7 +238,7 @@ fn export_omits_empty_consequences() {
     let binary = env!("CARGO_BIN_EXE_adr-db");
     let output = Command::new(binary)
         .current_dir(dir.path())
-        .args(["author", "export", "gh", "42"])
+        .args(["author", "export", "origin", "42"])
         .output()
         .expect("failed to run");
 
