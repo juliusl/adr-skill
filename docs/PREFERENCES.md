@@ -14,6 +14,7 @@ auto_delegate = true
 
 [author.dispatch]
 editor = "juliusl-editor-v4"
+tech_writer = "juliusl-tech-writer-v1"
 
 [implement]
 participation = "autonomous"
@@ -54,6 +55,7 @@ If neither file exists, skills use built-in defaults and never fail.
 | `[author].username` | string | `$(whoami)` | Username prefix for user-mode filenames — see [author-adr SKILL.md](../src/skills/author-adr/SKILL.md#user-mode) |
 | `[author.dispatch].review` | string | `"general-purpose"` | Agent for structured ADR review — see [author-adr SKILL.md](../src/skills/author-adr/SKILL.md#agent-dispatch-authordispatch) |
 | `[author.dispatch].editor` | string | `"interactive"` | Agent for editorial revision; `"interactive"` prompts the user — see [author-adr SKILL.md](../src/skills/author-adr/SKILL.md#agent-dispatch-authordispatch) |
+| `[author.dispatch].tech_writer` | string | `""` | Agent for A-2 content writing; empty means inline agent writes directly — see [author-adr SKILL.md](../src/skills/author-adr/SKILL.md#agent-dispatch-authordispatch) |
 
 ### implement-adr
 
@@ -101,6 +103,7 @@ template = "nygard-agent"     # ADR format
 [author.dispatch]
 review = "general-purpose"    # review agent
 editor = "interactive"        # revision agent ("interactive" = prompt user)
+tech_writer = ""              # content writing agent (empty = inline)
 
 [implement]
 participation = "guided"      # full-control | guided | autonomous | weighted
