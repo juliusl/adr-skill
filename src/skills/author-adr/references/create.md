@@ -87,13 +87,13 @@ Watch for these fallacies when drafting and use the countermeasures:
 | Step 2a | Identifying big/early decisions |
 | Step 2b | Most responsible moment |
 | Step 2c | ADMM — 5 logical steps for decision-making |
-| Step 3 | Evaluation Checkpoint — gate between options and decision |
+| Step 3 | Draft the ADR — populate from template |
 | Step 3a | Draft Worksheet integration |
 | Step 3b | Tech-Writer Dispatch (conditional) — delegate writing to configured agent |
-| Step 4 | Convergence — transition from exploring to deciding |
-| Step 5 | Conclusion Checkpoint — verify before requesting review |
+| Step 4 | Evaluate Readiness — Evaluation Checkpoint gate |
+| Step 5 | Validate Completion — implementability criteria |
 | Step 5a | Quick self-test |
-| Step 6 | Rename ADR file — transition from TBD to titled |
+| Step 6 | Conclusion Checkpoint — verify before requesting review |
 
 ```
 Step 1 — Assess architectural significance
@@ -104,14 +104,14 @@ Step 3 — Draft the ADR
   ├─ Step 3a — Draft Worksheet integration
   └─ Step 3b — Tech-Writer Dispatch (conditional: tech_writer configured?)
   ↓
-Step 4 — Convergence
+Step 4 — Evaluation Checkpoint (conditional: Proceed / Pause / Skip)
   ↓
-Step 5 — Conclusion Checkpoint (conditional: Ready / Needs work / Skip)
+Step 5 — Validate Completion (implementability criteria)
   ↓
-Step 6 — Rename ADR file
+Step 6 — Conclusion Checkpoint (conditional: Ready / Needs work / Skip)
 ```
 
-**Conditional steps:** Step 3 and Step 5 are checkpoints with three possible assessments. If the assessment is "Skipped", record the rationale and proceed to the next step.
+**Conditional steps:** Step 4 and Step 6 are checkpoints with three possible assessments. If the assessment is "Skipped", record the rationale and proceed to the next step. Step 3b is conditional on `tech_writer` being configured.
 
 ## Step 1: Assess Architectural Significance (ASR Test)
 
