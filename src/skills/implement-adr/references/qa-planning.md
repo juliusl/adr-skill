@@ -289,13 +289,30 @@ checking that a deleted section's content was preserved elsewhere).
 1. For each numbered check, verify against the actual code.
 2. Report PASS or FAIL per individual check with specific evidence.
 3. Do not summarize multiple checks into a single verdict.
-4. Mark passing checks [x] in the QA plan.
-5. For failing checks, report the specific code/file and the violation.
-6. Apply the finding disposition rules to any new findings.
+4. For failing checks, report the specific code/file and the violation.
+5. Apply the finding disposition rules to any new findings.
+
+## Update the QA Plan File
+
+After verification, update the QA plan file directly — do not
+leave updates for the orchestrator.
+
+1. For each passing check, change `- [ ]` to `- [x]` in the QA
+   plan file.
+2. For each Recommendation whose corresponding check(s) passed,
+   update its Status column from `Open` to `✅ Resolved`.
+3. For each Recommendation whose check(s) failed, leave the
+   Status as `Open` and include the failure evidence in your
+   report.
+
+This is mandatory. Verified-but-not-recorded results leave the
+QA plan in a misleading state — a reviewer sees unchecked boxes
+and "Open" statuses despite all checks passing.
 
 ## Output Format
 
 - PASS/FAIL per check with specific file and line evidence
 - Any new findings with disposition classification
+- Confirmation that QA plan file was updated (checks marked, statuses set)
 - Verdict: Batch Approved / Batch Needs Remediation
 ```
