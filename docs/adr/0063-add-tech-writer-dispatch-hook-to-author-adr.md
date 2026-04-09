@@ -1,7 +1,7 @@
 # 63. Add tech-writer dispatch hook to author-adr
 
 Date: 2026-04-08
-Status: Planned
+Status: Accepted
 Last Updated: 2026-04-08
 Links:
 - Extends [ADR-0031](0031-add-author-adr-dispatch-hooks-for-custom-agent-delegation.md) (defines dispatch hooks for review/editor agents)
