@@ -56,7 +56,7 @@ tech_writer = "juliusl-tech-writer-v1"  # A-2: writer agent
 **Dispatch contract:**
 - The inline agent completes A-1 (worksheet) and A-2 Steps 1–2 (ASR test,
   readiness check)
-- At A-2 Step 3, the inline agent dispatches the tech-writer with:
+- At A-2 step 4, the inline agent dispatches the tech-writer with:
   - The ADR file (with draft worksheet already populated)
   - The problem statement and constraints
   - The template structure
@@ -119,7 +119,7 @@ instructions, configurable executor. The tech-writer receives the ADR file with
 the draft worksheet and all analytical context, writes the body content, and
 returns control to the inline agent for validation.
 
-**Integration point:** A-2 Step 3 (Draft the ADR). The inline agent handles
+**Integration point:** A-2 step 4 (Draft the ADR). The inline agent handles
 all steps before and after.
 
 **Dispatch mechanics:**
@@ -194,7 +194,7 @@ preserves backward compatibility.
 **Framing:**
 The user wants to delegate ADR content writing from the inline agent to a
 configurable tech-writer agent. This extends the existing dispatch pattern
-(ADR-0031) with a third hook point at A-2 Step 3. The user has
+(ADR-0031) with a third hook point at A-2 step 4. The user has
 `juliusl-tech-writer-v1` installed for prototyping.
 
 **Tolerance:**
@@ -204,7 +204,7 @@ configurable tech-writer agent. This extends the existing dispatch pattern
 
 **Uncertainty:**
 - Certain: The dispatch pattern works (proven by review/editor hooks)
-- Certain: The integration point is A-2 Step 3
+- Certain: The integration point is A-2 step 4
 - Uncertain: Exact dispatch prompt format for the tech-writer
 
 **Options:**
