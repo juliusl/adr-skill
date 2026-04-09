@@ -89,6 +89,7 @@ Watch for these fallacies when drafting and use the countermeasures:
 | Step 2c | ADMM — 5 logical steps for decision-making |
 | Step 3 | Evaluation Checkpoint — gate between options and decision |
 | Step 3a | Draft Worksheet integration |
+| Step 3b | Tech-Writer Dispatch (conditional) — delegate writing to configured agent |
 | Step 4 | Convergence — transition from exploring to deciding |
 | Step 5 | Conclusion Checkpoint — verify before requesting review |
 | Step 5a | Quick self-test |
@@ -99,7 +100,9 @@ Step 1 — Assess architectural significance
   ↓
 Step 2 — Evaluate decision readiness
   ↓
-Step 3 — Evaluation Checkpoint (conditional: Proceed / Pause / Skip)
+Step 3 — Draft the ADR
+  ├─ Step 3a — Draft Worksheet integration
+  └─ Step 3b — Tech-Writer Dispatch (conditional: tech_writer configured?)
   ↓
 Step 4 — Convergence
   ↓
@@ -168,6 +171,31 @@ Before drafting, check if a **Draft Worksheet** exists in the ADR's `## Comments
 - **Uncertainty** → inform which areas need more analysis in Context and which constraints are firm vs. tentative.
 
 If no worksheet exists, proceed with the standard drafting workflow below — A-1 should have created one, but the workflow must not block if it's absent.
+
+### Step 3b: Tech-Writer Dispatch (Conditional)
+
+**Condition:** `[author.dispatch].tech_writer` is configured with a non-empty value.
+
+When a tech-writer agent is configured, delegate the ADR body writing to it instead of writing inline.
+
+1. **Build dispatch context** — assemble the payload for the tech-writer agent:
+   - The ADR file path (with draft worksheet from A-1 and any ASR/readiness context from Steps 1–2)
+   - The problem statement, constraints, and stakeholder context from the calling workflow
+   - The template structure selected in Step 3 (use the active template, not a hardcoded reference)
+   - Writing style instructions (from SKILL.md Writing Style section)
+   - Section expectations: Context, Options, Decision, Consequences, Quality Strategy
+
+2. **Dispatch via `task` tool** — invoke the configured tech-writer agent. The agent writes the ADR body content and returns control.
+
+3. **Validate output** — after the tech-writer returns, verify:
+   - All required sections are populated (Context, Options, Decision, Consequences)
+   - Quality Strategy checkboxes reflect the decision's actual quality concerns
+   - The content aligns with the draft worksheet's framing and constraints
+   If validation fails (missing sections, malformed output, or partial content from a mid-execution failure), the inline agent completes or corrects the remaining sections and warns the user that tech-writer output was supplemented.
+
+4. **Fallback** — if the configured agent cannot be resolved at runtime, fall back to inline writing (the inline agent writes the content itself) and warn the user.
+
+**When `tech_writer` is absent or empty:** Skip this subsection — the inline agent writes content directly as the default behavior.
 
 ## Step 4: Evaluate Readiness (Evaluation Checkpoint)
 
