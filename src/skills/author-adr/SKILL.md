@@ -189,7 +189,10 @@ Read [references/create.md](references/create.md) for the full creation workflow
 1. **Assess significance** — score the decision against the 7 ASR criteria. If it's not architecturally significant, suggest informal documentation.
 2. **Check readiness** — verify the START criteria: Stakeholders, Time/MRM, Alternatives, Requirements, Template.
 3. **Pick a template** — default to Nygard Agent. Use MADR if the user needs structured tradeoff analysis. See [Choosing a Template](#choosing-a-template).
-4. **Draft the ADR** — populate from the template in [assets/templates/](assets/templates/).
+4. **Draft the ADR** — populate the ADR body from the template in [assets/templates/](assets/templates/).
+   - **If `tech_writer` is configured** (non-empty value in `[author.dispatch]`): dispatch the tech-writer agent via the `task` tool with the ADR file path (with draft worksheet from A-1), the problem context, the template structure selected in step 3, and writing style instructions. The tech-writer writes Context, Options, Decision, Consequences, and Quality Strategy sections. Quality Strategy is a documentation task — the inline agent validates the selections during checkpoint review. After the tech-writer returns, the inline agent verifies all required sections are populated and content aligns with the draft worksheet. If the tech-writer returns partial or malformed output, the inline agent completes the remaining sections and warns the user. If the configured agent cannot be resolved at runtime, fall back to inline writing and warn the user.
+   - **If `tech_writer` is absent or empty** (default): the inline agent writes content directly, preserving current behavior.
+   See [references/create.md](references/create.md) Step 3b for the full dispatch procedure.
 5. **Create via Makefile** — always use the Makefile target:
    ```bash make -f <skill-root>/Makefile new TITLE="Use PostgreSQL" ```
    Only fall back to calling scripts directly if the Makefile is unavailable. See [Escape Hatch](#escape-hatch-direct-script-usage) for direct usage.
