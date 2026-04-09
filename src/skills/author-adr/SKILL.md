@@ -123,20 +123,22 @@ username = ""        # override for $(whoami) in user-mode filenames
 3. Update cross-references: links from other user-mode ADRs or plans that reference the old filename
 
 ### Agent Dispatch (`[author.dispatch]`)
-Per ADR-0031, the review→revise workflow supports configurable agent dispatch. Each hook point can be set to a specific agent or left at its default.
+Per ADR-0031, the author-adr workflow supports configurable agent dispatch at three hook points: writing (A-2), review (A-3), and revision (A-4). Each hook can be set to a specific agent or left at its default.
 ```toml
 [author.dispatch]
 review = "general-purpose"   # Agent for structured review (default)
 editor = "interactive"       # Agent for editorial decisions (default: user)
+tech_writer = ""             # Agent for A-2 content writing (default: inline)
 ```
 | Hook | Default | Role | Instructions |
 |------|---------|------|-------------|
 | `review` | `"general-purpose"` | Reviewer | Receives `polish.md` — executes Review Phase (R-1 through R-6) |
 | `editor` | `"interactive"` | Editor | Receives `polish.md` — executes Revision Phase (V-1 through V-6) |
+| `tech_writer` | `""` (inline) | Writer | Dispatched at A-2 step 4 — writes ADR body content (Context through Quality Strategy) |
 **Contract: same instructions, configurable executor.** Each hook dispatches the same reference instructions regardless of which agent is configured. The custom agent's persona shapes HOW it applies the instructions (which findings it prioritizes, how it weighs tradeoffs), not WHAT it checks.
-The `"interactive"` value is a reserved keyword meaning "prompt the user directly." Any other value is treated as an agent reference (e.g., a custom `.agent.md` persona).
+The `"interactive"` value is a reserved keyword meaning "prompt the user directly." Any other value is treated as an agent reference (e.g., a custom `.agent.md` persona). For `tech_writer`, the empty string `""` means the inline agent writes content itself. Values containing only whitespace are treated as empty.
 **Graceful fallback:** If a configured agent reference cannot be resolved at runtime, fall back to the default value for that hook and warn the user.
-**Default behavior preservation:** When no `[author.dispatch]` table exists in `preferences.toml`, behavior is identical to the current workflow (general-purpose review, interactive user prompts).
+**Default behavior preservation:** When no `[author.dispatch]` table exists in `preferences.toml`, behavior is identical to the current workflow (general-purpose review, interactive user prompts, inline content writing).
 
 **Mandatory dispatch compliance:** See P-1.
 ### A-0: Format Detection
