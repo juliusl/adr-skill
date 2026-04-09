@@ -52,7 +52,7 @@ The author-adr skill's maximum status transition is `Ready`. After a review Acce
 | `assets/templates/` | Templates | ADR templates (Nygard Agent, MADR, Y-Statement) |
 | `assets/decisions/0023-*.md` | Decision | ADR-0023: Defines prototype-adr skill for validation — referenced by A-3 review checkpoint handling |
 | `assets/decisions/0024-*.md` | Decision | ADR-0024: Defines Evaluation and Conclusion Checkpoint sections in template — referenced by A-0, A-2, A-3 |
-| `assets/decisions/0031-*.md` | Decision | ADR-0031: Defines dispatch hooks for review/editor agents — referenced by A-3, A-4 |
+| `assets/decisions/0031-*.md` | Decision | ADR-0031: Defines dispatch hooks for review/editor/tech-writer agents — referenced by A-0, A-2, A-3, A-4 |
 | `assets/decisions/0032-*.md` | Decision | ADR-0032: Defines draft worksheet workflow — referenced by A-1 |
 
 When a step references an ADR (e.g., "per ADR-0031"), read the corresponding file from `assets/decisions/`.
