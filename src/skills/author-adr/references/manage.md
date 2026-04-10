@@ -8,8 +8,15 @@ Every ADR has a status that tracks its progression:
 
 ```mermaid
 flowchart LR
-    Prototype --> Proposed --> Ready --> Planned --> Accepted --> Deprecated
-    Accepted --> Superseded["Superseded by ADR-NNNN"]
+    Prototype --> Proposed --> Ready --> Planned --> Accepted
+    Proposed --> Deprecated
+    Ready --> Deprecated
+    Planned --> Deprecated
+    Accepted --> Deprecated
+    Proposed --> Superseded["Superseded by ADR-NNNN"]
+    Ready --> Superseded
+    Planned --> Superseded
+    Accepted --> Superseded
 ```
 
 | Status | Meaning | When to Use |

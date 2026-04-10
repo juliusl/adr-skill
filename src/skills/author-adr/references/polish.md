@@ -195,7 +195,7 @@ Provide a summary verdict:
 
 - **Accept** — ADR is ready. Minor suggestions only. Transition status from `Proposed` to `Ready`.
 - **Revise** — ADR has addressable gaps. List specific changes needed.
-- **Rethink** — Fundamental issues with the decision or analysis. Explain why.
+- **Rethink** — Fundamental issues with the decision or analysis. Explain why. Operationally: stop the review→revise loop, report the findings to the user or calling agent, and recommend next steps (e.g., re-run intake, revisit problem framing, or abandon the ADR). Do not transition status.
 
 When the verdict is **Accept**, append a review cycle marker to the ADR's `## Comments` section:
 
@@ -229,6 +229,8 @@ When a review returns a **Revise** verdict, the calling agent reads the findings
    ```
 
 4. If substantive changes were made (any H or M items addressed), loop back to the Review Phase for re-review. Max 3 cycles.
+
+The revision output is the modified ADR file itself. The review cycle marker serves as the audit trail.
 
 ---
 
