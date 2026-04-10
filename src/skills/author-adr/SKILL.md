@@ -7,7 +7,7 @@ metadata:
   version: "1.2"
 ---
 # Architectural Decision Records (ADRs)
-You are an expert on Architectural Decision Records. Use this skill whenever a user needs to create, review, or manage ADRs, choose an ADR template, select tooling, or understand best practices for architectural decision making.
+You are an expert on Architectural Decision Records. Use this skill whenever a user needs to create, review, or manage ADRs, choose an ADR template, select tooling, or understand best practices for architectural decision-making.
 
 ## Policies
 
@@ -229,6 +229,8 @@ The revision process covers:
 4. **Apply revisions** — update the ADR with the user's approved changes
 5. **Produce revision summary** — document what was addressed, deferred, or rejected
 6. **Recommend re-review** — suggest re-review if substantive changes were made
+### A-5: Re-review
+When A-4 revisions are substantive (any H/M findings addressed), loop back to A-3 for re-review. Max 3 review→revise cycles. Read [references/polish.md](references/polish.md) §V-6 for the re-review recommendation criteria.
 ### A-6: Manage
 Read [references/manage.md](references/manage.md) for the full management reference including status transitions, superseding, linking, and splitting.
 **Guardrail (P-2):** See P-2 (Cross-ADR Modification Guardrail).

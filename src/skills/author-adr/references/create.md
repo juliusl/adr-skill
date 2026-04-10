@@ -48,7 +48,7 @@ When defining evaluation criteria, normalize DOWN to the same abstraction level 
 ## Writing Justifications
 
 **Y-Statement Template:**
-> In the context of **{use case}**, facing **{concern}**, we decided for we chose **{option}** over **{alternatives}** to achieve **{benefits}**, accepting **{drawbacks}**.
+> In the context of **{use case}**, facing **{concern}**, we chose **{option}** over **{alternatives}** to achieve **{benefits}**, accepting **{drawbacks}**.
 
 **Good justifications (grounded in):**
 - Prior successful project experience in a similar context
@@ -60,7 +60,7 @@ When defining evaluation criteria, normalize DOWN to the same abstraction level 
 - "We've always done it this way" — inertia
 - "It'll look good on my resume" — personal interest over project needs
 
-## Seven AD Making Fallacies
+## Seven Decision-Making Fallacies
 
 Watch for these fallacies when drafting and use the countermeasures:
 
