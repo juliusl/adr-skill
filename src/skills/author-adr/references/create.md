@@ -237,7 +237,8 @@ When UX or DX review agents are configured, dispatch them to evaluate the Option
    Each agent runs its own review procedure and returns findings using its established output format (see the agent's Appendix A for verdict and finding structure).
 
 3. **Incorporate findings** — after agents return, incorporate their findings into the checkpoint assessment:
-   - If either agent returns a **Redesign** verdict, set the checkpoint Assessment to `Pause for validation` and populate Validation needs with the findings.
+   - If either agent returns a **Redesign** verdict, set the checkpoint Assessment to `Pause for validation` and populate Validation needs with the findings. Redesign means the approach needs rethinking — prototype validation is warranted.
+   - If either agent returns a **Revise — Major** verdict, incorporate the findings as revision requirements for the Options section. The agent is signaling heavy-but-addressable rework — specific options need significant restructuring, but the overall approach is sound. Apply the revisions inline before proceeding to the Decision section. Do not escalate to `prototype-adr`.
    - If either agent returns a **Revise** verdict, present Medium findings as checkpoint considerations — they inform the decision but do not block it.
    - If both return **Accept** or **Accept with suggestions**, proceed normally.
    - If an agent returns an unrecognized verdict, log the raw output for the user to review, treat as `Accept with suggestions`, and warn that manual review is needed.
