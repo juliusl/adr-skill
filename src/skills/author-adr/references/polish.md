@@ -58,7 +58,7 @@ Apply three perspectives progressively:
 | R-1a | Checkpoint State Review — evaluate Evaluation/Conclusion checkpoint assessments |
 | R-1b | Experimentation Tolerance Spectrum — assess data support level |
 | R-2 | Fallacy Scan — check justification against 7 decision-making fallacies |
-| R-3 | Anti-Pattern Check — scan for 11 ADR creation anti-patterns |
+| R-3 | Anti-Pattern Check — scan for 13 ADR creation anti-patterns |
 | R-4 | Consequence Validation — review stated consequences for plausibility |
 | R-5 | Review Checklist — answer 7 questions about the ADR |
 | R-6 | Verdict — Accept, Revise, or Rethink |
@@ -142,7 +142,7 @@ For each detected fallacy, provide:
 
 ### R-3: Anti-Pattern Check
 
-Scan for the 11 ADR creation anti-patterns:
+Scan for the 13 ADR creation anti-patterns:
 
 **Subjectivity:**
 - **Fairy Tale** — shallow justification without real evidence
@@ -158,8 +158,11 @@ Scan for the 11 ADR creation anti-patterns:
 **Size/nature:**
 - **Blueprint/Policy in Disguise** — not actually a decision
 - **Mega-ADR** — too many decisions bundled together
+- **Novel/Epic** — far too much detail for an executive summary
 
 **Magic tricks:**
+- **Non-existent urgency** — fabricating time pressure
+- **Problem-solution mismatch** — solution doesn't address the stated problem
 - **Pseudo-accuracy** — false quantitative scoring to disguise subjective judgment
 
 ### R-4: Consequence Validation

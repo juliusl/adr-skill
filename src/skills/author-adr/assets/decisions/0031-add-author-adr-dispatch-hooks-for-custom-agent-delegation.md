@@ -367,11 +367,10 @@ template = "nygard"
 # Default: "general-purpose"
 review = "general-purpose"
 
-# Agent for editorial decisions during the review→revise cycle.
-# Receives: revise.md instructions + review output as prompt.
-# Handles: consequence validation, finding triage (Address/Reject), re-review.
-# Default: "interactive" (user handles these steps directly)
-editor = "interactive"
+# REMOVED by ADR-0065: The `editor` hook was removed. The calling agent
+# now applies revisions inline after review. Remove any `editor` key
+# from [author.dispatch] — it is silently ignored.
+# editor = "interactive"
 ```
 
 ### Dispatch Contract: Same Instructions, Configurable Executor
@@ -382,7 +381,7 @@ agent is configured:
 | Hook | Instructions | Input | Output |
 |------|-------------|-------|--------|
 | `review` | `review.md` | ADR file content | Structured review (verdict, findings) |
-| `editor` | `revise.md` | Review output + ADR content | Revision decisions (address/reject per finding) |
+| ~~`editor`~~ | ~~`revise.md`~~ | ~~Review output + ADR content~~ | ~~Revision decisions~~ — **Removed by ADR-0065** |
 
 The custom agent's `.agent.md` persona shapes HOW it applies the instructions
 (which findings it prioritizes, how it weighs tradeoffs, what editorial
@@ -396,11 +395,8 @@ structure; the agent brings judgment.
    checklist, verdict). Defaults to `"general-purpose"` because the review
    instructions are comprehensive and any capable agent can execute them.
 
-2. **`editor`** — the editor. Handles all user-facing interactive steps during
-   the review→revise cycle: consequence validation, finding triage
-   (Address/Reject), and re-review decision. Defaults to `"interactive"`
-   (user handles it). When set to an agent reference, that agent stands in for
-   the user's editorial judgment.
+2. ~~**`editor`** — removed by ADR-0065. The calling agent now applies
+   revisions inline after the review step. No separate editor dispatch.~~
 
 The `"interactive"` value is a reserved keyword meaning "prompt the user
 directly." Any other value is treated as an agent reference.
@@ -413,7 +409,7 @@ identified for future workflows but are NOT implemented by this ADR:
 | Workflow | Hook | Role | Status |
 |----------|------|------|--------|
 | Review→Revise | `review` | Reviewer | **This ADR** |
-| Review→Revise | `editor` | Editor | **This ADR** |
+| ~~Review→Revise~~ | ~~`editor`~~ | ~~Editor~~ | **Removed by ADR-0065** |
 | Create | `create_validation` | Reviewer | Future |
 | Solve | `option_evaluation` | Advisor | Future |
 | Solve | `convergence` | Editor | Future |
@@ -436,13 +432,15 @@ configuration requires structured grouping that flat keys don't express well.
 **Positive:**
 
 - Custom agent personas can be plugged into the review→revise workflow by
-  setting `review` and/or `editor` in `[author.dispatch]`, enabling the user's
-  goal of persona-based automation.
+  setting `review` in `[author.dispatch]`, enabling the user's
+  goal of persona-based automation. (The `editor` hook was removed by ADR-0065 —
+  the calling agent applies revisions inline.)
 - The "same instructions, configurable executor" contract means custom agents
   don't need to re-implement the review structure — they receive `review.md`
   and `revise.md` as prompts, inheriting the full quality framework.
 - Two role-based hooks (reviewer + editor) are simpler than per-step hooks
   while still allowing different agents for different capabilities.
+  (Note: editor hook was subsequently removed by ADR-0065.)
 - The dispatch table is self-documenting — it enumerates all available hooks
   and their defaults in one place.
 - Progressive automation: defaults (`review = "general-purpose"`,

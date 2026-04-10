@@ -119,6 +119,8 @@ Establish what the goal of the code changes is. Derive your own understanding of
 
 Apply the scrutiny priorities and defect checklists below to every change. Flag answers that indicate a problem at the appropriate priority level.
 
+Steps 2a to 2d can be dispatched to background agents in parallel.
+
 ### Step 2a: Scrutiny Priorities
 
 Apply more scrutiny when the change includes:
