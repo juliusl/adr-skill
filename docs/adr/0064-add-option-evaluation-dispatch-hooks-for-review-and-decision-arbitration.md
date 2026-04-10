@@ -1,7 +1,7 @@
 # 64. Add option-evaluation dispatch hooks for UX/DX reviewer and TPM integration
 
 Date: 2026-04-09
-Status: Planned
+Status: Accepted
 Last Updated: 2026-04-09
 Links:
 - Extends [ADR-0031](0031-add-author-adr-dispatch-hooks-for-custom-agent-delegation.md) (author-adr dispatch hooks)
