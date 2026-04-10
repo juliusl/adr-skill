@@ -119,7 +119,7 @@ Establish what the goal of the code changes is. Derive your own understanding of
 
 Apply the scrutiny priorities and defect checklists below to every change. Flag answers that indicate a problem at the appropriate priority level.
 
-Steps 2a to 2d can be dispatched to background agents in parallel.
+**Parallel dispatch:** Use the task tool to dispatch Steps 2a–2d as parallel background explore agents. Each sub-agent prompt must include: (1) the full diff or changed file paths, (2) the complete checklist copied from the relevant substep below, (3) instruction to return findings categorized by priority level. Collect all sub-agent results before proceeding to Step 3.
 
 ### Step 2a: Scrutiny Priorities
 

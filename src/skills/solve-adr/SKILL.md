@@ -176,7 +176,7 @@ Run this before every scenario.
    > - `auto_delegate = false` — ask before invoking /implement-adr
    >
    > Save these defaults?
-4. **Load dispatch config** — read `[author.dispatch]` keys (`review`, `editor`) for downstream `/author-adr` calls. Read `[solve.dispatch]` keys (`code_review`) for optional code review dispatch in C-2. Normalize `code_review` to a list: if it's a string, wrap in a single-element list. Filter out empty or whitespace-only entries. If the resulting list is empty, C-2 will be skipped.
+4. **Load dispatch config** — read `[author.dispatch]` keys (`review`, `editor`) for downstream `/author-adr` calls. Read `[solve.dispatch]` keys (`code_review`) for optional code review dispatch in C-2. Normalize `code_review` to a list: if it's a string, wrap in a single-element list. Filter out empty or whitespace-only entries. If the resulting list is empty, C-2 will be skipped. Read `[solve] fast_path_sources` for S-3 routing — validate each value against the recognized set (`retro`, `bug-bash`, `amendment`). Log a warning for each unrecognized value: `Warning: fast_path_sources contains unrecognized value "<v>" — ignored`.
 5. **Pre-flight check** — before proceeding to any scenario, verify the environment:
    - `git status --porcelain` — warn if the working tree is dirty (branching in S-1 requires a clean tree)
    - `make test` — run the test suite to establish a clean baseline. If tests fail, note pre-existing failures so they aren't mistaken for regressions during implementation.
@@ -407,8 +407,6 @@ After C-3, run a structured retrospective on the completed solve run. C-4 is opt
 **Preferences write strategy:** Read the existing `.adr/preferences.toml`, modify only the target keys in memory, and rewrite the full file preserving all other sections and keys. Do not overwrite the file with only the modified section. If the file doesn't exist, note that no existing keys are available to update and skip the write step — do not create the file.
 
 **Retro record slug:** Derive the slug from the current UTC timestamp (`YYYYMMDD-HHMMSS`), not from user-supplied text. Example: `.adr/var/retro-20260410-143022.md`. If a file at the derived path already exists, append a counter suffix (`-2`, `-3`, etc.) rather than overwriting.
-
-**Unrecognized `fast_path_sources` values** are silently ignored when routing — log a warning for each unrecognized value: `Warning: fast_path_sources contains unrecognized value "<v>" — ignored`.
 
 **Zero-findings case:** When `skip_when_no_findings = false` and the retrospective produces no actionable findings, note "No findings to retrospect" and skip the 4 questions. Writing a retro record with empty answers serves no purpose regardless of the key value.
 

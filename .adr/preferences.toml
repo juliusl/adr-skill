@@ -6,7 +6,11 @@ auto_delegate = true
 code_review = ["juliusl-code-reviewer-analytics-v5", "juliusl-code-reviewer-sweep-v5"]
 
 [author.dispatch]
-editor = "juliusl-editor-v4"
+review = "juliusl-editor-v5"
+tech_writer = "juliusl-tech-writer-v1"
+ux_review = "juliusl-ux-reviewer-v1"
+dx_review = "juliusl-dx-reviewer-v1"
+tpm = "juliusl-tpm-v1"
 
 [implement]
 participation = "autonomous"

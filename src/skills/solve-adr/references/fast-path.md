@@ -62,6 +62,8 @@ Every finding must land in exactly one list. If a finding is ambiguous, err towa
 
 ### Step 2: Author Y-statement ADRs
 
+**Entry condition:** ADR list from Step 1 is non-empty. If empty, log "Step 2 skipped — no ADR-worthy findings" and proceed to Step 3.
+
 For each finding on the ADR list:
 
 1. Create the ADR file using the Makefile.
@@ -76,7 +78,7 @@ For each finding on the ADR list:
    > In the context of [X], facing [Y], we chose [Z] over [A] to achieve [B], accepting [C].
 5. Fill the Quality Strategy checklist.
 6. **Skip Options and Evaluation Checkpoint — absent by design.** The decision is already understood; these sections are not applicable to S-3 ADRs.
-7. **Invoke author-adr A-3 onward** (review, revise, re-review). When dispatching the reviewer, include this note:
+7. **Invoke author-adr A-3 onward** via the `skill` tool (review, revise, re-review). When dispatching the reviewer, include this note:
    > Options and Evaluation Checkpoint are absent by design — this is an S-3 fast-path ADR. R-1 criterion 1 (≥2 alternatives) does not apply. R-1 criterion 1 checks that at least two alternative options were considered; it is not applicable when the decision is already understood and the goal is traceability, not exploration.
 
 Repeat for all findings on the ADR list. All ADRs must reach Ready status before proceeding to Step 4.
@@ -106,7 +108,7 @@ Invoke `/implement-adr` with:
 
 Pass both in a single batch. The implement-adr skill will merge the plan-only tasks into the implementation plan alongside the ADR-driven tasks. Each plan-only task retains its `[Source: ...]` note in the plan.
 
-**Zero-ADR case:** If classification in Step 1 produces zero ADR-worthy findings (all findings are plan-only), skip Step 2 entirely. In Step 4, invoke `/implement-adr` with only the plan-only task list. A bare task list is a valid input — implement-adr will generate a plan with no source ADRs. Note in the plan: "No new ADRs created — all findings were plan-only per the S-3 classification test."
+**Zero-ADR case:** If Step 2 was skipped (all findings plan-only), invoke `/implement-adr` with only the plan-only task list. A bare task list is a valid input — implement-adr will generate a plan with no source ADRs. Note in the plan: "No new ADRs created — all findings were plan-only per the S-3 classification test."
 
 ---
 

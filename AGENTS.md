@@ -202,7 +202,7 @@ inline it.
    progressive disclosure):
 
    ```bash
-   wc -l src/skills/author-adr/SKILL.md src/skills/implement-adr/SKILL.md
+   wc -l src/skills/author-adr/SKILL.md src/skills/implement-adr/SKILL.md src/skills/solve-adr/SKILL.md
    ```
 
 ## P-9: Spec Constraints
@@ -328,7 +328,7 @@ ALWAYS, when encountering a broken makefile target, STOP and fix the target befo
 
 ## P-17: Autonomy Directives
 
-When operating autonomously, **NEVER** take shortcuts when a procedure or plan has been established. Resource constraints or session length are not valid reasons to skip procedures. Procedures are in place to safe-guard autonomously generated code.
+When operating autonomously, **NEVER** take shortcuts when a procedure or plan has been established. Resource constraints or session length are not valid reasons to skip procedures. Procedures are in place to safeguard autonomously generated code.
 
 ## P-18: Broken References Policy
 
