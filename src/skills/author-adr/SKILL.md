@@ -123,22 +123,28 @@ username = ""        # override for $(whoami) in user-mode filenames
 3. Update cross-references: links from other user-mode ADRs or plans that reference the old filename
 
 ### Agent Dispatch (`[author.dispatch]`)
-Per ADR-0031, the author-adr workflow supports configurable agent dispatch at three hook points: writing (A-2), review (A-3), and revision (A-4). Each hook can be set to a specific agent or left at its default.
+Per ADR-0031 and ADR-0064, the author-adr workflow supports configurable agent dispatch at six hook points: writing (A-2), review (A-3), revision (A-4), and option evaluation (Step 4a/4b). Each hook can be set to a specific agent or left at its default.
 ```toml
 [author.dispatch]
 review = "general-purpose"   # Agent for structured review (default)
 editor = "interactive"       # Agent for editorial decisions (default: user)
 tech_writer = ""             # Agent for A-2 content writing (default: inline)
+ux_review = ""               # Agent for UX option review (default: skip)
+dx_review = ""               # Agent for DX option review (default: skip)
+tpm = ""                     # Agent for decision quality assessment (default: skip)
 ```
 | Hook | Default | Role | Instructions |
 |------|---------|------|-------------|
 | `review` | `"general-purpose"` | Reviewer | Receives `polish.md` — executes Review Phase (R-1 through R-6) |
 | `editor` | `"interactive"` | Editor | Receives `polish.md` — executes Revision Phase (V-1 through V-6) |
 | `tech_writer` | `""` (inline) | Writer | Dispatched at A-2 step 4 — writes ADR body content (Context through Quality Strategy) |
-**Contract: same instructions, configurable executor.** Each hook dispatches the same reference instructions regardless of which agent is configured. The custom agent's persona shapes HOW it applies the instructions (which findings it prioritizes, how it weighs tradeoffs), not WHAT it checks.
-The `"interactive"` value is a reserved keyword meaning "prompt the user directly." Any other value is treated as an agent reference (e.g., a custom `.agent.md` persona). For `tech_writer`, the empty string `""` means the inline agent writes content itself. Values containing only whitespace are treated as empty.
+| `ux_review` | `""` (skip) | UX Reviewer | Dispatched at Step 4a — evaluates options for user experience quality |
+| `dx_review` | `""` (skip) | DX Reviewer | Dispatched at Step 4a — evaluates options for developer experience quality |
+| `tpm` | `""` (skip) | Decision Arbiter | Dispatched at Step 4b — applies decision quality tests (ASR, START, ADMM) |
+**Contract:** The `review`, `editor`, and `tech_writer` hooks dispatch the same reference instructions regardless of which agent is configured — the custom agent's persona shapes HOW it applies the instructions, not WHAT it checks. The `ux_review`, `dx_review`, and `tpm` hooks dispatch agents that run their own review procedures — each agent defines its own checklist and output format.
+The `"interactive"` value is a reserved keyword meaning "prompt the user directly." Any other value is treated as an agent reference (e.g., a custom `.agent.md` persona). For `tech_writer`, `ux_review`, `dx_review`, and `tpm`, the empty string `""` means the hook is skipped — no dispatch occurs. Values containing only whitespace are treated as empty.
 **Graceful fallback:** If a configured agent reference cannot be resolved at runtime, fall back to the default value for that hook and warn the user.
-**Default behavior preservation:** When no `[author.dispatch]` table exists in `preferences.toml`, behavior is identical to the current workflow (general-purpose review, interactive user prompts, inline content writing).
+**Default behavior preservation:** When no `[author.dispatch]` table exists in `preferences.toml`, behavior is identical to the current workflow (general-purpose review, interactive user prompts, inline content writing, no option evaluation dispatch).
 
 **Mandatory dispatch compliance:** See P-1.
 ### A-0: Format Detection
