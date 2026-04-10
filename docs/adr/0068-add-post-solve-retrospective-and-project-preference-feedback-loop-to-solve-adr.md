@@ -1,7 +1,7 @@
 # 68. Add post-solve retrospective and project-preference feedback loop to solve-adr
 
 Date: 2026-04-10
-Status: Planned
+Status: Accepted
 Last Updated: 2026-04-10
 Links: ADR-0044, ADR-0048, ADR-0067
 

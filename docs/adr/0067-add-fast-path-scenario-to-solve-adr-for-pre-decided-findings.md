@@ -1,7 +1,7 @@
 # 67. Add fast-path scenario to solve-adr for pre-decided findings
 
 Date: 2026-04-10
-Status: Planned
+Status: Accepted
 Last Updated: 2026-04-10
 Links: ADR-0068
 
