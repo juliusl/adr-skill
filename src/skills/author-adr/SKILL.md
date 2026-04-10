@@ -216,7 +216,7 @@ The review process covers:
 4. **Consequence validation** — interactively verify stated consequences with the user
 5. **7-point checklist** — structured quality assessment
 6. **Verdict** — Accept (→ Ready status), Revise, or Rethink
-7. **Accept-with-suggestions** — if the verdict is Accept but includes minor suggestions, dispatch the editor agent for a lightweight polish pass (see polish.md §R-6a). If no editor agent is configured, present suggestions to the user as optional improvements.
+7. **Accept-with-suggestions** — if the verdict is Accept but includes minor suggestions, apply the dispatch threshold: for ≥3 suggestions or any Medium+ item, dispatch the editor agent for a polish pass (see polish.md §R-6a); for ≤2 Low-severity suggestions, apply inline without dispatch. If no editor agent is configured, present suggestions to the user as optional improvements.
 8. **Revision handoff** — if the verdict is "Revise":
    - If `editor` is `"interactive"` (or absent): offer to interactively address the review comments. If the user agrees, proceed to [Revising an ADR](#revising-an-adr).
    - If `editor` is an agent reference: automatically proceed to [Revising an ADR](#revising-an-adr) — the configured editor agent stands in for the user during triage. Do not ask for permission; the delegated editor handles the review→revise loop.
