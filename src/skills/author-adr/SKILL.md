@@ -152,7 +152,7 @@ Before any ADR operation, determine which ADR format to use:
 1. **Read the config file** — resolve the config path (see [Configuration](#configuration)) and read `[author].template` from `preferences.toml`.
    - If set (e.g., `"nygard-agent"`, `"wi-nygard-agent"`, `"nygard"`, or `"madr"`), use it directly.
    - If absent, default to `"nygard-agent"`.
-   - Also read `[author.dispatch]` keys (`review`, `editor`, `tech_writer`) if present. Store for use during create, review, and revise workflows. If absent, use defaults (`review = "general-purpose"`, `editor = "interactive"`, `tech_writer = ""`).
+   - Also read `[author.dispatch]` keys (`review`, `editor`, `tech_writer`, `ux_review`, `dx_review`, `tpm`) if present. Store for use during create, review, and revise workflows. If absent, use defaults (`review = "general-purpose"`, `editor = "interactive"`, `tech_writer = ""`, `ux_review = ""`, `dx_review = ""`, `tpm = ""`).
 2. **If `docs/adr/` does not exist** — bootstrap the decision log using the default nygard-agent format:
    ```bash make -f <skill-root>/Makefile init DIR=docs/adr ```
 3. **Cache the format** — for the rest of the session, pass `ADR_AGENT_SKILL_FORMAT=nygard-agent` (or the configured format) to all Makefile targets.
