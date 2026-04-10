@@ -230,7 +230,11 @@ When UX or DX review agents are configured, dispatch them to evaluate the Option
    - The artifact to review: the Options section content
    - Scope: `New` (options are being authored, not modified)
 
-2. **Dispatch in parallel** — invoke each configured agent via the `task` tool simultaneously. Each agent runs its own review procedure and returns findings using its established output format (see the agent's Appendix A for verdict and finding structure).
+2. **Dispatch in parallel with viability pre-screen** — invoke each configured agent via the `task` tool simultaneously. Include the following pre-screen guidance in each dispatch prompt:
+
+   > **Two-pass analysis:** Before deep evaluation, perform a quick viability screen (~30 seconds per option). Flag any option that is obviously non-viable — e.g., contradicts a stated constraint, depends on unavailable technology, or fails to address the core problem. Report non-viable options with a brief reason but skip element-by-element analysis on them. Deep-dive only on viable options.
+
+   Each agent runs its own review procedure and returns findings using its established output format (see the agent's Appendix A for verdict and finding structure).
 
 3. **Incorporate findings** — after agents return, incorporate their findings into the checkpoint assessment:
    - If either agent returns a **Redesign** verdict, set the checkpoint Assessment to `Pause for validation` and populate Validation needs with the findings.
