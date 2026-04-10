@@ -1,12 +1,12 @@
 # QA Planning Protocol
 
-Self-contained reference for QA plan generation and execution. Read this file when generating a QA plan after the main implementation plan has been approved, or when executing QA checks after all stages complete.
+QA planning protocol for the implement-adr skill — covers plan generation, test-gap analysis, finding disposition, and QA execution. Applied at Step 4b (after plan approval) and after all stages complete.
 
 ## When to Use
 
 After the plan-reviewer approves the implementation plan (Step 4), the main executor spawns a **separate general-purpose QA planner agent** to generate the QA plan. This is Step 4b in the implement-adr workflow.
 
-QA plan generation is **mandatory** — it runs for every plan, regardless of participation mode. There is no opt-out.
+QA plan generation is **mandatory** — it runs for every plan, regardless of participation mode.
 
 ## Agent Separation Principle
 
@@ -54,7 +54,7 @@ Items 5–7 are the **observability check**: a stage that produces unverifiable 
 
 ## Regeneration on Plan Revision
 
-When the main implementation plan is revised (new revision created per Step 7), the QA plan **must be regenerated**. A stale QA plan that validates against an outdated plan is a silent failure — the QA checks may not cover the revised tasks.
+When the main implementation plan is revised (new revision created per Step 7), the QA plan **must be regenerated**. A stale QA plan that validates against an outdated plan is a silent failure — the QA checks do not account for the revised tasks.
 
 The main executor is responsible for triggering QA plan regeneration when a plan revision occurs.
 
@@ -203,7 +203,7 @@ For each finding that won't be fixed:
 
 ### QA-4d: Backwards Compatibility
 
-If no QA plan exists (plans generated before this feature), the stage boundary hook is a no-op — execution proceeds to auto-commit directly.
+If no QA plan exists (plans generated before this feature), execution proceeds to auto-commit directly.
 
 ## QA-5: Prompt Templates
 
@@ -302,5 +302,5 @@ and "Open" statuses despite all checks passing.
 - PASS/FAIL per check with specific file and line evidence
 - Any new findings with disposition classification
 - Confirmation that QA plan file was updated (checks marked, statuses set)
-- Verdict: Batch Approved / Batch Needs Remediation
+- Verdict: Approved / Needs Remediation
 ```
