@@ -110,5 +110,12 @@ validate-solve: ## Validate solve-adr skill against agentskills.io spec
 		exit 1; \
 	fi
 	$(SKILLS_REF) validate $(SOLVE_SKILL_DIR)
+	@lines=$$(wc -l < $(SOLVE_SKILL_DIR)/SKILL.md); \
+	if [ "$$lines" -gt 500 ]; then \
+		echo "ERROR: $(SOLVE_SKILL_DIR)/SKILL.md has $$lines lines (limit: 500)"; \
+		exit 1; \
+	else \
+		echo "OK: SKILL.md line count $$lines/500"; \
+	fi
 
 validate-all: validate validate-implement validate-prototype validate-solve ## Validate all skills

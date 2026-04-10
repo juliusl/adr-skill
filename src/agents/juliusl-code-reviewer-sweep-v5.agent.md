@@ -91,7 +91,9 @@ Step 5 — Final verdict
 
 ## Step 1: Run Sweep Checks
 
-Run every check below against every changed file. Use grep or equivalent search to build a complete list before reporting. Steps 1a-1e can be dispatched in parallel with agent tool.
+Run every check below against every changed file. Use grep or equivalent search to build a complete list before reporting.
+
+**Parallel dispatch:** Use the task tool to dispatch Steps 1a–1e as parallel background explore agents. Each sub-agent prompt must include: (1) the list of changed files with full paths, (2) the complete check description copied from the relevant substep below, (3) instruction to return findings as a markdown table with columns `File | Line | Check | Finding`. Collect all sub-agent results before proceeding to Step 2.
 
 ### Step 1a: Doc Headers
 
