@@ -2,7 +2,7 @@
 
 Self-contained reference for the ADR quality loop: review → verdict → revise → re-review. Read this file when the user asks to review, revise, or polish an ADR.
 
-Use this as the prompt for the configured agents (per ADR-0031, `[author.dispatch]`). The review agent executes the Review Phase (steps R-1 through R-6). The editor agent executes the Revision Phase (steps V-1 through V-6). Custom agents get the same checks — their persona shapes judgment, not task structure.
+Use this as the prompt for the configured review agent (per ADR-0031, `[author.dispatch]`). The review agent executes steps R-1 through R-6. The calling agent handles revision inline. Custom agents get the same checks — their persona shapes judgment, not task structure.
 
 **All steps must be executed in order within each phase. If a step is skipped, log the justification inline before proceeding.** Skipping without justification is a workflow violation.
 
@@ -25,7 +25,7 @@ After a review Accept verdict, transition the ADR from `Proposed` to `Ready`. Th
 
 ### P-2: Dispatch Compliance
 
-When `[author.dispatch]` keys are configured, use the configured agent for each phase. Do not substitute `general-purpose` or skip dispatch. The user configured these agents for a reason.
+When `[author.dispatch]` is configured, use the configured agent for the review phase. Do not substitute `general-purpose` or skip dispatch.
 
 ### P-3: Semantic Boundary
 
@@ -63,21 +63,16 @@ Apply three perspectives progressively:
 | R-5 | Review Checklist — answer 7 questions about the ADR |
 | R-6 | Verdict — Accept, Revise, or Rethink |
 
-```
-R-1 — Implementability Check
-  ↓
-R-2 — Fallacy Scan
-  ↓
-R-3 — Anti-Pattern Check
-  ↓
-R-4 — Consequence Validation
-  ↓
-R-5 — Review Checklist
-  ↓
-R-6 — Verdict
-  ├─ Accept ──► Ready status → Done
-  ├─ Revise ──► Calling agent applies fixes inline → re-review (max 3 cycles)
-  └─ Rethink ──► Stop
+```mermaid
+flowchart TD
+    R1["R-1: Implementability Check"] --> R2["R-2: Fallacy Scan"]
+    R2 --> R3["R-3: Anti-Pattern Check"]
+    R3 --> R4["R-4: Consequence Validation"]
+    R4 --> R5["R-5: Review Checklist"]
+    R5 --> R6["R-6: Verdict"]
+    R6 --> A["Accept → Ready status → Done"]
+    R6 --> V["Revise → Calling agent applies fixes inline → re-review (max 3 cycles)"]
+    R6 --> T["Rethink → Stop"]
 ```
 
 **Conditional steps:** R-1a is conditional on the ADR using the checkpoint template format.
@@ -107,11 +102,12 @@ Report which criteria are met and which are missing.
 
 **Condition:** The ADR uses the checkpoint template format.
 
-If the ADR uses the checkpoint template format, also review the state of each checkpoint:
+Review the state of each checkpoint:
 
 - **Evaluation Checkpoint** — check whether the assessment was `Proceed`, `Pause for validation`, or `Skipped`. If `Skipped`, evaluate whether the rationale is sound. If the checkpoint is **blank** (no assessment written), flag this as a finding — it means the checkpoint was ignored, not consciously skipped.
 - **Conclusion Checkpoint** — check whether the assessment was `Ready for review`, `Needs work`, or `Skipped`. A blank conclusion checkpoint suggests the ADR was not self-checked before requesting review.
 - **Validation needs** — if populated, check whether the listed experiments were actually run and findings incorporated. If validation needs are listed but not addressed, flag as a gap.
+
 Note: ADRs created before ADR-0024 will not have checkpoint sections. This is expected and not a finding.
 
 #### R-1b: Experimentation Tolerance Spectrum
@@ -138,6 +134,7 @@ Check the ADR's justification against the seven architectural decision-making fa
 | 6 | **Golden hammer** | Only one option considered, or dismissing alternatives without evaluation |
 | 7 | **Time irrelevance** | Using outdated benchmarks/evaluations without re-validation |
 Also check for the **AI über-confidence** bonus fallacy: AI-generated justifications presented without QA or accountability.
+
 For each detected fallacy, provide:
 - The specific text that triggers the concern
 - Which fallacy it matches
@@ -200,9 +197,7 @@ Provide a summary verdict:
 - **Revise** — ADR has addressable gaps. List specific changes needed.
 - **Rethink** — Fundamental issues with the decision or analysis. Explain why.
 
-> **Note:** The "Accept" verdict triggers a status transition from `Proposed` to `Ready` — meaning the decision is reviewed and approved, ready for implementation. The `Ready` status is the maximum that author-adr sets (P-1). The `Planned` and `Accepted` statuses are set by implement-adr during plan execution.
-
-When the verdict is **Accept**, append a review cycle marker to the ADR's `## Comments` section (see V-5c):
+When the verdict is **Accept**, append a review cycle marker to the ADR's `## Comments` section:
 
 ```markdown
 <!-- Review cycle 1 — [YYYY-MM-DD] — Verdict: Accept. No findings. -->

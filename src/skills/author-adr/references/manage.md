@@ -6,10 +6,10 @@ Self-contained reference for ADR management tasks. Read this file when the user 
 
 Every ADR has a status that tracks its progression:
 
-```
-Prototype ──► Proposed ──► Ready ──► Planned ──► Accepted ──► Deprecated
-                                                      │
-                                                      └──► Superseded by ADR-NNNN
+```mermaid
+flowchart LR
+    Prototype --> Proposed --> Ready --> Planned --> Accepted --> Deprecated
+    Accepted --> Superseded["Superseded by ADR-NNNN"]
 ```
 
 | Status | Meaning | When to Use |
@@ -22,7 +22,7 @@ Prototype ──► Proposed ──► Ready ──► Planned ──► Accepte
 | **Deprecated** | Decision is no longer relevant | When the problem it solved no longer exists |
 | **Superseded** | Decision is replaced by a newer ADR | When a new decision explicitly replaces this one |
 
-**Workflow note:** In the local agent-developer workflow, new ADRs start as `Prototype`. The author promotes to `Proposed` when the decision is ready for team review (e.g., before opening a PR). ADRs that pass review transition to `Ready` before implementation. ADRs may also go directly from `Prototype` to `Planned` via the `implement-adr` skill if the author chooses to skip team review and proceed straight to implementation.
+**Workflow note:** New ADRs start as `Prototype`. `Proposed` signals readiness for team review (e.g., before opening a PR). ADRs can skip `Ready` and move directly from `Prototype` to `Planned` if the author bypasses team review via `implement-adr`.
 
 ## Procedure
 
@@ -40,12 +40,13 @@ Prototype ──► Proposed ──► Ready ──► Planned ──► Accepte
 | M-4a | Signs of a Mega-ADR — detection criteria |
 | M-4b | Splitting Process — step-by-step decomposition |
 
-```
-User request
-├─ "Update status" ────────► M-1: Transitioning Status
-├─ "Supersede an ADR" ────► M-2: Superseding Decisions
-├─ "Link ADRs" ────────────► M-3: Linking Related ADRs
-└─ "Split this ADR" ───────► M-4: Splitting Mega-ADRs
+```mermaid
+flowchart TD
+    R[User request]
+    R --> |Update status| M1["M-1: Transitioning Status"]
+    R --> |Supersede an ADR| M2["M-2: Superseding Decisions"]
+    R --> |Link ADRs| M3["M-3: Linking Related ADRs"]
+    R --> |Split this ADR| M4["M-4: Splitting Mega-ADRs"]
 ```
 
 ---
@@ -87,7 +88,9 @@ make -f <skill-root>/Makefile status NUM=3 STATUS=Deprecated
 
 1. Create the new ADR with the `SUPERSEDE` parameter:
 
-   ```bash make -f <skill-root>/Makefile new TITLE="Use OAuth2 instead of API keys" SUPERSEDE=3 ```
+   ```bash
+   make -f <skill-root>/Makefile new TITLE="Use OAuth2 instead of API keys" SUPERSEDE=3
+   ```
 
    This automatically:
    - Creates the new ADR with a link to the superseded ADR
@@ -99,7 +102,7 @@ make -f <skill-root>/Makefile status NUM=3 STATUS=Deprecated
 
 ## M-3: Linking Related ADRs
 
-ADRs often relate to each other without one replacing the other. Use links to express these relationships.
+Links express relationships between ADRs that don't involve replacement.
 
 ### M-3a: Relationship Types
 
@@ -127,7 +130,7 @@ For MADR format, add links manually by editing the ADR files directly.
 
 ## M-4: Splitting Mega-ADRs
 
-A Mega-ADR bundles too many decisions into one document. Signs that an ADR should be split:
+A Mega-ADR bundles too many decisions into one document.
 
 ### M-4a: Signs of a Mega-ADR
 

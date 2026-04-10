@@ -37,7 +37,7 @@ The original four-section format from Michael Nygard's 2011 article. Still suppo
 
 ## Alternative: MADR (Markdown Architectural Decision Records)
 
-MADR extends the Nygard format with structured tradeoff analysis. The name stands for decisions that *matter* (`[ˈmæɾɚ]`). MADR is the recommended template from the adr GitHub organization.
+MADR extends the Nygard format with structured tradeoff analysis. MADR is the recommended template from the adr GitHub organization.
 
 **Full template:** madr-full-template.md
 — official MADR 4.0.0 source: gh-adr-madr-full-template.md
@@ -47,7 +47,7 @@ MADR extends the Nygard format with structured tradeoff analysis. The name stand
 
 ### Key Features (Beyond Nygard)
 
-- **Considered options with pros and cons** — enables future readers to understand the tradeoff analysis
+- **Considered options with pros and cons** — preserves structured pros/cons analysis for future reference
 - **Decision drivers** — explicit list of forces and concerns
 - **Confirmation** — how the team will validate implementation
 - **Metadata** — decision makers, date, status, links to related ADRs

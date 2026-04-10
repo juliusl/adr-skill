@@ -96,7 +96,7 @@ The scripts resolve the ADR directory using a priority chain:
 2. `.adr-dir` — legacy adr-tools convention (backwards compatible)
 3. `docs/adr` — default
 
-This means projects that adopt `.adr/` can migrate their directory pointer from the root-level `.adr-dir` file into `.adr/adr-dir`. Legacy projects continue to work unchanged.
+This means projects that adopt `.adr/` can migrate their directory pointer from the root-level `.adr-dir` file into `.adr/adr-dir`.
 
 ### Backward Compatibility
 
@@ -125,7 +125,7 @@ To add support for a new format (e.g., MADR):
 
 ### When to Use Diagrams
 
-Use diagrams when they clarify structure that prose or tables cannot. Skip them otherwise — too many diagrams overload context.
+Use diagrams only when structure cannot be expressed clearly in prose or tables.
 
 **Good uses for diagrams:**
 - ADR status transitions (state diagram)
@@ -146,7 +146,7 @@ See assets/mermaid-chart-examples.md for ADR-specific diagram patterns and gener
 
 ### Markdown Tables for Comparisons
 
-When presenting decision justification, use markdown tables to condense the analysis. Tables are easier to scan and keep the ADR focused:
+When presenting decision justification, use markdown tables to condense the analysis. Tables keep comparisons compact and the ADR focused:
 
 ```markdown
 | Criteria   | Option A  | Option B  | Option C  |
