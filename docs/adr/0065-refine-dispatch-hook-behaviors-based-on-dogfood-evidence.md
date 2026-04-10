@@ -1,7 +1,7 @@
 # 65. Refine dispatch hook behaviors based on dogfood evidence
 
 Date: 2026-04-10
-Status: Planned
+Status: Accepted
 Last Updated: 2026-04-10
 Links:
 - Extends [ADR-0064](0064-add-option-evaluation-dispatch-hooks-for-review-and-decision-arbitration.md) (UX/DX/TPM dispatch hooks)
