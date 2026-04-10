@@ -219,6 +219,50 @@ After documenting options, pause at the **Evaluation Checkpoint (Optional)** sec
 
 4. **If "Pause for validation"** — ask the user whether to prototype, selectively validate, or skip. The user controls what gets prototyped, not the checklist.
 
+### Step 4a: UX/DX Option Review (Conditional)
+
+**Condition:** At least one of `[author.dispatch].ux_review` or `[author.dispatch].dx_review` is configured with a non-empty value.
+
+When UX or DX review agents are configured, dispatch them to evaluate the Options section before the decision converges.
+
+1. **Build dispatch context** — assemble the payload for each configured reviewer:
+   - The ADR file path (with Options section populated)
+   - The artifact to review: the Options section content
+   - Scope: `New` (options are being authored, not modified)
+
+2. **Dispatch in parallel** — invoke each configured agent via the `task` tool simultaneously. Each agent runs its own review procedure and returns findings using its established output format (see the agent's Appendix A for verdict and finding structure).
+
+3. **Incorporate findings** — after agents return, incorporate their findings into the checkpoint assessment:
+   - If either agent returns a **Redesign** verdict, set the checkpoint Assessment to `Pause for validation` and populate Validation needs with the findings.
+   - If either agent returns a **Revise** verdict, present Medium findings as checkpoint considerations — they inform the decision but do not block it.
+   - If both return **Accept** or **Accept with suggestions**, proceed normally.
+
+4. **Fallback** — if a configured agent cannot be resolved at runtime, warn and skip that agent. If all configured agents fail to resolve, skip Step 4a.
+
+**When neither `ux_review` nor `dx_review` is configured:** Skip Step 4a. Log: "Step 4a skipped — no UX/DX review agents configured."
+
+### Step 4b: TPM Decision Quality Assessment (Conditional)
+
+**Condition:** `[author.dispatch].tpm` is configured with a non-empty value.
+
+When a TPM agent is configured, dispatch it to assess decision quality at the Evaluation Checkpoint.
+
+1. **Build dispatch context** — assemble the payload for the TPM:
+   - The ADR file path (with Context, Options, and Decision Drivers populated)
+   - UX/DX review findings from Step 4a, if Step 4a ran and produced findings. When Step 4a was skipped or produced no findings, omit this field — UX/DX findings are optional enrichment, not a prerequisite.
+   - Instruction: apply ASR, START, and ADMM tests; detect anti-patterns; validate justification readiness
+
+2. **Dispatch via `task` tool** — invoke the configured TPM agent.
+
+3. **Incorporate assessment** — after the TPM returns:
+   - If the TPM flags **not-ready** (missing START criteria, detected anti-patterns, or fallacies), set the checkpoint Assessment to `Pause for validation` and populate Validation needs with the TPM's findings.
+   - If the TPM flags **ready with findings**, present findings as checkpoint considerations and proceed with `Proceed`.
+   - If the TPM flags **ready**, proceed normally.
+
+4. **Fallback** — if the configured agent cannot be resolved at runtime, fall back to the inline agent's existing checkpoint assessment and warn the user.
+
+**When `tpm` is not configured:** Skip Step 4b. Log: "Step 4b skipped — no TPM agent configured."
+
 ## Step 5: Validate Completion (Implementability Criteria)
 
 Verify these six criteria before considering the ADR complete:
