@@ -261,10 +261,13 @@ When a TPM agent is configured, dispatch it to assess decision quality at the Ev
 2. **Dispatch via `task` tool** — invoke the configured TPM agent.
 
 3. **Incorporate assessment** — after the TPM returns, map its verdict using its established output contract (see the agent's documentation for verdict and finding structure):
-   - If the TPM verdict maps to **not-ready** (missing START criteria, detected anti-patterns, or fallacies), set the checkpoint Assessment to `Pause for validation` and populate Validation needs with the TPM's findings.
+   - If the TPM verdict maps to **not-ready** with fundamental gaps (missing START criteria, detected anti-patterns, or fallacies), set the checkpoint Assessment to `Pause for validation` and populate Validation needs with the TPM's findings.
+   - If the TPM verdict maps to **not-ready** with addressable structural gaps (e.g., missing decision drivers, incomplete option analysis, but no anti-patterns or fallacies), treat as **Revise — Major**: incorporate the findings as revision requirements for the Options section. Apply revisions inline before proceeding. Do not escalate to `prototype-adr`.
    - If the TPM verdict maps to **ready with findings**, present findings as checkpoint considerations and proceed with `Proceed`.
    - If the TPM verdict maps to **ready**, proceed normally.
    - If the verdict format is unrecognized, log the raw output for the user, treat as `ready with findings`, and warn the user to review manually.
+
+   **Distinguishing fundamental from addressable gaps:** Fundamental gaps involve missing START criteria, detected decision-making fallacies, or identified anti-patterns — these indicate the decision framework is unsound. Addressable gaps involve missing detail within an otherwise sound framework — incomplete analysis, missing drivers, or unclear scope that can be fixed by revising the existing content.
 
 4. **Fallback** — if the configured agent cannot be resolved at runtime, fall back to the inline agent's existing checkpoint assessment and warn the user.
 
