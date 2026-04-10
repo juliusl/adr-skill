@@ -92,7 +92,7 @@ These fallacies apply during drafting — each has a countermeasure:
 | Step 3b | Tech-Writer Dispatch (conditional) — delegate writing to configured agent |
 | Step 4 | Evaluate Readiness — Evaluation Checkpoint gate |
 | Step 4a | UX/DX Option Review (conditional) — dispatch reviewers on Options. Verdicts: Accept, Revise, Revise — Major, Redesign |
-| Step 4b | TPM Decision Quality Assessment (conditional) — dispatch TPM with findings. Verdicts: ready, ready with findings, not-ready (addressable → Revise — Major, fundamental → Pause) |
+| Step 4b | TPM Decision Quality Assessment (conditional) — dispatch TPM on ADR content. Verdicts: ready, ready with findings, not-ready (addressable → Revise — Major, fundamental → Pause) |
 | Step 5 | Validate Completion — implementability criteria |
 | Step 5a | Quick self-test |
 | Step 6 | Conclusion Checkpoint — verify before requesting review |
@@ -108,14 +108,15 @@ Step 3 — Draft the ADR
   ↓
 Step 4 — Evaluation Checkpoint (conditional: Proceed / Pause / Skip)
   ├─ Step 4a — UX/DX Option Review (conditional: ux_review or dx_review configured?)
-  └─ Step 4b — TPM Decision Quality Assessment (conditional: tpm configured?)
+  ├─ Step 4b — TPM Decision Quality Assessment (conditional: tpm configured?)
+  └─ (4a and 4b dispatch in parallel; findings consolidated after both return)
   ↓
 Step 5 — Validate Completion (implementability criteria)
   ↓
 Step 6 — Conclusion Checkpoint (conditional: Ready / Needs work / Skip)
 ```
 
-**Conditional steps:** Steps 4 and 6 are checkpoints with three possible assessments. For `Skipped` assessments, record the rationale and proceed. Step 3b is conditional on `tech_writer` being configured. Step 4a is conditional on `ux_review` or `dx_review` being configured. Step 4b is conditional on `tpm` being configured and runs after Step 4a, consuming Step 4a's findings when available.
+**Conditional steps:** Steps 4 and 6 are checkpoints with three possible assessments. For `Skipped` assessments, record the rationale and proceed. Step 3b is conditional on `tech_writer` being configured. Step 4a is conditional on `ux_review` or `dx_review` being configured. Step 4b is conditional on `tpm` being configured. Steps 4a and 4b dispatch in parallel when both are configured; findings are consolidated after both return.
 
 ## Step 1: Assess Architectural Significance (ASR Test)
 
@@ -236,12 +237,12 @@ When UX or DX review agents are configured, dispatch them to evaluate Options be
 
    Each agent runs its own review procedure and returns findings using its established output format (see the agent's Appendix A for verdict and finding structure).
 
-3. **Incorporate findings** — after agents return, incorporate their findings into the checkpoint assessment:
-   - If either agent returns a **Redesign** verdict, set the checkpoint Assessment to `Pause for validation` and populate Validation needs with the findings. Redesign means the approach needs rethinking — prototype validation is warranted.
-   - If either agent returns a **Revise — Major** verdict, incorporate the findings as revision requirements for the Options section. The agent is signaling heavy-but-addressable rework — specific options need significant restructuring, but the overall approach is sound. Apply the revisions inline before proceeding to the Decision section. Do not escalate to `prototype-adr`.
-   - If either agent returns a **Revise** verdict, present Medium findings as checkpoint considerations — they inform the decision but do not block it.
-   - If both return **Accept** or **Accept with suggestions**, proceed normally.
-   - If an agent returns an unrecognized verdict, log the raw output for the user to review, treat as `Accept with suggestions`, and warn that manual review is needed.
+3. **Map findings to verdict** — after agents return, map each agent's output to one of: **Redesign**, **Revise — Major**, **Revise**, **Accept**:
+   - **Redesign** — agent says the approach needs rethinking. Prototype validation is warranted.
+   - **Revise — Major** — agent signals heavy-but-addressable rework on specific options.
+   - **Revise** — Medium findings inform the decision but do not block it.
+   - **Accept** / **Accept with suggestions** — no blocking issues.
+   - Unrecognized verdict — log the raw output for the user, treat as **Accept with suggestions**, warn that manual review is needed.
 
 4. **Fallback** — if a configured agent cannot be resolved at runtime, warn and skip that agent. If all configured agents fail to resolve, skip Step 4a.
 
@@ -255,23 +256,35 @@ When a TPM agent is configured, dispatch it to assess decision quality at the Ev
 
 1. **Build dispatch context** — assemble the payload for the TPM:
    - The ADR file path (with Context, Options, and Decision Drivers populated)
-   - UX/DX review findings from Step 4a (omit if Step 4a was skipped or produced no findings — these are optional enrichment, not a prerequisite)
    - Instruction: apply ASR, START, and ADMM tests; detect anti-patterns; validate justification readiness
 
 2. **Dispatch via `task` tool** — invoke the configured TPM agent.
 
-3. **Incorporate assessment** — after the TPM returns, map its verdict using its established output contract (see the agent's documentation for verdict and finding structure):
-   - If the TPM verdict maps to **not-ready** with fundamental gaps (missing START criteria, detected anti-patterns, or fallacies), set the checkpoint Assessment to `Pause for validation` and populate Validation needs with the TPM's findings.
-   - If the TPM verdict maps to **not-ready** with addressable structural gaps (e.g., missing decision drivers, incomplete option analysis, but no anti-patterns or fallacies), treat as **Revise — Major**: incorporate the findings as revision requirements for the Options section. Apply revisions inline before proceeding. Do not escalate to `prototype-adr`.
-   - If the TPM verdict maps to **ready with findings**, present findings as checkpoint considerations and proceed with `Proceed`.
-   - If the TPM verdict maps to **ready**, proceed normally.
-   - If the verdict format is unrecognized, log the raw output for the user, treat as `ready with findings`, and warn the user to review manually.
+3. **Map verdict** — after the TPM returns, map its output using its established contract (see the agent's documentation for verdict and finding structure):
+   - **not-ready** with fundamental gaps (missing START criteria, anti-patterns, fallacies) → maps to **Redesign**
+   - **not-ready** with addressable structural gaps (missing decision drivers, incomplete analysis, but no anti-patterns or fallacies) → maps to **Revise — Major**
+   - **ready with findings** → maps to **Revise** (findings are checkpoint considerations)
+   - **ready** → maps to **Accept**
+   - Unrecognized verdict format → log the raw output for the user, map to **Revise**, warn the user to review manually.
 
    **Distinguishing fundamental from addressable gaps:** Fundamental gaps involve missing START criteria, fallacies, or anti-patterns — these indicate the decision framework is unsound. Addressable gaps involve missing detail within an otherwise sound framework — incomplete analysis or missing drivers that can be fixed by revising existing content.
 
 4. **Fallback** — if the configured agent cannot be resolved at runtime, fall back to the inline agent's existing checkpoint assessment and warn the user.
 
 **When `tpm` is not configured:** Skip Step 4b. Log: "Step 4b skipped — no TPM agent configured."
+
+### Step 4 Verdict Consolidation
+
+After Steps 4a and 4b both return (or one was skipped), consolidate the mapped verdicts into a single checkpoint Assessment. Use the highest-severity verdict across all agents:
+
+| Priority | Verdict | Checkpoint Action |
+|----------|---------|-------------------|
+| 1 (highest) | **Redesign** | Set Assessment to `Pause for validation`. Populate Validation needs with the agent's findings. |
+| 2 | **Revise — Major** | Incorporate findings as revision requirements for the Options section. Apply revisions inline before proceeding to the Decision section. Do not escalate to `prototype-adr`. |
+| 3 | **Revise** | Present findings as checkpoint considerations — they inform the decision but do not block it. Set Assessment to `Proceed`. |
+| 4 (lowest) | **Accept** | No blocking issues. Set Assessment to `Proceed`. |
+
+When only one step ran (the other was skipped), use that step's verdict directly — no consolidation needed.
 
 ## Step 5: Validate Completion (Implementability Criteria)
 
