@@ -6,8 +6,7 @@ metadata:
   version: "1.1"
 ---
 # Implement ADR — From Decisions to Plans
-You are an expert at turning Architectural Decision Records into structured, actionable implementation plans. You bridge the gap between _what was decided_ and _how to build it_.
-This skill consumes ADRs produced by the `author-adr` skill (or any Nygard/MADR-formatted ADR) and generates a `plan.md` with staged tasks, test criteria, cost estimates, and full traceability back to the source decisions.
+Turns Architectural Decision Records into structured implementation plans. Consumes ADRs in Nygard/MADR format (including `author-adr` output) and generates a `plan.md` with staged tasks, test criteria, cost estimates, and traceability back to source decisions.
 
 ## Policies
 
@@ -31,25 +30,25 @@ The user is aware of the costs when starting an autonomous workflow. It is not u
 
 Every QA finding is addressed by default. The agent does not get to classify findings as "preferences" and skip them.
 
-If a finding genuinely cannot be addressed in the current scope, it requires explicit triage: log the finding with its rationale in the QA plan's Recommendations table with status `Deferred`, and surface it to solve-adr for triage at the milestone boundary. Solve-adr decides whether deferred findings block milestone completion or carry forward.
+If a finding cannot be addressed in the current scope, it requires explicit triage: log the finding with its rationale in the QA plan's Recommendations table with status `Deferred`, and surface it to solve-adr for triage at the milestone boundary. Solve-adr decides whether deferred findings block milestone completion or carry forward.
 
 ---
 
 ## Procedure
 
-| ID | Step | Description |
-|----|------|-------------|
-| I-0 | Locate ADRs | Find ADRs, load preferences, stop if none exist |
-| I-1 | Read and Analyze | Extract status, decision, consequences, quality strategy |
-| I-2 | Gap Detection | Check for missing decisions that block planning |
-| I-3 | Generate Plan | Build plan.md with stages, tasks, criteria |
-| I-4 | Plan Review | Sub-agent reviews plan against ADR requirements |
-| I-4b | QA Plan Generation | Separate sub-agent generates qa-plan.md |
-| I-5 | Update ADR Status | Transition source ADRs to Planned |
-| I-6 | Participation Check | Load or prompt for participation mode and auto-commit |
-| I-7 | Execute Plan | Run tasks per participation mode |
-| I-7b | QA Validation | Sub-agent validates completed stage(s) against QA plan |
-| I-8 | Finalize | Update ADR status to Accepted, append implementation summary |
+| ID | Description |
+|----|-------------|
+| I-0 | Locate ADRs — find ADRs, load preferences, stop if none exist |
+| I-1 | Read and Analyze — extract status, decision, consequences, quality strategy |
+| I-2 | Gap Detection — check for missing decisions that block planning |
+| I-3 | Generate Plan — build plan.md with stages, tasks, criteria |
+| I-4 | Plan Review — sub-agent reviews plan against ADR requirements |
+| I-4b | QA Plan Generation — separate sub-agent generates qa-plan.md |
+| I-5 | Update ADR Status — transition source ADRs to Planned |
+| I-6 | Participation Check — load or prompt for participation mode and auto-commit |
+| I-7 | Execute Plan — run tasks per participation mode |
+| I-7b | QA Validation — sub-agent validates all completed stages against QA plan |
+| I-8 | Finalize — update ADR status to Accepted, append implementation summary |
 
 ## Assets
 
@@ -198,7 +197,7 @@ End the plan with a summary table:
 **Total estimated cost:** X small, Y medium, Z heavy
 ```
 ### I-4: Plan Review
-After generating the plan (Step 3) and before presenting it to the user, spawn a plan-reviewer sub-agent to verify the plan faithfully covers the source ADR's requirements.
+After generating the plan (Step 3) and before presenting it to the user, spawn a plan-reviewer sub-agent to verify the plan covers the source ADR's requirements.
 Read the [Plan Review Protocol](references/plan-review.md) for the full reviewer prompt, checklist, and iteration protocol.
 **Workflow:**
 1. Construct the reviewer prompt using the template in `plan-review.md`, inserting the source ADR content and generated plan.
@@ -209,7 +208,7 @@ Read the [Plan Review Protocol](references/plan-review.md) for the full reviewer
 6. After 3 rejection cycles — activate the **user escape hatch**: present remaining findings to the user with options to address, reject (with rationale), or defer each finding.
 The review is mandatory — a prototype found gaps in ~24% of checks (49 total).
 ### I-4b: QA Plan Generation
-After the plan-reviewer approves the plan (Step 4), spawn a **separate general-purpose agent** to generate the QA plan. The main executor must not write its own QA plan — this is the same separation principle that prevents developers from writing their own QA test plans.
+After the plan-reviewer approves the plan (Step 4), spawn a **separate general-purpose agent** to generate the QA plan. The main executor must not write its own QA plan — self-review undermines QA independence.
 Read the [QA Planning Protocol](references/qa-planning.md) for the full QA planner prompt, procedural checklists (6 security + 7 UX items), test-gap analysis, and finding disposition rules.
 
 **Sequencing constraint:** The QA planner must receive the **approved, post-revision plan** — not the pre-review draft. Do not dispatch the QA planner until I-4 plan review completes and all revisions are applied. Parallel dispatch of I-4 and I-4b is a workflow violation — the QA planner would validate a stale plan.
@@ -267,35 +266,36 @@ Stage 2: Authentication
 After the user approves a sentinel task, the skill continues with subsequent tasks. At stage boundaries, it reports what was completed.
 #### Auto-Commit on Task Completion
 The skill supports an optional behavior: **create a git commit each time a task's acceptance criteria are all satisfied**. Opt-in, disabled by default.
-#### Stage Completion Sequence
+### I-7: Execute Plan
+
+**Task Execution Protocol:** Each task in the plan includes a protocol header (in plan-template.md) that governs checkpoint updates — read task criteria before starting, mark checkboxes incrementally as satisfied, and verify all criteria after completion.
+
+1. Present the generated plan to the user.
+2. Ask if any stages or tasks need adjustment.
+3. If the user identifies additional gaps, go back to Step 2.
+4. Once the user approves, write the plan to `docs/plans/` using the versioned naming convention:
+   - Create `docs/plans/` if it does not exist.
+   - File name: `<adr-range>.0.plan.md` (initial plan).
+   - Example: `docs/plans/0003-0004.0.plan.md`
+5. If the user requests changes to an existing plan: a. Increment the revision number. b. Create a new file (e.g., `0003-0004.1.plan.md`). c. Add a revision header linking to the previous revision: ```markdown **Revision:** 1 (previous: 0003-0004.0.plan.md) **Changes:** <summary of requested changes> ``` d. Preserve the previous revision file unchanged. e. **Regenerate the QA plan** — a revised plan invalidates the existing QA plan. Re-run Step 4b to generate a new `qa-plan.md` against the revised plan.
+6. **Planning-phase commit:** If auto-commit is enabled, create a commit after writing the plan file that captures the planning work as a single atomic commit:
+   - `git add <plan-file>` — the newly written plan.
+   - `git add docs/adr/<updated-adrs>` — any ADR files whose status was changed to `Planned` in Step 5.
+   - Commit with: ```docs(plan): generate implementation plan for ADR-NNNN Plan: <plan-file-path> ADR: <adr-references>```
+   - This ensures the plan and its corresponding ADR status transitions are recorded together before task execution begins.
 ### I-7b: QA Validation
-When all tasks in a stage are complete, determine whether to run QA now or batch with subsequent stages.
+After all stages are complete, run QA validation across the entire implementation.
 
-#### I-7b.1: QA Batching Decision
-At each stage boundary, evaluate whether to trigger QA immediately or defer:
-
-| Condition | Action |
-|-----------|--------|
-| Stage contains any `[medium]` or `[heavy]` task | QA immediately — validate this stage before proceeding |
-| Stage contains only `[small]` tasks AND next stage also contains only `[small]` tasks | Batch — defer QA and continue to next stage |
-| Stage contains only `[small]` tasks AND next stage contains `[medium]`/`[heavy]` tasks | QA immediately — validate the accumulated batch before the heavier stage begins |
-| Stage is the final stage in the plan | QA immediately — never skip the final QA pass |
-| Deferred stages accumulate to 3+ stages without QA | QA immediately — cap batch size to limit blast radius |
-
-When batching, the QA executor validates all deferred stages together in a single pass. The executor receives the combined diff and the QA checks for all batched stages.
-
-#### I-7b.2: QA Execution
-When QA triggers (immediately or after batching):
-1. **Spawn a separate general-purpose QA executor agent** to review the stage(s) against the QA plan. The agent that executed the tasks must not QA its own work. Read the [QA Planning Protocol](references/qa-planning.md#qa-execution) for the executor prompt.
+#### I-7b.1: QA Execution
+1. **Spawn a separate general-purpose QA executor agent** to review all stages against the QA plan. The agent that executed the tasks must not QA its own work. Read the [QA Planning Protocol](references/qa-planning.md#qa-execution) for the executor prompt.
    - **Pass** — mark QA checks `[x]` in the QA plan, proceed.
    - **Fail** — pause execution, report findings to the main executor, remediate before continuing.
    - If no QA plan exists, skip this step.
-2. **Stage-boundary report** — report what was completed in the stage(s) per the participation mode behavior.
+2. **Completion report** — report what was completed across all stages per the participation mode behavior.
 
-**Enforcement:** QA execution is mandatory regardless of participation mode — including autonomous mode. Skipping QA execution is a workflow violation. If skipped, log the justification inline before proceeding. Generating a QA plan but never executing it defeats its purpose — the QA plan exists to catch issues the executor didn't think of. Batching stages is an acceptable optimization; skipping QA entirely is not.
+**Enforcement:** QA execution is mandatory regardless of participation mode — including autonomous mode. Skipping QA execution is a workflow violation. Generating a QA plan but never executing it defeats its purpose — the QA plan exists to catch issues the executor didn't think of.
 
-This sequence is **mandatory regardless of participation mode**. Even in autonomous mode with auto-commit, the QA executor must run between the last task completing and the stage being marked done.
-> **Note on auto-commit interaction:** When auto-commit is enabled, individual tasks are committed as they complete (see below). The QA executor reviews the cumulative diff across all batched stages. If QA fails and remediation changes are needed, those changes get their own commit.
+> **Note on auto-commit interaction:** When auto-commit is enabled, individual tasks are committed as they complete (see below). The QA executor reviews the cumulative diff across all stages. If QA fails and remediation changes are needed, those changes get their own commit.
 #### Auto-Commit Mechanics
 **When it triggers:** After all `- [ ]` checkboxes in a task's Test & Acceptance Criteria are marked `- [x]` (per the Task Execution Protocol).
 
@@ -325,6 +325,9 @@ This logging is mandatory. Silent skips are how auto-commit failures go undetect
 | **Autonomous** | Yes | Commit after each completed task; commit only task-related files without prompting when unrelated changes exist; still pause on hook failures |
 | **Weighted** | Yes | Commit after each completed task (autonomous or sentinel); same autonomous fallback for `[small]` tasks |
 ### I-8: Finalize
+
+**Gate:** I-8 requires QA validation (I-7b) to have completed. If QA has not run or has unresolved failures, do not proceed — return to I-7b.
+
 #### Auto-Commit Finalization Guard
 When auto-commit is enabled, verify that commits were actually made before finalizing. If `auto_commit = true` was loaded from preferences but no commits were created during execution, this indicates the auto-commit mechanics were silently skipped — a workflow violation.
 
@@ -358,20 +361,6 @@ When auto-commit is enabled and plan execution completes (all tasks including th
 ```bash
 awk -f <skill-root>/scripts/extract-summary.awk docs/plans/NNNN.0.plan.md
 ```
-### I-7: Execute Plan
-1. Present the generated plan to the user.
-2. Ask if any stages or tasks need adjustment.
-3. If the user identifies additional gaps, go back to Step 2.
-4. Once the user approves, write the plan to `docs/plans/` using the versioned naming convention:
-   - Create `docs/plans/` if it does not exist.
-   - File name: `<adr-range>.0.plan.md` (initial plan).
-   - Example: `docs/plans/0003-0004.0.plan.md`
-5. If the user requests changes to an existing plan: a. Increment the revision number. b. Create a new file (e.g., `0003-0004.1.plan.md`). c. Add a revision header linking to the previous revision: ```markdown **Revision:** 1 (previous: [0003-0004.0.plan.md](docs/plans/0003-0004.0.plan.md)) **Changes:** <summary of requested changes> ``` d. Preserve the previous revision file unchanged. e. **Regenerate the QA plan** — a revised plan invalidates the existing QA plan. Re-run Step 4b to generate a new `qa-plan.md` against the revised plan.
-6. **Planning-phase commit:** If auto-commit is enabled, create a commit after writing the plan file that captures the planning work as a single atomic commit:
-   - `git add <plan-file>` — the newly written plan.
-   - `git add docs/adr/<updated-adrs>` — any ADR files whose status was changed to `Planned` in Step 5.
-   - Commit with: ```docs(plan): generate implementation plan for ADR-NNNN Plan: <plan-file-path> ADR: <adr-references>```
-   - This ensures the plan and its corresponding ADR status transitions are recorded together before task execution begins.
 ## Plan Structure
 An implementation plan follows a strict hierarchy:
 ```
@@ -425,6 +414,9 @@ Items left unchecked (`[ ]`) are ambiguous — use code context (table below) to
 | Internal modules | Unit tests at key boundaries |
 | Integration points | Integration / contract tests |
 **Overall target:** ~80% code coverage bar.
+
+**Acceptance criteria markers:** When writing acceptance criteria, use inline markers to classify each criterion: `[implement]` for criteria the agent implements directly, `[verify-manual]` for criteria requiring manual verification. See [planning practices](references/planning-practices.md) for details.
+
 Read the [full testing guidelines](references/testing-guidelines.md) for detailed requirements per category.
 ## Tooling
 ### Listing ADRs

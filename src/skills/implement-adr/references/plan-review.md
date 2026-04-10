@@ -1,16 +1,16 @@
 # Plan Review Protocol
 
-Self-contained reference for the plan-reviewer sub-agent. Read this file when generating the reviewer prompt after plan creation.
+Self-contained reference for the plan-reviewer sub-agent. The parent skill reads this file to construct the reviewer prompt after plan creation.
 
 ## When to Use
 
 After `implement-adr` generates an implementation plan (Step 3), spawn a general-purpose sub-agent with a structured review prompt derived from this reference. The reviewer reads both the source ADR(s) and the generated plan, then produces a finding report.
 
-The review is mandatory for every plan. The ~3 minute cost per cycle is small compared with missed requirements.
+The review is mandatory for every plan.
 
 ## Procedure
 
-The reviewer evaluates the plan against 6 checks:
+The reviewer runs 6 checks and applies 1 iteration protocol:
 
 **All six checks must be evaluated. If a check is skipped, log the justification inline before proceeding.** Skipping without justification is a workflow violation.
 
@@ -25,29 +25,24 @@ The reviewer evaluates the plan against 6 checks:
 | Review 7 | Iteration Protocol — cycle limit, revision process, user escape hatch |
 | Review 7a | User Escape Hatch — present remaining findings after 3 cycles |
 
-```
-Check 1 — Quality Strategy Coverage
-  ↓
-Check 2 — Consequence Traceability
-  ↓
-Check 3 — AQC Coverage
-  ↓
-Check 4 — Evaluation Checkpoint Coverage
-  ↓
-Check 5 — Scope Completeness
-  ↓
-Check 6 — Project Integration
-  ↓
-Verdict
-  ↓
-Review 7 — Iteration Protocol
+```mermaid
+flowchart TD
+    C1["Check 1 — Quality Strategy Coverage"]
+    C2["Check 2 — Consequence Traceability"]
+    C3["Check 3 — AQC Coverage"]
+    C4["Check 4 — Evaluation Checkpoint Coverage"]
+    C5["Check 5 — Scope Completeness"]
+    C6["Check 6 — Project Integration"]
+    V["Verdict"]
+    R7["Review 7 — Iteration Protocol"]
+    C1 --> C2 --> C3 --> C4 --> C5 --> C6 --> V --> R7
 ```
 
-### 1. Quality Strategy Coverage
+### Check 1: Quality Strategy Coverage
 
 For each checked `[x]` item in the ADR's Quality Strategy section, verify at least one plan task or acceptance criterion addresses it.
 
-**Cross-reference each checkbox against the Quality Strategy Items documentation** (in `nygard-agent-template.md` §Quality Strategy Items) to understand what each checkbox means and what plan coverage it implies:
+**Cross-reference each checkbox against the Quality Strategy Items documentation** (in the author-adr skill at `assets/templates/nygard-agent-template.md` §Quality Strategy) to understand what each checkbox means and what plan coverage it implies:
 
 | Checkbox | Meaning | Expected Plan Coverage |
 |----------|---------|----------------------|
@@ -64,23 +59,23 @@ For each checked `[x]` item in the ADR's Quality Strategy section, verify at lea
 
 Report **PASS** or **FAIL** per item. For FAIL, quote the checkbox and state what plan coverage is missing.
 
-### 2. Consequence Traceability
+### Check 2: Consequence Traceability
 
 For each stated **positive** consequence, verify there's a plan task that realizes it. For each stated **negative** consequence, verify there's a mitigation task or an explicit acknowledgment that the risk is accepted.
 
 Report PASS/FAIL per consequence with quoted text.
 
-### 3. AQC Coverage
+### Check 3: AQC Coverage
 
 For each item in the **Additional Quality Concerns** section, verify at least one plan task or acceptance criterion addresses it.
 
 Report PASS/FAIL per item.
 
-### 4. Evaluation Checkpoint Coverage
+### Check 4: Evaluation Checkpoint Coverage
 
 If the ADR has a populated **Validation needs** section (from the Evaluation Checkpoint), verify each need is addressed in the plan. Pay special attention to items marked as deferred to implementation.
 
-### 5. Scope Completeness
+### Check 5: Scope Completeness
 
 Verify the plan covers the full decision scope:
 
@@ -88,7 +83,7 @@ Verify the plan covers the full decision scope:
 - Does the plan cover all skill behaviors described in the Decision section?
 - Are all components, interfaces, or artifacts mentioned in the Decision represented in the plan?
 
-### 6. Project Integration
+### Check 6: Project Integration
 
 If the plan creates new directories, scripts, skills, or artifacts, verify
 the project's build/install/test infrastructure is updated:
@@ -136,40 +131,35 @@ The reviewer must produce a structured finding report:
 
 ## Review 7: Iteration Protocol
 
-```
-implement-adr generates plan
-        │
-        ▼
-plan-reviewer sub-agent reviews (cycle 1)
-        │
-    ┌───┴───┐
-    │ Pass  │──► Plan Approved → proceed
-    └───┬───┘
-        │ Fail
-        ▼
-main agent revises plan based on findings
-        │
-        ▼
-re-review (cycle 2)
-        │
-    ┌───┴───┐
-    │ Pass  │──► Plan Approved
-    └───┬───┘
-        │ Fail
-        ▼
-revise again, re-review (cycle 3)
-        │
-    ┌───┴───┐
-    │ Pass  │──► Plan Approved
-    └───┬───┘
-        │ Fail
-        ▼
-User Escape Hatch
+```mermaid
+flowchart TD
+    G["implement-adr generates plan"]
+    R1["plan-reviewer cycle 1"]
+    A1["Plan Approved"]
+    Rev1["main agent revises plan"]
+    R2["plan-reviewer cycle 2"]
+    A2["Plan Approved"]
+    Rev2["main agent revises plan"]
+    R3["plan-reviewer cycle 3"]
+    A3["Plan Approved"]
+    UEH["User Escape Hatch"]
+
+    G --> R1
+    R1 -->|Pass| A1
+    R1 -->|Fail| Rev1
+    Rev1 --> R2
+    R2 -->|Pass| A2
+    R2 -->|Fail| Rev2
+    Rev2 --> R3
+    R3 -->|Pass| A3
+    R3 -->|Fail| UEH
 ```
 
-**Cycle limit: 3.** If the reviewer and planner can't converge in 3 cycles, the remaining findings likely require human judgment.
+**Cycle limit: 3.** If the reviewer and planner can't converge in 3 cycles, the remaining findings require human judgment.
 
 ### Review 7a: User Escape Hatch
+
+**Activation:** The reviewer agent generates the escape hatch output. The main executor (implement-adr) presents it to the user. The reviewer detects the cycle limit; the executor owns user communication.
 
 When the 3-cycle limit is reached, present remaining findings to the user:
 
@@ -216,7 +206,7 @@ faithfully reflects the source ADR's stated requirements.
 [Insert full plan content]
 
 ### Quality Strategy Items Reference
-[Insert Quality Strategy Items section from nygard-agent-template.md]
+[Insert Quality Strategy Items section from author-adr skill: assets/templates/nygard-agent-template.md §Quality Strategy]
 
 ## Output Format
 [Insert output format specification from above]

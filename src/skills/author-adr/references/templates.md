@@ -31,23 +31,36 @@ The **nygard-agent template** is the default format for ADRs created by this ski
 
 The original four-section format from Michael Nygard's 2011 article. Still supported for reading — `list` and `status` commands handle both inline `Status:` and `## Status` heading formats.
 
-**Template:** nygard-template.md — with inline guidance: gh-joelparkerhenderson-nygard-template.md
+> **Note:** Legacy templates are no longer bundled with the skill. The nygard-agent template (above) is the only actively maintained template file.
+
+---
+
+## Work-Item Formats
+
+Two additional formats extend the nygard-agent template with work-item integration:
+
+| Format | Config Value | Description |
+|--------|-------------|-------------|
+| **WI-Nygard Agent** | `wi-nygard-agent` | Adds work-item metadata (remote adapter, ID, lifecycle) to the nygard-agent template. Use when ADRs are tracked as work items in GitHub, ADO, or Gitea. |
+| **WI-Full Agent ADR** | `wi-full-agent-adr` | TOML-based ADR format with structured fields for machine processing. Use when ADRs need to be ingested into databases or queried programmatically. |
+
+Set the format in `preferences.toml`:
+```toml
+[author]
+template = "wi-nygard-agent"  # or "wi-full-agent-adr"
+```
 
 ---
 
 ## Alternative: MADR (Markdown Architectural Decision Records)
 
-MADR extends the Nygard format with structured tradeoff analysis. The name stands for decisions that *matter* (`[ˈmæɾɚ]`). MADR is the recommended template from the adr GitHub organization.
+MADR extends the Nygard format with structured tradeoff analysis. MADR is the recommended template from the adr GitHub organization.
 
-**Full template:** madr-full-template.md
-— official MADR 4.0.0 source: gh-adr-madr-full-template.md
-
-**Minimal template:** madr-minimal-template.md
-— official MADR 4.0.0 source: gh-adr-madr-minimal-template.md
+> **Note:** MADR templates are not bundled with the skill. Use the nygard-agent template as the default.
 
 ### Key Features (Beyond Nygard)
 
-- **Considered options with pros and cons** — enables future readers to understand the tradeoff analysis
+- **Considered options with pros and cons** — preserves structured pros/cons analysis for future reference
 - **Decision drivers** — explicit list of forces and concerns
 - **Confirmation** — how the team will validate implementation
 - **Metadata** — decision makers, date, status, links to related ADRs
@@ -72,7 +85,7 @@ MADR extends the Nygard format with structured tradeoff analysis. The name stand
 | MADR Full | Team wants structured tradeoff analysis with explicit option comparison |
 | MADR Minimal | Quick capture with considered options but less ceremony than full |
 
-For a section-by-section walkthrough, see the MADR Template Primer (PRACTICES_NOTES.md).
+For a section-by-section walkthrough, see the MADR Template Primer in [create.md](create.md#madr-template-primer).
 
 ---
 
@@ -80,7 +93,7 @@ For a section-by-section walkthrough, see the MADR Template Primer (PRACTICES_NO
 
 A single-sentence format originated from the Sustainable Architectural Decisions paper by Zdun et al.
 
-**Template:** y-statement-template.md
+> **Note:** Y-Statement templates are not bundled with the skill. Use the Y-Statement form inline or as a seed for a full nygard-agent ADR.
 
 ### Short Form
 
@@ -109,11 +122,12 @@ A single-sentence format originated from the Sustainable Architectural Decisions
 | Situation | Template |
 |-----------|----------|
 | Default (agent-developer workflow) | **Nygard Agent** |
+| ADRs tracked as work items (GitHub/ADO/Gitea) | **WI-Nygard Agent** |
+| Machine-processable ADRs (database ingestion) | **WI-Full Agent ADR** |
 | Structured tradeoff analysis needed | **MADR Full** |
 | Quick capture, minimal ceremony | **MADR Minimal** or **Y-Statement** |
 | Inline documentation in a single sentence | **Y-Statement** |
 | Legacy projects using adr-tools | **Standard Nygard** |
-| Custom template needed | Place `template.md` in your ADR directory's `templates/` folder |
 
 ## Other Templates
 

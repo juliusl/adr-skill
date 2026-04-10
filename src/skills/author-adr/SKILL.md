@@ -7,7 +7,7 @@ metadata:
   version: "1.2"
 ---
 # Architectural Decision Records (ADRs)
-You are an expert on Architectural Decision Records. Use this skill whenever a user needs to create, review, or manage ADRs, choose an ADR template, select tooling, or understand best practices for architectural decision making.
+Skill for creating, reviewing, and managing Architectural Decision Records. Covers template selection, tooling, quality review, and best practices.
 
 ## Policies
 
@@ -21,7 +21,7 @@ You are an expert on Architectural Decision Records. Use this skill whenever a u
 
 ### P-1: Mandatory Dispatch Compliance
 
-When `[author.dispatch]` keys are configured, always use the configured agent — do not substitute `general-purpose` or skip dispatch. The user configured these agents for a reason. This applies in all modes, including autonomous workflows triggered by other skills (e.g., implement-adr invoking author-adr for ADR creation).
+When `[author.dispatch]` keys are configured, always use the configured agent — do not substitute `general-purpose` or skip dispatch. This applies in all modes, including autonomous workflows triggered by other skills (e.g., implement-adr invoking author-adr for ADR creation).
 
 ### P-2: Cross-ADR Modification Guardrail
 
@@ -39,7 +39,7 @@ The author-adr skill's maximum status transition is `Ready`. After a review Acce
 | A-1 | Draft Worksheet | Yes | Capture intent in a draft worksheet before create |
 | A-2 | Create | Yes | Run the create workflow to produce the ADR |
 | A-3 | Review | Yes | Run structured review using the configured review agent |
-| A-4 | Revise | Conditional | Run if review verdict is "Revise"; use configured editor agent |
+| A-4 | Revise | Conditional | Run if review verdict is "Revise"; calling agent applies fixes inline |
 | A-5 | Re-review | Conditional | Run if revisions were substantive; max 3 cycles |
 | A-6 | Manage | No | Status transitions, supersede, link, split — on request |
 
@@ -52,27 +52,39 @@ The author-adr skill's maximum status transition is `Ready`. After a review Acce
 | `assets/templates/` | Templates | ADR templates (Nygard Agent, MADR, Y-Statement) |
 | `assets/decisions/0023-*.md` | Decision | ADR-0023: Defines prototype-adr skill for validation — referenced by A-3 review checkpoint handling |
 | `assets/decisions/0024-*.md` | Decision | ADR-0024: Defines Evaluation and Conclusion Checkpoint sections in template — referenced by A-0, A-2, A-3 |
-| `assets/decisions/0031-*.md` | Decision | ADR-0031: Defines dispatch hooks for review/editor/tech-writer agents — referenced by A-0, A-2, A-3, A-4 |
+| `assets/decisions/0031-*.md` | Decision | ADR-0031: Defines dispatch hooks for review and tech-writer agents — referenced by A-0, A-2, A-3, A-4 |
 | `assets/decisions/0032-*.md` | Decision | ADR-0032: Defines draft worksheet workflow — referenced by A-1 |
+| `assets/decisions/0064-*.md` | Decision | ADR-0064: Defines UX/DX/TPM dispatch hooks for option evaluation — referenced by A-0, A-2 (Step 4a/4b) |
 
 When a step references an ADR (e.g., "per ADR-0031"), read the corresponding file from `assets/decisions/`.
 
 Follow the procedure table above. Always start at A-0.
-```
-User request
-├─ docs/adr/ exists? ────────────► Read config → set format
-├─ docs/adr/ missing? ──────────► Bootstrap with nygard-agent → set format
-│
-├─ "Create an ADR" ──────────────► Draft Worksheet (A-1) → Creating an ADR (A-2)
-├─ "Draft an ADR / start a draft" ► Draft Worksheet (A-1) only
-├─ "I have a problem to solve" ─► Redirect to /solve-adr
-├─ "Review an ADR" ──────────────► Go to: Reviewing an ADR
-├─ "Revise an ADR" ──────────────► Go to: Revising an ADR
-├─ "Update/supersede an ADR" ───► Go to: Managing ADRs
-├─ "Set up ADR tooling" ─────────► Go to: Tooling
-├─ "Which template?" ────────────► Go to: Choosing a Template
-├─ "Explain ADRs / concepts" ────► Go to: Core Concepts
-└─ "Visualize / diagram" ────────► Go to: Visualization
+```mermaid
+flowchart TD
+    Start([User request]) --> A0[A-0: Format Detection]
+    A0 --> Exists{docs/adr/ exists?}
+    Exists -- Yes --> ReadConfig[Read config → set format]
+    Exists -- No --> Bootstrap[Bootstrap nygard-agent → set format]
+    ReadConfig --> Route{Intent}
+    Bootstrap --> Route
+    Route -- Create an ADR --> A1A2[A-1 Draft Worksheet → A-2 Create]
+    Route -- Draft only --> A1[A-1 Draft Worksheet]
+    Route -- Problem to solve --> Redirect[Redirect to /solve-adr]
+    Route -- Review an ADR --> A3[A-3 Review]
+    Route -- Revise an ADR --> A4[A-4 Revise]
+    Route -- Update/supersede --> A6[A-6 Manage]
+    Route -- Set up tooling --> Tooling[Tooling]
+    Route -- Which template? --> Template[Choosing a Template]
+    Route -- Explain concepts --> Concepts[Core Concepts]
+    Route -- Visualize/diagram --> Viz[Visualization]
+    A1A2 --> A3
+    A3 --> Verdict{Verdict}
+    Verdict -- Accept --> Ready[Ready status]
+    Verdict -- Revise --> A4
+    Verdict -- Rethink --> Stop([Stop])
+    A4 --> A5{A-5: Re-review?}
+    A5 -- Substantive changes --> A3
+    A5 -- No / max cycles --> Ready
 ```
 
 ## Configuration
@@ -123,22 +135,29 @@ username = ""        # override for $(whoami) in user-mode filenames
 3. Update cross-references: links from other user-mode ADRs or plans that reference the old filename
 
 ### Agent Dispatch (`[author.dispatch]`)
-Per ADR-0031, the author-adr workflow supports configurable agent dispatch at three hook points: writing (A-2), review (A-3), and revision (A-4). Each hook can be set to a specific agent or left at its default.
+Per ADR-0031 and ADR-0064, five dispatch hooks are configurable: review (A-3), tech-writer content writing (A-2), and option evaluation (ux_review, dx_review, tpm). Each hook can be set to a specific agent or left at its default.
 ```toml
 [author.dispatch]
 review = "general-purpose"   # Agent for structured review (default)
-editor = "interactive"       # Agent for editorial decisions (default: user)
 tech_writer = ""             # Agent for A-2 content writing (default: inline)
+ux_review = ""               # Agent for UX option review (default: skip)
+dx_review = ""               # Agent for DX option review (default: skip)
+tpm = ""                     # Agent for decision quality assessment (default: skip)
 ```
 | Hook | Default | Role | Instructions |
 |------|---------|------|-------------|
 | `review` | `"general-purpose"` | Reviewer | Receives `polish.md` — executes Review Phase (R-1 through R-6) |
-| `editor` | `"interactive"` | Editor | Receives `polish.md` — executes Revision Phase (V-1 through V-6) |
 | `tech_writer` | `""` (inline) | Writer | Dispatched at A-2 step 4 — writes ADR body content (Context through Quality Strategy) |
-**Contract: same instructions, configurable executor.** Each hook dispatches the same reference instructions regardless of which agent is configured. The custom agent's persona shapes HOW it applies the instructions (which findings it prioritizes, how it weighs tradeoffs), not WHAT it checks.
-The `"interactive"` value is a reserved keyword meaning "prompt the user directly." Any other value is treated as an agent reference (e.g., a custom `.agent.md` persona). For `tech_writer`, the empty string `""` means the inline agent writes content itself. Values containing only whitespace are treated as empty.
-**Graceful fallback:** If a configured agent reference cannot be resolved at runtime, fall back to the default value for that hook and warn the user.
-**Default behavior preservation:** When no `[author.dispatch]` table exists in `preferences.toml`, behavior is identical to the current workflow (general-purpose review, interactive user prompts, inline content writing).
+| `ux_review` | `""` (skip) | UX Reviewer | Dispatched at Step 4a — evaluates options for user experience quality |
+| `dx_review` | `""` (skip) | DX Reviewer | Dispatched at Step 4a — evaluates options for developer experience quality |
+| `tpm` | `""` (skip) | Decision Arbiter | Dispatched at Step 4b — applies decision quality tests (ASR, START, ADMM) |
+
+- **Contract:** The `review` and `tech_writer` hooks dispatch the same reference instructions regardless of which agent is configured — the configured agent's persona shapes how the instructions are applied, not what is checked. The `ux_review`, `dx_review`, and `tpm` hooks dispatch agents that run their own review procedures — each agent defines its own checklist and output format.
+The `"interactive"` value is a reserved keyword meaning "prompt the user directly." Any other value is treated as an agent reference (e.g., a custom `.agent.md` persona). For `tech_writer`, `ux_review`, `dx_review`, and `tpm`, the empty string `""` means the hook is skipped — no dispatch occurs. Values containing only whitespace are treated as empty.
+
+- **Graceful fallback:** If a configured agent reference cannot be resolved at runtime, fall back to the default value for that hook and warn the user.
+
+- **Default behavior preservation:** When no `[author.dispatch]` table exists in `preferences.toml`, behavior is identical to the current workflow (general-purpose review, interactive user prompts, inline content writing, no option evaluation dispatch).
 
 **Mandatory dispatch compliance:** See P-1.
 ### A-0: Format Detection
@@ -146,12 +165,14 @@ Before any ADR operation, determine which ADR format to use:
 1. **Read the config file** — resolve the config path (see [Configuration](#configuration)) and read `[author].template` from `preferences.toml`.
    - If set (e.g., `"nygard-agent"`, `"wi-nygard-agent"`, `"nygard"`, or `"madr"`), use it directly.
    - If absent, default to `"nygard-agent"`.
-   - Also read `[author.dispatch]` keys (`review`, `editor`, `tech_writer`) if present. Store for use during create, review, and revise workflows. If absent, use defaults (`review = "general-purpose"`, `editor = "interactive"`, `tech_writer = ""`).
+   - Also read each `[author.dispatch]` key individually (`review`, `tech_writer`, `ux_review`, `dx_review`, `tpm`). For any key not present in the config, apply its default: `review = "general-purpose"`, `tech_writer = ""`, `ux_review = ""`, `dx_review = ""`, `tpm = ""`. Store for use during create and review workflows.
 2. **If `docs/adr/` does not exist** — bootstrap the decision log using the default nygard-agent format:
-   ```bash make -f <skill-root>/Makefile init DIR=docs/adr ```
+```bash
+make -f <skill-root>/Makefile init DIR=docs/adr
+```
 3. **Cache the format** — for the rest of the session, pass `ADR_AGENT_SKILL_FORMAT=nygard-agent` (or the configured format) to all Makefile targets.
 ### A-1: Draft Worksheet
-Per ADR-0032, a draft worksheet captures the author's original intent and workflow calibration before the create workflow runs. The agent always runs this step. The user may decline to fill specific fields, but the worksheet structure must be present in the ADR before proceeding to A-2.
+Per ADR-0032, a draft worksheet captures the author's original intent and workflow calibration before the create workflow runs. The user may decline to fill specific fields, but the worksheet structure must be present in the ADR before proceeding to A-2.
 **Activation triggers:** Any create request triggers A-1 first. Direct triggers: "draft an ADR," "start a draft," "I have an idea for a decision."
 **Workflow:**
 1. **Create the ADR file** — `make -f <skill-root>/Makefile new TITLE="tbd"` to create a placeholder ADR.
@@ -180,7 +201,7 @@ Per ADR-0032, a draft worksheet captures the author's original intent and workfl
    - **Solve workflow** (user arrives with a problem) — fill the worksheet **after** the problem intake conversation. The agent drafts the worksheet from the conversation and the user confirms/adjusts.
 4. **Hand off** — after the worksheet is filled, proceed to [Creating an ADR](#creating-an-adr). The create workflow reads the worksheet for grounding (see [references/create.md](references/create.md)).
 
-**Autonomous low-uncertainty merge:** In autonomous mode with low uncertainty (Tolerance: Risk Low, Improvisation Low), A-1 and A-2 may be merged into a single pass. The worksheet still appears in Comments, but is written alongside the ADR body — not in a separate step. The worksheet's value scales with uncertainty; low-uncertainty problems don't benefit from a separate round-trip.
+**Autonomous low-uncertainty merge:** In autonomous mode with low uncertainty (Tolerance: Risk Low, Improvisation Low), A-1 and A-2 may be merged into a single pass. The worksheet still appears in Comments, but is written alongside the ADR body — not in a separate step. The worksheet's value scales with uncertainty; low-uncertainty problems don't benefit from a separate pass.
 
 **Comments area evolution:** The `## Comments` section holds both the Draft Worksheet (pre-decision intent) and Revision Q&A entries (post-review dialogue). The Draft Worksheet always appears first, before any revision Q&A entries.
 ### A-2: Create
@@ -194,35 +215,30 @@ Read [references/create.md](references/create.md) for the full creation workflow
    - **If `tech_writer` is absent or empty** (default): the inline agent writes content directly, preserving current behavior.
    See [references/create.md](references/create.md) Step 3b for the full dispatch procedure.
 5. **Create via Makefile** — always use the Makefile target:
-   ```bash make -f <skill-root>/Makefile new TITLE="Use PostgreSQL" ```
+```bash
+make -f <skill-root>/Makefile new TITLE="Use PostgreSQL"
+```
    Only fall back to calling scripts directly if the Makefile is unavailable. See [Escape Hatch](#escape-hatch-direct-script-usage) for direct usage.
 6. **Validate completion** — check the implementability criteria: Criteria, Documentation, Experimentation Tolerance, Scope Clarity, Actionable Consequences, Dependency Visibility.
 7. **Recommend review** — after creating the ADR, recommend reviewing it:
-   > Would you like to review this ADR? It will be checked for completeness, > reasoning fallacies, and anti-patterns.
-   If the user agrees, proceed to [Reviewing an ADR](#reviewing-an-adr).
+   > Would you like to review this ADR? It will be checked for completeness, reasoning fallacies, and anti-patterns.
+   On confirmation, proceed to [A-3: Review](#a-3-review).
 **Problem-solving workflows:** For problem-first workflows (exploring options before committing to a solution), use `/solve-adr` instead. It orchestrates across `/author-adr`, `/prototype-adr`, and `/implement-adr`.
 ### A-3: Review
 Read [references/polish.md](references/polish.md) for the full quality loop process. Direct the review agent to the Review Phase section (steps R-1 through R-6). By default this is a general-purpose agent; a custom agent can be configured via `[author.dispatch].review`.
 The review process covers:
 1. **Implementability check** — verify the 6 implementability criteria
 2. **Fallacy scan** — check against 7 architectural decision-making fallacies
-3. **Anti-pattern check** — scan for 11 ADR creation anti-patterns
+3. **Anti-pattern check** — scan for 13 ADR creation anti-patterns
 4. **Consequence validation** — interactively verify stated consequences with the user
 5. **7-point checklist** — structured quality assessment
 6. **Verdict** — Accept (→ Ready status), Revise, or Rethink
-7. **Accept-with-suggestions** — if the verdict is Accept but includes minor suggestions, dispatch the editor agent for a lightweight polish pass (see polish.md §R-6a). If no editor agent is configured, present suggestions to the user as optional improvements.
-8. **Revision handoff** — if the verdict is "Revise":
-   - If `editor` is `"interactive"` (or absent): offer to interactively address the review comments. If the user agrees, proceed to [Revising an ADR](#revising-an-adr).
-   - If `editor` is an agent reference: automatically proceed to [Revising an ADR](#revising-an-adr) — the configured editor agent stands in for the user during triage. Do not ask for permission; the delegated editor handles the review→revise loop.
+7. **Accept-with-suggestions** — if the verdict is Accept with minor suggestions, record them in the review cycle marker. Accept means the ADR is ready — suggestions are informational, not blocking.
+8. **Revision handoff** — if the verdict is "Revise", proceed to [A-4: Revise](#a-4-revise). The calling agent reads the findings and applies revisions inline.
 ### A-4: Revise
-Read [references/polish.md](references/polish.md) for the full quality loop process. Direct the editor agent to the Revision Phase section (steps V-1 through V-6). Use this after a review produces a "Revise" verdict. When `[author.dispatch].editor` is configured with an agent reference (not `"interactive"`), the configured editor agent stands in for the user during triage — see [Agent Dispatch](#agent-dispatch-authordispatch).
-The revision process covers:
-1. **Load review comments** — parse the structured review output into discrete revision items
-2. **Present each comment** — show findings one at a time with context
-3. **Collect user response** — for each comment, the user can address it, reject it, or defer it to another ADR
-4. **Apply revisions** — update the ADR with the user's approved changes
-5. **Produce revision summary** — document what was addressed, deferred, or rejected
-6. **Recommend re-review** — suggest re-review if substantive changes were made
+Read [references/polish.md](references/polish.md) for the revision phase. The calling agent reads the review findings and fixes them inline — no separate editor dispatch. The revision phase is lightweight: fix findings, append a review cycle marker, re-review if substantive changes were made.
+### A-5: Re-review
+When A-4 revisions are substantive (any H/M findings addressed), loop back to A-3 for re-review. Max 3 review→revise cycles. Read [references/polish.md](references/polish.md) for re-review criteria.
 ### A-6: Manage
 Read [references/manage.md](references/manage.md) for the full management reference including status transitions, superseding, linking, and splitting.
 **Guardrail (P-2):** See P-2 (Cross-ADR Modification Guardrail).

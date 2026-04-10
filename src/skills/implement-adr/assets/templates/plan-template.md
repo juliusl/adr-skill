@@ -19,8 +19,8 @@ When executing any task from this plan, follow this protocol:
 
 1. **Before starting a task** — read the task's **Test & Acceptance Criteria** section in full.
 2. **As each criterion is satisfied** — immediately edit this plan file to mark the checkbox from `- [ ]` to `- [x]`.
-3. **After completing all implementation work** for a task — review the criteria list one final time. Any criterion still unchecked is either incomplete work (go back and finish it) or an oversight (check it off with a brief inline note if it was already satisfied by prior work).
-4. **Do not batch checkbox updates** to the end of a stage — update them incrementally so that progress is visible in the file at all times.
+3. **After completing all implementation work** for a task — review the criteria list one final time. Any unchecked criterion is either incomplete work or an oversight — finish it, or check it off with a brief inline note.
+4. **Do not batch checkbox updates** to the end of a stage — update incrementally.
 
 ---
 
@@ -90,7 +90,7 @@ When executing any task from this plan, follow this protocol:
 
 ### Task N.1: Update ADR status and Deliverables    [small]
 
-**Description:** Update the status of each source ADR from `Planned` to `Accepted` to reflect that the decision has been fully implemented. If the ADR has a `## Deliverables` section, check off each deliverable that was produced during implementation and add artifact references (file paths, commit SHAs) where applicable.
+**Description:** Update each source ADR status from `Planned` to `Accepted`. If the ADR has a `## Deliverables` section, check off completed deliverables and add artifact references (file paths, commit SHAs).
 
 > **Note:** Source ADRs will be in `Planned` status at this point — they were transitioned from `Proposed` to `Planned` in Step I-5 before execution began.
 

@@ -23,19 +23,18 @@ Detailed guidance for decomposing ADRs into staged implementation plans.
 | PP-4a | Referencing ADRs in Plans — plan-level ADR references |
 | PP-4b | Per-Task ADR References — task-level ADR section references |
 
-```
-PP-1 — Stage Decomposition
-  ↓
-PP-2 — Task Scoping
-  ↓
-PP-3 — Gap Detection
-  ↓
-PP-4 — ADR Linkage
+```mermaid
+flowchart TD
+    PP1["PP-1 — Stage Decomposition"]
+    PP2["PP-2 — Task Scoping"]
+    PP3["PP-3 — Gap Detection"]
+    PP4["PP-4 — ADR Linkage"]
+    PP1 --> PP2 --> PP3 --> PP4
 ```
 
 ## PP-1: Stage Decomposition
 
-Stages represent logical phases of implementation. They impose order on work and make progress visible.
+Stages impose order on work and make progress visible by grouping tasks into logical implementation phases.
 
 ### PP-1a: Principles
 
@@ -63,7 +62,7 @@ Use short, descriptive names that communicate the phase:
 
 ## PP-2: Task Scoping
 
-Each task must be independently executable. An engineer or agent should be able to pick up a task and complete it without reading other task plans.
+Each task must be independently executable — completable without referencing other tasks.
 
 ### PP-2a: Self-Containment Checklist
 
@@ -75,7 +74,7 @@ Each task must be independently executable. An engineer or agent should be able 
 
 ### PP-2b: Splitting Oversized Tasks
 
-If a task feels too large (rule of thumb: more than ~200 lines of code or touches more than 3 files), consider:
+A task is oversized if it changes more than ~200 lines or touches more than 3 files. Split it by:
 
 1. **Extract setup** — Move scaffolding, config, or boilerplate into a separate `[small]` task.
 2. **Split by concern** — Separate validation, business logic, and persistence.
@@ -122,7 +121,7 @@ If the user chooses to proceed despite gaps:
 
 - Mark affected tasks with `⚠️ PARTIAL` in the title
 - Add a note explaining which decision is missing
-- Do not fabricate architectural choices — leave those sections as TODOs
+- Do not fabricate architectural choices — mark incomplete sections with `<!-- TODO: requires ADR on [topic] -->` so they are machine-searchable
 
 ## PP-4: ADR Linkage
 
@@ -144,7 +143,6 @@ Each task should cite the specific ADR section that drives it:
 **ADR Reference:** ADR-0002, Decision §1 (Staged Implementation Tree)
 ```
 
-This maintains traceability from implementation back to the decision that motivated it.
 
 ## Acceptance Criteria Categories
 
@@ -155,7 +153,8 @@ Every acceptance criterion that mentions manual verification must be classified 
 | Implement + verify manually | `[implement, verify-manual]` | The feature does not exist yet. Build it, then verify by hand. | Write the code, then note manual verification is needed. |
 | Verify manually only | `[verify-manual]` | The feature is already implemented. It cannot be tested automatically. | Skip implementation — only note that manual verification is needed. |
 
-**Why this matters:** A criterion like "Ctrl+C cancels the current line" looks like a verification item, but if no signal handling code exists, it's actually an implementation gap. Without the category marker, agents treat it as "already done, just needs testing" and move on.
+**Why this matters:** A criterion like "Ctrl+C cancels the current line" looks like a verification item, but without signal handling code it is an implementation gap. The category marker prevents agents from treating unimplemented features as already done.
 
 **Rule:** When writing acceptance criteria, default to `[implement, verify-manual]`. Only use `[verify-manual]` when the code already exists and only needs human confirmation (e.g., visual layout checks, UX feel).
 
+**Placement:** Category markers go on acceptance criteria lines (e.g., `- [ ] [implement, verify-manual] Signal handling works for Ctrl+C`). Cost markers (`[small]`/`[medium]`/`[heavy]`) go on task title lines. The two marker types do not appear on the same line.

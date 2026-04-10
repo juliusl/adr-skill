@@ -1,14 +1,14 @@
 # Testing Guidelines
 
-Guidance for selecting appropriate test and acceptance criteria based on code context and the source ADR's Quality Strategy. Every task in an implementation plan must include testing instructions.
+Every implementation plan task requires test and acceptance criteria. Select criteria based on code context and the source ADR's Quality Strategy.
 
 ## Quality Strategy Checklist
 
 The nygard-agent ADR template includes a **Quality Strategy** section with checkboxes that signal which quality concerns apply to the decision. When generating task test criteria, read this section first:
 
-- **Checked items (`[x]`)** — the ADR author has flagged this as required. Include corresponding test criteria in relevant tasks.
-- **Struck-through items (`~~`)** — the ADR author has marked this as not applicable. Do not add these test types.
-- **Unchecked items (`[ ]`)** — ambiguous. Fall back to code context analysis (see below) to decide.
+- **Checked items (`[x]`)** — required. Include corresponding test criteria in relevant tasks.
+- **Struck-through items (`~~`)** — not applicable. Omit these test types.
+- **Unchecked items (`[ ]`)** — ambiguous; use code context analysis to determine applicability.
 
 ### Mapping Quality Strategy to Test Criteria
 
@@ -23,20 +23,21 @@ The nygard-agent ADR template includes a **Quality Strategy** section with check
 | `[x] User documentation` | Documentation update criteria (README, CLI docs, code headers, usage guides) |
 | `[x] Introduces major semantic changes` | Version bump criteria, downstream compatibility checks |
 | `[x] Introduces minor semantic changes` | Regression test criteria verifying no unintended side effects |
+| `[x] Tooling` | Update criteria for Makefiles, install targets, CI configs, and validation pipelines |
 
 ### Integration Tests
 
-When the ADR author checks `[x] Integration tests`, the decision involves a dependency external to the immediate system (e.g., databases, third-party APIs, message queues, file systems, external services).
+A checked `[x] Integration tests` item indicates an external dependency (databases, third-party APIs, message queues, file systems).
 
 **When generating tasks:**
 
-1. **If integration tests already exist** for the relevant dependency — add criteria to keep them up to date with the changes introduced by this decision. Existing tests must be extended or modified to cover the new behavior.
+1. **If integration tests already exist** — add criteria to extend or modify them to cover the new behavior.
 
-2. **If integration tests do not yet exist** — add a task to create them. If creating integration tests requires infrastructure or tooling decisions that are not yet made (e.g., choosing a test container strategy, setting up a mock service), recommend an ADR for the integration testing gap instead of making ad-hoc tooling choices in the plan.
+2. **If integration tests do not yet exist** — add a task to create them. If infrastructure or tooling decisions are unresolved (e.g., test container strategy, mock service setup), recommend an ADR for the gap instead of making ad-hoc tooling choices.
 
 ### Additional Quality Concerns
 
-The ADR may also include free-text notes under `### Additional Quality Concerns`. Read these and translate them into specific test criteria for the relevant tasks. These often capture domain-specific quality requirements not covered by the standard checklist.
+The ADR may also include free-text notes under `### Additional Quality Concerns`. Translate these into specific test criteria for the relevant tasks. They often capture domain-specific requirements not covered by the standard checklist.
 
 ## Testing by Code Context
 
@@ -62,7 +63,7 @@ Code that processes user-supplied data (form fields, CLI arguments, file uploads
 Code on a hot path (request handlers, tight loops, serialization, core algorithms) must demonstrate acceptable performance.
 
 **Required testing:**
-- **Benchmarking** — Measure throughput and latency under expected load. Establish a baseline and fail if performance regresses beyond a threshold.
+- **Benchmarking** — Measure throughput and latency under expected load; establish a baseline and fail on regression beyond threshold.
 - **Profiling** — Identify allocations, lock contention, or algorithmic inefficiency during review.
 - **Load testing** — For network-facing hot paths, simulate concurrent requests.
 
@@ -140,4 +141,4 @@ When writing the "Test & Acceptance Criteria" section of a task:
 1. **Be specific** — Name the type of test (unit, fuzz, benchmark, integration).
 2. **Be measurable** — Include quantities where possible (e.g., "≥3 edge cases", "1000 fuzz inputs", "p99 < 50ms").
 3. **Be contextual** — Match the test type to the code context using the table above.
-4. **Include a "done" signal** — What does "passing" look like? (e.g., "all tests green", "no regressions in benchmark", "coverage ≥ 80%").
+4. **Include a "done" signal** — Define what passing looks like (e.g., "all tests green", "no regressions in benchmark", "coverage ≥ 80%").

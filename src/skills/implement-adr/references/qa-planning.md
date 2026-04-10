@@ -1,12 +1,12 @@
 # QA Planning Protocol
 
-Self-contained reference for QA plan generation and execution. Read this file when generating a QA plan after the main implementation plan has been approved, or when executing QA checks at stage boundaries.
+QA planning protocol for the implement-adr skill — covers plan generation, test-gap analysis, finding disposition, and QA execution. Applied at Step 4b (after plan approval) and after all stages complete.
 
 ## When to Use
 
 After the plan-reviewer approves the implementation plan (Step 4), the main executor spawns a **separate general-purpose QA planner agent** to generate the QA plan. This is Step 4b in the implement-adr workflow.
 
-QA plan generation is **mandatory** — it runs for every plan, regardless of participation mode. There is no opt-out.
+QA plan generation is **mandatory** — it runs for every plan, regardless of participation mode.
 
 ## Agent Separation Principle
 
@@ -16,7 +16,7 @@ Three distinct agent roles ensure no agent reviews its own work:
 |------|-------|----------------|
 | **Main executor** | The orchestrating agent | Generates the dev plan, coordinates execution, remediates QA findings |
 | **QA planner** | Separate general-purpose agent | Generates the QA plan (adversarial: "how could this go wrong?") |
-| **QA executor** | Separate general-purpose agent (per batch) | Validates completed stage(s) code against QA checks |
+| **QA executor** | Separate general-purpose agent | Validates completed implementation against QA checks |
 
 The main executor must not write its own QA plan, and the agent that executes stage tasks must not QA its own work.
 
@@ -54,7 +54,7 @@ Items 5–7 are the **observability check**: a stage that produces unverifiable 
 
 ## Regeneration on Plan Revision
 
-When the main implementation plan is revised (new revision created per Step 7), the QA plan **must be regenerated**. A stale QA plan that validates against an outdated plan is a silent failure — the QA checks may not cover the revised tasks.
+When the main implementation plan is revised (new revision created per Step 7), the QA plan **must be regenerated**. A stale QA plan that validates against an outdated plan is a silent failure — the QA checks do not account for the revised tasks.
 
 The main executor is responsible for triggering QA plan regeneration when a plan revision occurs.
 
@@ -73,9 +73,9 @@ The main executor is responsible for triggering QA plan regeneration when a plan
 | QA-3a | Quality concerns — remediate before finalization |
 | QA-3b | Low-severity findings — remediate with minimal implementation |
 | QA-3c | Boundary test — classification decision rule |
-| QA-4 | QA Execution — stage boundary validation |
+| QA-4 | QA Execution — run after all stages complete |
 | QA-4a | Enforcement — mandatory regardless of participation mode |
-| QA-4b | Stage Boundary Hook — spawn QA executor agent per batch |
+| QA-4b | Execution Hook — spawn QA executor agent |
 | QA-4c | Documenting Accepted Findings — rationale for won't-fix items |
 | QA-4d | Backwards Compatibility — handle plans without QA plans |
 | QA-5 | Prompt Templates — prompts for QA planner and executor agents |
@@ -175,27 +175,15 @@ When classifying a finding, apply this test: **If this finding were a bug report
 
 ### QA-4a: Enforcement
 
-QA execution at stage boundaries is **mandatory regardless of participation mode** — including autonomous mode. Generating a QA plan but skipping execution defeats the purpose of the QA separation principle. If QA execution is skipped for any stage, log the justification inline before proceeding. Skipping without justification is a workflow violation.
+QA execution after all stages complete is **mandatory regardless of participation mode** — including autonomous mode. Generating a QA plan but skipping execution defeats the purpose of the QA separation principle. If QA execution is skipped, log the justification inline before proceeding. Skipping without justification is a workflow violation.
 
-In autonomous mode with multiple stages, adjacent small-only stages may be batched for a single QA pass. The batching decision uses the plan's cost estimates (`[small]`/`[medium]`/`[heavy]`):
+### QA-4b: Execution Hook
 
-| Condition | Action |
-|-----------|--------|
-| Stage contains any `[medium]` or `[heavy]` task | QA immediately |
-| Stage contains only `[small]` tasks and next stage is also all `[small]` | Defer — batch with subsequent stages |
-| Stage contains only `[small]` tasks and next stage has `[medium]`/`[heavy]` | QA immediately — validate batch before heavier work begins |
-| Final stage in the plan | QA immediately |
-| 3+ stages accumulated without QA | QA immediately — cap batch size |
-
-Batching consolidates QA execution while preserving coverage. Skipping QA entirely is not an acceptable optimization.
-
-### QA-4b: Stage Boundary Hook
-
-During plan execution, after all tasks in a stage complete, evaluate the batching decision (see QA-4a). When QA triggers:
+After all stages in the plan are complete, spawn a QA executor:
 
 1. **Spawn a separate general-purpose QA executor agent** with:
-   - The QA plan's checks for all stages in the current batch
-   - The actual code changes made during the batched stages (combined diff or file list)
+   - The QA plan's checks for all stages
+   - The actual code changes made during implementation (cumulative diff)
    - This reference document for context
 2. **The QA executor reviews** the actual implementation against the QA checks. The executor must report **PASS/FAIL per individual check** — summary-level verdicts without per-check evidence are insufficient.
 3. **If all checks pass** — mark them `[x]` in the QA plan and update the Recommendations table: set each finding's Status from `Open` to `✅ Resolved` when the corresponding verification passed. Proceed to auto-commit.
@@ -215,9 +203,11 @@ For each finding that won't be fixed:
 
 ### QA-4d: Backwards Compatibility
 
-If no QA plan exists (plans generated before this feature), the stage boundary hook is a no-op — execution proceeds to auto-commit directly.
+If no QA plan exists (plans generated before this feature), execution proceeds to auto-commit directly.
 
 ## QA-5: Prompt Templates
+
+**Assembly:** To construct a prompt from these templates, replace each `[Insert ...]` placeholder with the corresponding content from this reference file or the source materials. Copy the section content verbatim — do not summarize or paraphrase.
 
 ### QA-5a: QA Planner Agent Prompt
 
@@ -260,20 +250,20 @@ Write a QA plan using the qa-plan-template.md structure. For each stage:
 ### QA-5b: QA Executor Agent Prompt
 
 ```
-You are a QA executor agent. Review the actual implementation of
-completed stage(s) against the QA plan's checks.
+You are a QA executor agent. Review the actual implementation against
+the QA plan's checks.
 
 You must not have been the agent that executed the tasks.
 
-## QA Checks for This Batch
+## QA Checks
 
-[Insert the QA plan's checks for all stages in this batch]
+[Insert the QA plan's checks for all stages]
 
 ## Code Changes
 
 Provide the code changes using a diff-based summary to keep context
 focused. Include:
-1. The combined diff (`git diff <base>..HEAD` or per-stage diffs)
+1. The cumulative diff (`git diff <base>..HEAD`)
 2. A brief summary of what each stage changed and which files were affected
 3. For any check that requires broader file context beyond the diff,
    include the full file content — do not hide context the executor
@@ -314,5 +304,5 @@ and "Open" statuses despite all checks passing.
 - PASS/FAIL per check with specific file and line evidence
 - Any new findings with disposition classification
 - Confirmation that QA plan file was updated (checks marked, statuses set)
-- Verdict: Batch Approved / Batch Needs Remediation
+- Verdict: Approved / Needs Remediation
 ```

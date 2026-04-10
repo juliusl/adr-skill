@@ -87,7 +87,6 @@ When a visual needs supporting detail, place it in an Appendix — don't inline 
 | Step 2 | Draft or revise content |
 | Step 2a | Apply policies P-1 through P-7 during writing |
 | Step 2b | Verify scope matches document purpose (P-6) |
-| Step 2c | Peer review — adversarial audience persona finds gaps |
 | Step 3 | Review — one pass per policy |
 
 ```
@@ -117,10 +116,6 @@ Each sentence should pass P-1 through P-7. Lead with the point (P-2), don't rest
 ### Step 2b: Verify scope
 
 Check that the document stays within its purpose (P-6). Move implementation details to reference docs. Move user-facing instructions out of design docs.
-
-### Step 2c: Peer review
-
-Launch an adversarial agent as a persona of the target audience with a survey to find missing gaps or incomplete information. Use `mode='background'`. Wait for the system completion notification before reading results — do not poll immediately. Do not make assumptions on gaps — note them as follow-up items.
 
 ---
 

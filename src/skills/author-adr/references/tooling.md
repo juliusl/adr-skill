@@ -16,14 +16,15 @@ The Makefile routes to the correct scripts based on `ADR_AGENT_SKILL_FORMAT`.
 # Set format (default: nygard-agent)
 export ADR_AGENT_SKILL_FORMAT=nygard-agent
 
-# Core targets
-make init                               # bootstrap ADR directory
-make init DIR=decisions                  # custom directory
-make init-data                          # bootstrap .adr/ project-scoped directory
-make new TITLE="Use PostgreSQL"         # create a new ADR
-make list                               # list all ADRs
-make status                             # show all ADR statuses
-make status NUM=2 STATUS=Proposed       # update status
+# Core targets — invoke with: make -f <skill-root>/Makefile <target>
+make -f <skill-root>/Makefile init                          # bootstrap ADR directory
+make -f <skill-root>/Makefile init DIR=decisions             # custom directory
+make -f <skill-root>/Makefile init-data                      # bootstrap .adr/ project-scoped directory
+make -f <skill-root>/Makefile new TITLE="Use PostgreSQL"     # create a new ADR
+make -f <skill-root>/Makefile rename NUM=2 TITLE="New Title" # rename an ADR
+make -f <skill-root>/Makefile list                           # list all ADRs
+make -f <skill-root>/Makefile status                         # show all ADR statuses
+make -f <skill-root>/Makefile status NUM=2 STATUS=Proposed   # update status
 ```
 
 ### Available Targets
@@ -33,6 +34,7 @@ make status NUM=2 STATUS=Proposed       # update status
 | `init` | Bootstrap ADR directory and create first ADR |
 | `init-data` | Bootstrap `.adr/` project-scoped directory (opt-in) |
 | `new` | Create a new ADR from the format's baked-in template |
+| `rename` | Rename an ADR (`NUM=N TITLE="New Title"`) |
 | `list` | List all ADRs with number, title, and status |
 | `status` | Show or update an ADR's status |
 | `install-agents` | Install custom agent files |
@@ -96,7 +98,7 @@ The scripts resolve the ADR directory using a priority chain:
 2. `.adr-dir` — legacy adr-tools convention (backwards compatible)
 3. `docs/adr` — default
 
-This means projects that adopt `.adr/` can migrate their directory pointer from the root-level `.adr-dir` file into `.adr/adr-dir`. Legacy projects continue to work unchanged.
+This means projects that adopt `.adr/` can migrate their directory pointer from the root-level `.adr-dir` file into `.adr/adr-dir`.
 
 ### Backward Compatibility
 
@@ -125,7 +127,7 @@ To add support for a new format (e.g., MADR):
 
 ### When to Use Diagrams
 
-Use diagrams when they clarify structure that prose or tables cannot. Skip them otherwise — too many diagrams overload context.
+Use diagrams only when structure cannot be expressed clearly in prose or tables.
 
 **Good uses for diagrams:**
 - ADR status transitions (state diagram)
@@ -146,7 +148,7 @@ See assets/mermaid-chart-examples.md for ADR-specific diagram patterns and gener
 
 ### Markdown Tables for Comparisons
 
-When presenting decision justification, use markdown tables to condense the analysis. Tables are easier to scan and keep the ADR focused:
+When presenting decision justification, use markdown tables to condense the analysis. Tables keep comparisons compact and the ADR focused:
 
 ```markdown
 | Criteria   | Option A  | Option B  | Option C  |

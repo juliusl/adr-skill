@@ -1,6 +1,6 @@
 # Creating an ADR
 
-Self-contained reference for the ADR creation workflow. Read this file when the user asks to create, draft, or write an ADR.
+Self-contained reference for the ADR creation workflow. Read this file when the user asks to create or draft an ADR.
 
 **If a step is skipped, log the justification inline before proceeding.** Skipping without justification is a workflow violation.
 
@@ -10,7 +10,7 @@ Self-contained reference for the ADR creation workflow. Read this file when the 
 2. **Don't defer high-impact, hard-to-reverse decisions**
 3. **Prioritize meta-qualities** (observability, reactivity) over presumed long-term goals
 4. **Root decisions in actual requirements** and personal experience
-5. **Invest in editorial quality** — write clearly and concisely
+5. **Invest in editorial quality** — write concisely
 6. **Split complex decisions into stages** (short-term → mid-term → long-term)
 7. **Disclose confidence level** and acknowledge biases
 
@@ -41,28 +41,28 @@ Self-contained reference for the ADR creation workflow. Read this file when the 
 
 ## Decision Criteria
 
-When defining evaluation criteria, normalize DOWN to the same abstraction level by decomposing high-level criteria into 3–4 specific sub-criteria. Avoid weighted scoring systems — they create false precision and maintenance burden.
+When defining evaluation criteria, normalize to the same abstraction level by decomposing high-level criteria into 3–4 specific sub-criteria. Avoid weighted scoring systems — they create false precision and maintenance burden.
 
 **Example:** "Maintainability" (too abstract) → API stability, major release frequency, developer familiarity (concrete, comparable).
 
 ## Writing Justifications
 
 **Y-Statement Template:**
-> In the context of **{use case}**, facing **{concern}**, we decided for we chose **{option}** over **{alternatives}** to achieve **{benefits}**, accepting **{drawbacks}**.
+> In the context of **{use case}**, facing **{concern}**, we chose **{option}** over **{alternatives}** to achieve **{benefits}**, accepting **{drawbacks}**.
 
-**Good justifications (grounded in):**
+**Ground justifications in:**
 - Prior successful project experience in a similar context
 - PoC/PoT with convincing results
 - Available market skills for the chosen technology
 
-**Bad justifications (pseudo-rationale):**
+**Pseudo-rationale to avoid:**
 - "Everybody does it" — bandwagon fallacy
 - "We've always done it this way" — inertia
 - "It'll look good on my resume" — personal interest over project needs
 
-## Seven AD Making Fallacies
+## Seven Decision-Making Fallacies
 
-Watch for these fallacies when drafting and use the countermeasures:
+These fallacies apply during drafting — each has a countermeasure:
 
 | # | Fallacy | Countermeasure |
 |---|---------|----------------|
@@ -91,6 +91,8 @@ Watch for these fallacies when drafting and use the countermeasures:
 | Step 3a | Draft Worksheet integration |
 | Step 3b | Tech-Writer Dispatch (conditional) — delegate writing to configured agent |
 | Step 4 | Evaluate Readiness — Evaluation Checkpoint gate |
+| Step 4a | UX/DX Option Review (conditional) — dispatch reviewers on Options. Verdicts: Accept, Revise, Revise — Major, Redesign |
+| Step 4b | TPM Decision Quality Assessment (conditional) — dispatch TPM with findings. Verdicts: ready, ready with findings, not-ready (addressable → Revise — Major, fundamental → Pause) |
 | Step 5 | Validate Completion — implementability criteria |
 | Step 5a | Quick self-test |
 | Step 6 | Conclusion Checkpoint — verify before requesting review |
@@ -105,17 +107,19 @@ Step 3 — Draft the ADR
   └─ Step 3b — Tech-Writer Dispatch (conditional: tech_writer configured?)
   ↓
 Step 4 — Evaluation Checkpoint (conditional: Proceed / Pause / Skip)
+  ├─ Step 4a — UX/DX Option Review (conditional: ux_review or dx_review configured?)
+  └─ Step 4b — TPM Decision Quality Assessment (conditional: tpm configured?)
   ↓
 Step 5 — Validate Completion (implementability criteria)
   ↓
 Step 6 — Conclusion Checkpoint (conditional: Ready / Needs work / Skip)
 ```
 
-**Conditional steps:** Step 4 and Step 6 are checkpoints with three possible assessments. If the assessment is "Skipped", record the rationale and proceed to the next step. Step 3b is conditional on `tech_writer` being configured.
+**Conditional steps:** Steps 4 and 6 are checkpoints with three possible assessments. For `Skipped` assessments, record the rationale and proceed. Step 3b is conditional on `tech_writer` being configured. Step 4a is conditional on `ux_review` or `dx_review` being configured. Step 4b is conditional on `tpm` being configured and runs after Step 4a, consuming Step 4a's findings when available.
 
 ## Step 1: Assess Architectural Significance (ASR Test)
 
-Before creating an ADR, verify that the decision is architecturally significant. Score the issue against these 7 criteria (takes 1–2 minutes):
+Verify architectural significance by scoring against 7 criteria (takes 1–2 minutes):
 
 | # | Criterion | Ask |
 |---|-----------|-----|
@@ -131,7 +135,7 @@ Before creating an ADR, verify that the decision is architecturally significant.
 - Prioritize issues with high business value/risk and cross-cutting impact
 - **ECSA core decisions** that typically need early attention: minimal functionality/regulations, architectural style, technology stacks, integration options, governance structure, development environment standards
 
-If the decision is not architecturally significant, suggest informal documentation (e.g., a comment, wiki page, or team channel post) instead of a formal ADR.
+If the decision is not architecturally significant, suggest informal documentation (e.g., a wiki page) instead of a formal ADR.
 
 ## Step 2: Check Readiness (START)
 
@@ -155,7 +159,7 @@ Don't decide too early (reduces flexibility) or too late (causes costly rework).
 
 1. Identification of design issue & options
 2. Criteria collection & option analysis
-3. Decision making
+3. Decision-making
 4. Decision capturing (ADR documentation)
 5. Decision enforcement
 
@@ -163,14 +167,14 @@ Don't decide too early (reduces flexibility) or too late (causes costly rework).
 
 ### Step 3a: Draft Worksheet Integration
 
-Before drafting, check if a **Draft Worksheet** exists in the ADR's `## Comments` section (per ADR-0032). If present, use it to ground the drafting process:
+If a **Draft Worksheet** exists in the ADR's `## Comments` section (per ADR-0032), use it to ground the draft:
 
 - **Framing** → seed the Context section. Use the author's stated direction as the starting point for the problem description.
 - **Tolerance** → calibrate option depth. Low risk/change tolerance suggests fewer, more conservative options. High tolerance opens the door to experimental approaches.
 - **Candidates** → pre-populate the Options section with the author's identified candidates, expanding each into a full option structure.
 - **Uncertainty** → inform which areas need more analysis in Context and which constraints are firm vs. tentative.
 
-If no worksheet exists, proceed with the standard drafting workflow below — A-1 should have created one, but the workflow must not block if it's absent.
+If absent, proceed with the standard drafting workflow — A-1 should have created one, but the workflow must not block.
 
 ### Step 3b: Tech-Writer Dispatch (Conditional)
 
@@ -191,7 +195,7 @@ When a tech-writer agent is configured, delegate the ADR body writing to it inst
    - All required sections are populated (Context, Options, Decision, Consequences)
    - Quality Strategy checkboxes reflect the decision's actual quality concerns
    - The content aligns with the draft worksheet's framing and constraints
-   If validation fails (missing sections, malformed output, or partial content from a mid-execution failure), the inline agent completes or corrects the remaining sections and warns the user that tech-writer output was supplemented.
+   If validation fails (missing sections or malformed output), the inline agent completes or corrects the remaining sections and warns the user that tech-writer output was supplemented.
 
 4. **Fallback** — if the configured agent cannot be resolved at runtime, fall back to inline writing (the inline agent writes the content itself) and warn the user.
 
@@ -214,6 +218,60 @@ After documenting options, pause at the **Evaluation Checkpoint (Optional)** sec
 3. **Check the baseline items** — mark each checkbox as satisfied or note why it's not applicable.
 
 4. **If "Pause for validation"** — ask the user whether to prototype, selectively validate, or skip. The user controls what gets prototyped, not the checklist.
+
+### Step 4a: UX/DX Option Review (Conditional)
+
+**Condition:** At least one of `[author.dispatch].ux_review` or `[author.dispatch].dx_review` is configured with a non-empty value.
+
+When UX or DX review agents are configured, dispatch them to evaluate Options before the decision converges.
+
+1. **Build dispatch context** — assemble the payload for each configured reviewer:
+   - The ADR file path (with Options section populated)
+   - The artifact to review: the Options section content
+   - Scope: `New` (options are being authored, not modified)
+
+2. **Dispatch agents in parallel** — invoke each configured agent via the `task` tool simultaneously. Include the following viability pre-screen guidance in each dispatch prompt:
+
+   > **Two-pass analysis:** Before deep evaluation, perform a quick viability screen (~30 seconds per option). Flag any option that is obviously non-viable — e.g., contradicts a stated constraint, depends on unavailable technology, or fails to address the core problem. Report non-viable options with a brief reason but skip element-by-element analysis on them. Deep-dive only on viable options.
+
+   Each agent runs its own review procedure and returns findings using its established output format (see the agent's Appendix A for verdict and finding structure).
+
+3. **Incorporate findings** — after agents return, incorporate their findings into the checkpoint assessment:
+   - If either agent returns a **Redesign** verdict, set the checkpoint Assessment to `Pause for validation` and populate Validation needs with the findings. Redesign means the approach needs rethinking — prototype validation is warranted.
+   - If either agent returns a **Revise — Major** verdict, incorporate the findings as revision requirements for the Options section. The agent is signaling heavy-but-addressable rework — specific options need significant restructuring, but the overall approach is sound. Apply the revisions inline before proceeding to the Decision section. Do not escalate to `prototype-adr`.
+   - If either agent returns a **Revise** verdict, present Medium findings as checkpoint considerations — they inform the decision but do not block it.
+   - If both return **Accept** or **Accept with suggestions**, proceed normally.
+   - If an agent returns an unrecognized verdict, log the raw output for the user to review, treat as `Accept with suggestions`, and warn that manual review is needed.
+
+4. **Fallback** — if a configured agent cannot be resolved at runtime, warn and skip that agent. If all configured agents fail to resolve, skip Step 4a.
+
+**When neither `ux_review` nor `dx_review` is configured:** Skip Step 4a. Log: "Step 4a skipped — no UX/DX review agents configured."
+
+### Step 4b: TPM Decision Quality Assessment (Conditional)
+
+**Condition:** `[author.dispatch].tpm` is configured with a non-empty value.
+
+When a TPM agent is configured, dispatch it to assess decision quality at the Evaluation Checkpoint.
+
+1. **Build dispatch context** — assemble the payload for the TPM:
+   - The ADR file path (with Context, Options, and Decision Drivers populated)
+   - UX/DX review findings from Step 4a (omit if Step 4a was skipped or produced no findings — these are optional enrichment, not a prerequisite)
+   - Instruction: apply ASR, START, and ADMM tests; detect anti-patterns; validate justification readiness
+
+2. **Dispatch via `task` tool** — invoke the configured TPM agent.
+
+3. **Incorporate assessment** — after the TPM returns, map its verdict using its established output contract (see the agent's documentation for verdict and finding structure):
+   - If the TPM verdict maps to **not-ready** with fundamental gaps (missing START criteria, detected anti-patterns, or fallacies), set the checkpoint Assessment to `Pause for validation` and populate Validation needs with the TPM's findings.
+   - If the TPM verdict maps to **not-ready** with addressable structural gaps (e.g., missing decision drivers, incomplete option analysis, but no anti-patterns or fallacies), treat as **Revise — Major**: incorporate the findings as revision requirements for the Options section. Apply revisions inline before proceeding. Do not escalate to `prototype-adr`.
+   - If the TPM verdict maps to **ready with findings**, present findings as checkpoint considerations and proceed with `Proceed`.
+   - If the TPM verdict maps to **ready**, proceed normally.
+   - If the verdict format is unrecognized, log the raw output for the user, treat as `ready with findings`, and warn the user to review manually.
+
+   **Distinguishing fundamental from addressable gaps:** Fundamental gaps involve missing START criteria, fallacies, or anti-patterns — these indicate the decision framework is unsound. Addressable gaps involve missing detail within an otherwise sound framework — incomplete analysis or missing drivers that can be fixed by revising existing content.
+
+4. **Fallback** — if the configured agent cannot be resolved at runtime, fall back to the inline agent's existing checkpoint assessment and warn the user.
+
+**When `tpm` is not configured:** Skip Step 4b. Log: "Step 4b skipped — no TPM agent configured."
 
 ## Step 5: Validate Completion (Implementability Criteria)
 
@@ -245,7 +303,7 @@ After completing the Quality Strategy section, pause at the **Conclusion Checkpo
    - `Skipped — <rationale>` — the user chooses to skip (record why).
 
 2. **Check the baseline items:**
-   - [ ] Decision justified (Y-statement or equivalent)
+   - [ ] Decision justified (Y-Statement or equivalent)
    - [ ] Consequences include positive, negative, and neutral outcomes
    - [ ] Quality Strategy reviewed — relevant items checked, irrelevant struck through
    - [ ] Links to related ADRs populated
@@ -269,7 +327,7 @@ If using MADR format, the full template sections are:
 9. **Pros and Cons of Options** — detailed per-option analysis
 10. **More Information** — evidence, confidence, realization plan
 
-- Start with **MADR Light** (5 core sections) if templates feel overwhelming
+- Use **MADR Light** (5 core sections) for simpler decisions
 - Evaluate all options at the same abstraction level
 - Document "Good, because…" and "Bad, because…" separately for each option
 - Status values: prototype → proposed → accepted → deprecated → superseded by

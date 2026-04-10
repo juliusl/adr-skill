@@ -1,13 +1,13 @@
 # Cost Estimation
 
-Guide for assigning t-shirt size cost estimates to implementation tasks.
+Assigns t-shirt size cost estimates (small/medium/heavy) to implementation tasks.
 
 ## Size Definitions
 
 | Size | Agent Turns | Typical Scope | Ambiguity Level |
 |------|-------------|---------------|-----------------|
-| **small** | ~1 turn | Single-file change, well-defined pattern | Low — clear what to do |
-| **medium** | ~2–3 turns | Multi-file change, some design choices | Moderate — a few decisions to make |
+| **small** | ~1 turn | Single-file change, well-defined pattern | Low |
+| **medium** | ~2–3 turns | Multi-file change, some design choices | Moderate |
 | **heavy** | ~4+ turns | Cross-cutting change, may need research | High — significant judgment required |
 
 ## Calibration Examples
@@ -43,7 +43,7 @@ Guide for assigning t-shirt size cost estimates to implementation tasks.
 
 ### Splitting Heavy Tasks
 
-If a task is estimated as `[heavy]`, consider whether it can be decomposed into smaller tasks:
+When a task is `[heavy]`, check whether it decomposes:
 
 - Can setup / scaffolding be separated? → Extract a `[small]` task
 - Are there independent sub-components? → Split into multiple `[medium]` tasks
@@ -58,7 +58,7 @@ If a task's scope is unclear because of a decision gap (see Gap Detection), add 
 - Would be `[small]` but has ambiguity → estimate as `[medium]`
 - Would be `[medium]` but has ambiguity → estimate as `[heavy]`
 
-Note the uncertainty in the task description so the user knows the estimate may improve once the gap is resolved.
+Note the uncertainty in the task description; the estimate improves once the gap is resolved.
 
 ## Presenting Estimates
 
@@ -78,4 +78,4 @@ End the plan with an aggregate count:
 **Total estimated cost:** 3 small, 4 medium, 1 heavy
 ```
 
-This gives the user a quick sense of overall effort without false precision.
+Conveys overall effort without false precision.
