@@ -77,6 +77,14 @@ flowchart TD
     Route -- Which template? --> Template[Choosing a Template]
     Route -- Explain concepts --> Concepts[Core Concepts]
     Route -- Visualize/diagram --> Viz[Visualization]
+    A1A2 --> A3
+    A3 --> Verdict{Verdict}
+    Verdict -- Accept --> Ready[Ready status]
+    Verdict -- Revise --> A4
+    Verdict -- Rethink --> Stop([Stop])
+    A4 --> A5{A-5: Re-review?}
+    A5 -- Substantive changes --> A3
+    A5 -- No / max cycles --> Ready
 ```
 
 ## Configuration

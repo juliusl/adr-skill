@@ -91,8 +91,8 @@ These fallacies apply during drafting — each has a countermeasure:
 | Step 3a | Draft Worksheet integration |
 | Step 3b | Tech-Writer Dispatch (conditional) — delegate writing to configured agent |
 | Step 4 | Evaluate Readiness — Evaluation Checkpoint gate |
-| Step 4a | UX/DX Option Review (conditional) — dispatch reviewers on Options |
-| Step 4b | TPM Decision Quality Assessment (conditional) — dispatch TPM with findings |
+| Step 4a | UX/DX Option Review (conditional) — dispatch reviewers on Options. Verdicts: Accept, Revise, Revise — Major, Redesign |
+| Step 4b | TPM Decision Quality Assessment (conditional) — dispatch TPM with findings. Verdicts: ready, ready with findings, not-ready (addressable → Revise — Major, fundamental → Pause) |
 | Step 5 | Validate Completion — implementability criteria |
 | Step 5a | Quick self-test |
 | Step 6 | Conclusion Checkpoint — verify before requesting review |

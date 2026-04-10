@@ -121,7 +121,7 @@ If the user chooses to proceed despite gaps:
 
 - Mark affected tasks with `⚠️ PARTIAL` in the title
 - Add a note explaining which decision is missing
-- Do not fabricate architectural choices — leave those sections as TODOs
+- Do not fabricate architectural choices — mark incomplete sections with `<!-- TODO: requires ADR on [topic] -->` so they are machine-searchable
 
 ## PP-4: ADR Linkage
 
@@ -157,3 +157,4 @@ Every acceptance criterion that mentions manual verification must be classified 
 
 **Rule:** When writing acceptance criteria, default to `[implement, verify-manual]`. Only use `[verify-manual]` when the code already exists and only needs human confirmation (e.g., visual layout checks, UX feel).
 
+**Placement:** Category markers go on acceptance criteria lines (e.g., `- [ ] [implement, verify-manual] Signal handling works for Ctrl+C`). Cost markers (`[small]`/`[medium]`/`[heavy]`) go on task title lines. The two marker types do not appear on the same line.

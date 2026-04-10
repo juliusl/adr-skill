@@ -207,6 +207,8 @@ If no QA plan exists (plans generated before this feature), execution proceeds t
 
 ## QA-5: Prompt Templates
 
+**Assembly:** To construct a prompt from these templates, replace each `[Insert ...]` placeholder with the corresponding content from this reference file or the source materials. Copy the section content verbatim — do not summarize or paraphrase.
+
 ### QA-5a: QA Planner Agent Prompt
 
 ```

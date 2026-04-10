@@ -23,6 +23,7 @@ The nygard-agent ADR template includes a **Quality Strategy** section with check
 | `[x] User documentation` | Documentation update criteria (README, CLI docs, code headers, usage guides) |
 | `[x] Introduces major semantic changes` | Version bump criteria, downstream compatibility checks |
 | `[x] Introduces minor semantic changes` | Regression test criteria verifying no unintended side effects |
+| `[x] Tooling` | Update criteria for Makefiles, install targets, CI configs, and validation pipelines |
 
 ### Integration Tests
 

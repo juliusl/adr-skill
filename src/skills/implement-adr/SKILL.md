@@ -36,19 +36,19 @@ If a finding cannot be addressed in the current scope, it requires explicit tria
 
 ## Procedure
 
-| ID | Step | Description |
-|----|------|-------------|
-| I-0 | Locate ADRs | Find ADRs, load preferences, stop if none exist |
-| I-1 | Read and Analyze | Extract status, decision, consequences, quality strategy |
-| I-2 | Gap Detection | Check for missing decisions that block planning |
-| I-3 | Generate Plan | Build plan.md with stages, tasks, criteria |
-| I-4 | Plan Review | Sub-agent reviews plan against ADR requirements |
-| I-4b | QA Plan Generation | Separate sub-agent generates qa-plan.md |
-| I-5 | Update ADR Status | Transition source ADRs to Planned |
-| I-6 | Participation Check | Load or prompt for participation mode and auto-commit |
-| I-7 | Execute Plan | Run tasks per participation mode |
-| I-7b | QA Validation | Sub-agent validates all completed stages against QA plan |
-| I-8 | Finalize | Update ADR status to Accepted, append implementation summary |
+| ID | Description |
+|----|-------------|
+| I-0 | Locate ADRs — find ADRs, load preferences, stop if none exist |
+| I-1 | Read and Analyze — extract status, decision, consequences, quality strategy |
+| I-2 | Gap Detection — check for missing decisions that block planning |
+| I-3 | Generate Plan — build plan.md with stages, tasks, criteria |
+| I-4 | Plan Review — sub-agent reviews plan against ADR requirements |
+| I-4b | QA Plan Generation — separate sub-agent generates qa-plan.md |
+| I-5 | Update ADR Status — transition source ADRs to Planned |
+| I-6 | Participation Check — load or prompt for participation mode and auto-commit |
+| I-7 | Execute Plan — run tasks per participation mode |
+| I-7b | QA Validation — sub-agent validates all completed stages against QA plan |
+| I-8 | Finalize — update ADR status to Accepted, append implementation summary |
 
 ## Assets
 
@@ -267,6 +267,9 @@ After the user approves a sentinel task, the skill continues with subsequent tas
 #### Auto-Commit on Task Completion
 The skill supports an optional behavior: **create a git commit each time a task's acceptance criteria are all satisfied**. Opt-in, disabled by default.
 ### I-7: Execute Plan
+
+**Task Execution Protocol:** Each task in the plan includes a protocol header (in plan-template.md) that governs checkpoint updates — read task criteria before starting, mark checkboxes incrementally as satisfied, and verify all criteria after completion.
+
 1. Present the generated plan to the user.
 2. Ask if any stages or tasks need adjustment.
 3. If the user identifies additional gaps, go back to Step 2.
@@ -322,6 +325,9 @@ This logging is mandatory. Silent skips are how auto-commit failures go undetect
 | **Autonomous** | Yes | Commit after each completed task; commit only task-related files without prompting when unrelated changes exist; still pause on hook failures |
 | **Weighted** | Yes | Commit after each completed task (autonomous or sentinel); same autonomous fallback for `[small]` tasks |
 ### I-8: Finalize
+
+**Gate:** I-8 requires QA validation (I-7b) to have completed. If QA has not run or has unresolved failures, do not proceed — return to I-7b.
+
 #### Auto-Commit Finalization Guard
 When auto-commit is enabled, verify that commits were actually made before finalizing. If `auto_commit = true` was loaded from preferences but no commits were created during execution, this indicates the auto-commit mechanics were silently skipped — a workflow violation.
 
@@ -408,6 +414,9 @@ Items left unchecked (`[ ]`) are ambiguous — use code context (table below) to
 | Internal modules | Unit tests at key boundaries |
 | Integration points | Integration / contract tests |
 **Overall target:** ~80% code coverage bar.
+
+**Acceptance criteria markers:** When writing acceptance criteria, use inline markers to classify each criterion: `[implement]` for criteria the agent implements directly, `[verify-manual]` for criteria requiring manual verification. See [planning practices](references/planning-practices.md) for details.
+
 Read the [full testing guidelines](references/testing-guidelines.md) for detailed requirements per category.
 ## Tooling
 ### Listing ADRs

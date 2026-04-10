@@ -38,7 +38,7 @@ flowchart TD
     C1 --> C2 --> C3 --> C4 --> C5 --> C6 --> V --> R7
 ```
 
-### 1. Quality Strategy Coverage
+### Check 1: Quality Strategy Coverage
 
 For each checked `[x]` item in the ADR's Quality Strategy section, verify at least one plan task or acceptance criterion addresses it.
 
@@ -59,23 +59,23 @@ For each checked `[x]` item in the ADR's Quality Strategy section, verify at lea
 
 Report **PASS** or **FAIL** per item. For FAIL, quote the checkbox and state what plan coverage is missing.
 
-### 2. Consequence Traceability
+### Check 2: Consequence Traceability
 
 For each stated **positive** consequence, verify there's a plan task that realizes it. For each stated **negative** consequence, verify there's a mitigation task or an explicit acknowledgment that the risk is accepted.
 
 Report PASS/FAIL per consequence with quoted text.
 
-### 3. AQC Coverage
+### Check 3: AQC Coverage
 
 For each item in the **Additional Quality Concerns** section, verify at least one plan task or acceptance criterion addresses it.
 
 Report PASS/FAIL per item.
 
-### 4. Evaluation Checkpoint Coverage
+### Check 4: Evaluation Checkpoint Coverage
 
 If the ADR has a populated **Validation needs** section (from the Evaluation Checkpoint), verify each need is addressed in the plan. Pay special attention to items marked as deferred to implementation.
 
-### 5. Scope Completeness
+### Check 5: Scope Completeness
 
 Verify the plan covers the full decision scope:
 
@@ -83,7 +83,7 @@ Verify the plan covers the full decision scope:
 - Does the plan cover all skill behaviors described in the Decision section?
 - Are all components, interfaces, or artifacts mentioned in the Decision represented in the plan?
 
-### 6. Project Integration
+### Check 6: Project Integration
 
 If the plan creates new directories, scripts, skills, or artifacts, verify
 the project's build/install/test infrastructure is updated:
@@ -158,6 +158,8 @@ flowchart TD
 **Cycle limit: 3.** If the reviewer and planner can't converge in 3 cycles, the remaining findings require human judgment.
 
 ### Review 7a: User Escape Hatch
+
+**Activation:** The reviewer agent generates the escape hatch output. The main executor (implement-adr) presents it to the user. The reviewer detects the cycle limit; the executor owns user communication.
 
 When the 3-cycle limit is reached, present remaining findings to the user:
 
