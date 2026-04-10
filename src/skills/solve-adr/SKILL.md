@@ -62,6 +62,7 @@ In autonomous mode, apply this heuristic: if the minimum fix is a test or valida
 | S-0 | Startup | Load preferences, check automation config, recommend missing settings |
 | S-1 | Problem | Solve a problem — explore options, produce ADRs, implement them |
 | S-2 | Roadmap | Solve a roadmap — process milestones sequentially, delegating each to S-1 |
+| S-3 | Fast-Path | Process pre-decided findings — classify, author Y-statement ADRs, route plan-only items directly |
 
 **Resume protocol:** Every solvable thing is resumable. When invoked on a problem that already has ADRs, the agent picks up where it left off — skipping completed steps, implementing remaining ADRs. Resume is not a separate scenario; it's how solve works across sessions.
 
@@ -85,7 +86,11 @@ User request
 ├─ "Process roadmap [path]" ────► S-0 → S-2: Roadmap
 ├─ "Continue milestone N" ──────► S-0 → S-2: Roadmap (resume)
 ├─ "Continue roadmap" ──────────► S-0 → S-2: Roadmap (resume)
-└─ "Roadmap progress" ──────────► S-0 → S-2: Roadmap (survey only)
+├─ "Roadmap progress" ──────────► S-0 → S-2: Roadmap (survey only)
+├─ "Process retro findings" ────► S-0 → S-3: Fast-Path
+├─ "Process bug bash findings" ─► S-0 → S-3: Fast-Path
+├─ "Apply amendment" ───────────► S-0 → S-3: Fast-Path
+└─ "Fast-path [findings]" ──────► S-0 → S-3: Fast-Path
 ```
 
 ## Configuration
@@ -116,7 +121,28 @@ code_review = "juliusl-code-reviewer-v1"
 ```toml
 [solve]
 default_scenario = "problem" # which scenario to use when not specified
+fast_path_sources = ["retro", "bug-bash", "amendment"]  # finding sources that trigger S-3 (requires ADR-0067)
 ```
+
+**Project-scoped `[solve]` keys:**
+
+| Key | Default | Description |
+|-----|---------|-------------|
+| `default_scenario` | `"problem"` | Scenario to use when the user's request doesn't clearly match any other routing entry. |
+| `fast_path_sources` | `["retro", "bug-bash", "amendment"]` | Finding source labels that trigger S-3 Fast-Path. Requires ADR-0067 (S-3). |
+
+**Project-scoped `[solve.retro]` keys:**
+
+```toml
+[solve.retro]
+enabled = true                # whether C-4 runs at all
+skip_when_no_findings = false # skip C-4 when retrospective produces no actionable findings
+```
+
+| Key | Default | Description |
+|-----|---------|-------------|
+| `[solve.retro] enabled` | `true` | Set to `false` to disable C-4 entirely for this project. |
+| `[solve.retro] skip_when_no_findings` | `false` | When `true`, C-4 skips writing a retro record if the retrospective produces no actionable findings. |
 
 **Path resolution:**
 1. If `$XDG_CONFIG_HOME` is set, use `$XDG_CONFIG_HOME/adr-skills/preferences.toml`.
@@ -234,12 +260,34 @@ C. Conclusion — code review, QA triage, report (defined in SKILL.md)
 
 **Composition:** S-2 wraps S-1. All mandatory safeguards (plan review, QA, ADR for every decision) flow through S-1 unchanged. S-2 does not duplicate S-1's logic — it orchestrates milestone selection and progress tracking.
 
+### S-3: Fast-Path
+
+Process pre-decided findings — retrospective findings, bug bash findings, amendments to existing decisions. Each finding is classified using the ADR list test before routing.
+
+Read [references/fast-path.md](references/fast-path.md) for the full workflow detail.
+
+**Lifecycle:**
+
+```
+Entry: Receive finding list, identify source (retro / bug-bash / amendment)
+   ↓
+1. Classify — apply ADR list test to each finding
+   ↓
+2. Author Y-statement ADRs — for ADR-worthy findings (no exploration)
+   ↓
+3. Build plan list — plan-only findings with [Source: <origin>] notes
+   ↓
+4. Delegate — /implement-adr with all Ready ADRs + plan-only task list
+   ↓
+C. Conclusion — C-1 → C-2 → C-3 → C-4
+```
+
 ## Conclusion
 
 After either S-1 or S-2 completes its implementation steps, run the conclusion sequence. These steps apply to any solve type regardless of which scenario created it.
 
 ```
-C-1 QA Triage → C-2 Code Review (optional) → C-3 Report
+C-1 QA Triage → C-2 Code Review (optional) → C-3 Report → C-4 Retrospective (optional)
 ```
 
 | ID | Step | Description |
@@ -253,6 +301,7 @@ C-1 QA Triage → C-2 Code Review (optional) → C-3 Report
 | C-2e | Re-review | Re-dispatch all reviewers to verify triage results |
 | C-2f | Gate | Block C-3 until all reviewers accept or no high-priority findings remain |
 | C-3 | Report | Summarize branch, completion status, remaining work |
+| C-4 | Retrospective (optional) | Run structured retro, classify findings, write preference updates to `.adr/preferences.toml` |
 
 ### C-1: QA Triage
 
@@ -335,6 +384,36 @@ Stay on the feature branch and present the completion report in the format appro
 **Next:** Milestone N+1 — [first objective]
 ```
 
+### C-4: Retrospective
+
+After C-3, run a structured retrospective on the completed solve run. C-4 is optional — skip when `[solve.retro] enabled = false` in `.adr/preferences.toml`. Skip also when `skip_when_no_findings = true` and the retrospective produces no actionable findings.
+
+**Entry condition:** C-3 has completed. C-4 does not affect C-3 artifacts.
+
+**Retrospective questions:**
+- What slowed things down?
+- What quality steps added the most value?
+- Were any steps unnecessary for this project's context?
+- What would you change for the next solve?
+
+**Classify each finding:**
+- **Pipeline preference** — expressible as an existing key in the preference schema. Propose a config update. If no matching key exists, the finding is note-only — do not invent new keys; new keys require a future ADR.
+- **Note-only** — useful context but not expressible as a current preference key.
+
+**Apply updates:**
+- Autonomous mode: write proposed changes to `.adr/preferences.toml` and log what changed. Log format: `C-4: set [solve.retro].key = value`.
+- Guided mode: present proposals, apply on confirmation.
+
+**Preferences write strategy:** Read the existing `.adr/preferences.toml`, modify only the target keys in memory, and rewrite the full file preserving all other sections and keys. Do not overwrite the file with only the modified section. If the file doesn't exist, note that no existing keys are available to update and skip the write step — do not create the file.
+
+**Retro record slug:** Derive the slug from the current UTC timestamp (`YYYYMMDD-HHMMSS`), not from user-supplied text. Example: `.adr/var/retro-20260410-143022.md`. If a file at the derived path already exists, append a counter suffix (`-2`, `-3`, etc.) rather than overwriting.
+
+**Unrecognized `fast_path_sources` values** are silently ignored when routing — log a warning for each unrecognized value: `Warning: fast_path_sources contains unrecognized value "<v>" — ignored`.
+
+**Zero-findings case:** When `skip_when_no_findings = false` and the retrospective produces no actionable findings, note "No findings to retrospect" and skip the 4 questions. Writing a retro record with empty answers serves no purpose regardless of the key value.
+
+**Write retro record:** Save findings to `.adr/var/retro-<slug>.md`. Include: run summary, findings, preference changes applied. Create `.adr/var/` if it doesn't exist.
+
 ## Cross-Skill Invocation
 
 The solve-adr agent delegates to companion skills by invoking them via the `skill` tool:
@@ -355,3 +434,4 @@ The platform constraint "do not invoke a skill that is already running" permits 
 
 - **[references/problem.md](references/problem.md)** — Full Problem workflow: intake, batch authoring, triage, implementation delegation, resume protocol, progress tracking.
 - **[references/roadmap.md](references/roadmap.md)** — Full Roadmap workflow: document format, milestone parsing, survey, selection, S-1 delegation, progress tracking, resume protocol.
+- **[references/fast-path.md](references/fast-path.md)** — Full Fast-Path workflow: finding intake, ADR list classification test, Y-statement authoring, plan-only routing, conclusion.
