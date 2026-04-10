@@ -54,6 +54,7 @@ The author-adr skill's maximum status transition is `Ready`. After a review Acce
 | `assets/decisions/0024-*.md` | Decision | ADR-0024: Defines Evaluation and Conclusion Checkpoint sections in template — referenced by A-0, A-2, A-3 |
 | `assets/decisions/0031-*.md` | Decision | ADR-0031: Defines dispatch hooks for review and tech-writer agents — referenced by A-0, A-2, A-3, A-4 |
 | `assets/decisions/0032-*.md` | Decision | ADR-0032: Defines draft worksheet workflow — referenced by A-1 |
+| `assets/decisions/0064-*.md` | Decision | ADR-0064: Defines UX/DX/TPM dispatch hooks for option evaluation — referenced by A-0, A-2 (Step 4a/4b) |
 
 When a step references an ADR (e.g., "per ADR-0031"), read the corresponding file from `assets/decisions/`.
 
@@ -142,10 +143,13 @@ tpm = ""                     # Agent for decision quality assessment (default: s
 | `ux_review` | `""` (skip) | UX Reviewer | Dispatched at Step 4a — evaluates options for user experience quality |
 | `dx_review` | `""` (skip) | DX Reviewer | Dispatched at Step 4a — evaluates options for developer experience quality |
 | `tpm` | `""` (skip) | Decision Arbiter | Dispatched at Step 4b — applies decision quality tests (ASR, START, ADMM) |
-**Contract:** The `review` and `tech_writer` hooks dispatch the same reference instructions regardless of which agent is configured — the configured agent's persona shapes how the instructions are applied, not what is checked. The `ux_review`, `dx_review`, and `tpm` hooks dispatch agents that run their own review procedures — each agent defines its own checklist and output format.
+
+- **Contract:** The `review` and `tech_writer` hooks dispatch the same reference instructions regardless of which agent is configured — the configured agent's persona shapes how the instructions are applied, not what is checked. The `ux_review`, `dx_review`, and `tpm` hooks dispatch agents that run their own review procedures — each agent defines its own checklist and output format.
 The `"interactive"` value is a reserved keyword meaning "prompt the user directly." Any other value is treated as an agent reference (e.g., a custom `.agent.md` persona). For `tech_writer`, `ux_review`, `dx_review`, and `tpm`, the empty string `""` means the hook is skipped — no dispatch occurs. Values containing only whitespace are treated as empty.
-**Graceful fallback:** If a configured agent reference cannot be resolved at runtime, fall back to the default value for that hook and warn the user.
-**Default behavior preservation:** When no `[author.dispatch]` table exists in `preferences.toml`, behavior is identical to the current workflow (general-purpose review, interactive user prompts, inline content writing, no option evaluation dispatch).
+
+- **Graceful fallback:** If a configured agent reference cannot be resolved at runtime, fall back to the default value for that hook and warn the user.
+
+- **Default behavior preservation:** When no `[author.dispatch]` table exists in `preferences.toml`, behavior is identical to the current workflow (general-purpose review, interactive user prompts, inline content writing, no option evaluation dispatch).
 
 **Mandatory dispatch compliance:** See P-1.
 ### A-0: Format Detection
@@ -155,7 +159,7 @@ Before any ADR operation, determine which ADR format to use:
    - If absent, default to `"nygard-agent"`.
    - Also read each `[author.dispatch]` key individually (`review`, `tech_writer`, `ux_review`, `dx_review`, `tpm`). For any key not present in the config, apply its default: `review = "general-purpose"`, `tech_writer = ""`, `ux_review = ""`, `dx_review = ""`, `tpm = ""`. Store for use during create and review workflows.
 2. **If `docs/adr/` does not exist** — bootstrap the decision log using the default nygard-agent format:
-   ```bash
+```bash
 make -f <skill-root>/Makefile init DIR=docs/adr
 ```
 3. **Cache the format** — for the rest of the session, pass `ADR_AGENT_SKILL_FORMAT=nygard-agent` (or the configured format) to all Makefile targets.
@@ -203,7 +207,7 @@ Read [references/create.md](references/create.md) for the full creation workflow
    - **If `tech_writer` is absent or empty** (default): the inline agent writes content directly, preserving current behavior.
    See [references/create.md](references/create.md) Step 3b for the full dispatch procedure.
 5. **Create via Makefile** — always use the Makefile target:
-   ```bash
+```bash
 make -f <skill-root>/Makefile new TITLE="Use PostgreSQL"
 ```
    Only fall back to calling scripts directly if the Makefile is unavailable. See [Escape Hatch](#escape-hatch-direct-script-usage) for direct usage.
