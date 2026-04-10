@@ -1,6 +1,6 @@
 # Architectural Decision Records — Agent Skills
 
-An [agentskills.io](https://agentskills.io)-compliant skill suite for AI coding agents to work with **Architectural Decision Records (ADRs)** — from authoring decisions to planning their implementation.
+[agentskills.io](https://agentskills.io)-compliant skills for AI coding agents to author, review, implement, and validate **Architectural Decision Records (ADRs)**.
 
 ## Skills
 
@@ -18,7 +18,7 @@ Create, review, revise, and manage ADRs.
 
 ### solve-adr
 
-Scenario-driven problem solving orchestrator. Delegates to `/author-adr`, `/prototype-adr`, and `/implement-adr`.
+Problem-solving orchestrator. Delegates to `/author-adr`, `/prototype-adr`, and `/implement-adr`.
 
 | Capability | Details |
 |---|---|
@@ -42,11 +42,31 @@ Turn accepted ADRs into actionable implementation plans.
 | **Traceability** | Link plan tasks back to source ADR sections |
 | **Participation modes** | Full control, Guided, Autonomous, or Weighted (cost-driven) |
 
+### prototype-adr
+
+Run controlled experiments to validate architectural decisions.
+
+| Capability | Details |
+|---|---|
+| **Prototype** | Run spikes or PoCs scoped to a specific architectural question |
+| **Experiment** | Define hypotheses, collect observations, draw conclusions |
+| **Report** | Produce a structured findings report that feeds back into `author-adr` |
+
 ## Quick Start
 
-Install the skill by adding it to your agent's skill configuration, then ask your agent to:
+Install the skill (see [Installation](#installation) below), then use any of the examples below.
 
-> **Note:** Running sessions will need to be restarted for the skill to be picked up.
+### Installation
+
+```sh
+# Clone the repo
+git clone https://github.com/juliusl/adr-skills
+
+# Install the skills to ~/.copilot/skills
+make install-skills
+```
+
+> **Tip:** If installation fails, verify `~/.copilot/skills/` exists and is writable. Re-run `make install-skills`. Running sessions must be restarted after installation.
 
 ### When you have a decision ready
 
@@ -54,7 +74,7 @@ Install the skill by adding it to your agent's skill configuration, then ask you
 Create an ADR for choosing PostgreSQL as our primary database.
 ```
 
-The agent will select the appropriate template, scaffold the record, and guide you through filling in the decision context, options, and rationale.
+The skill selects a template, scaffolds the record, and prompts for decision context, options, and rationale. Output is `NNNN-<title>.md`. After creation the skill offers a review pass (recommended).
 
 ### When you have a problem but no solution yet
 
@@ -62,16 +82,14 @@ The agent will select the appropriate template, scaffold the record, and guide y
 I need to figure out how to handle persistent event storage. Help me explore options.
 ```
 
-The agent will create a TBD ADR, help you discover and evaluate options through dialogue, and converge on a decision — capturing the full exploration as architectural knowledge.
+The skill creates a TBD ADR, explores options, and converges on a decision — recording the full evaluation as structured ADR content.
 
-> For more explicit control if you are using Copilot, you can use skill routing:
+> For more explicit control in **GitHub Copilot CLI** or **Copilot Chat**, use skill routing:
 >
 > ```sh
 > /author-adr Create an ADR for choosing PostgreSQL as our primary database.
 > /solve-adr I have a problem to solve — we need a caching strategy.
 > ```
-
-The skill will generate a file with the format `NNNN-<title>.md`. After creation, the skill will offer to review and revise the ADR (recommended).
 
 When you are ready to implement:
 
@@ -82,42 +100,19 @@ When you are ready to implement:
 /implement-adr 0002, autonomously w/ auto-commits
 ```
 
-This writes a plan under `docs/plans/` in the format `<ADR-RANGE>.<REVISION>.plan.md`. If the plan is extensive and the session is already saturated, you can create a new session:
+This writes a plan under `docs/plans/` in the format `<ADR-RANGE>.<REVISION>.plan.md`. If the session is saturated, continue in a new session:
 
 ```
 /implement-adr Implement ADR 0002 using plan 0002.0.plan.md
 ```
 
-**Installing to Copilot user-scoped skills**
-
-```sh
-# Clone the repo
-git clone github.com/juliusl/adr-skills
-
-# Install the skills to ~/.copilot/skills
-make install-skills
-```
+> Participation modes (full-control, guided, autonomous, weighted) and auto-commit can be configured in `~/.config/adr-skills/preferences.toml` — see [docs/PREFERENCES.md](docs/PREFERENCES.md).
 
 ## Usage Tips
 
 ### Use solve-adr for problems, author-adr for decisions
 
-If you know what you want to decide, use **author-adr** and be specific:
-
-```
-/author-adr Create an ADR for choosing PostgreSQL as our primary database.
-PostgreSQL shows significant performance over other alternatives (MySQL, SQLite)
-which is important as our service is called in a hot-path.
-```
-
-If you have a problem but haven't picked a solution, use **solve-adr** instead:
-
-```
-/solve-adr We need a database for our event storage service. The hot path
-requires sub-millisecond reads. Help me figure out the best approach.
-```
-
-The solve workflow guides you through option discovery, requirements refinement, and convergence — delegating to `/author-adr` for decisions, `/prototype-adr` for experiments, and `/implement-adr` for execution.
+Use **author-adr** when the decision is already known. Use **solve-adr** when the problem is known but the solution is not — it delegates to `/author-adr`, `/prototype-adr`, and `/implement-adr` as needed.
 
 ### Elaborate when describing context
 
@@ -128,15 +123,13 @@ Whether creating or solving, more context produces better ADRs. Include:
 
 ### Review and revise every ADR
 
-After authoring, always run the review. The review catches reasoning fallacies, anti-patterns, and missing quality criteria that are easy to overlook during drafting. If the verdict is "Revise," the skill will walk you through each finding interactively.
+Always run the review after authoring. It catches reasoning fallacies, anti-patterns, and missing quality criteria. A "Revise" verdict returns each finding with guidance for addressing it.
 
 ## Configuration
 
-All skills read preferences from `~/.config/adr-skills/preferences.toml` (user-scoped) and `.adr/preferences.toml` (project-scoped). Project values override user values.
+Skills read preferences from `~/.config/adr-skills/preferences.toml` (user-scoped) and `.adr/preferences.toml` (project-scoped). Project values override user values. See [docs/PREFERENCES.md](docs/PREFERENCES.md) for all keys and defaults.
 
-See [docs/PREFERENCES.md](docs/PREFERENCES.md) for the full reference with all keys, defaults, and example configurations.
-
-When using solve-adr for end-to-end workflows, it creates a `solve/<topic>` feature branch to isolate its output from your working branch. The resulting branch is ready for PR review.
+`solve-adr` creates a `solve/<topic>` branch for its output — the resulting branch is ready for PR review.
 
 ## Project Structure
 
@@ -181,7 +174,7 @@ When using solve-adr for end-to-end workflows, it creates a `solve/<topic>` feat
 ## Development
 
 ```bash
-# Run all tests (10 unified format tests)
+# Run all tests (32 tests)
 make test
 
 # Build Rust tooling (requires Rust toolchain)
@@ -192,15 +185,15 @@ make validate-setup   # one-time
 make validate-all     # both skills
 
 # Install bundled custom agents
-make install-agents
+make install-agents        # installs bundled custom agents to ~/.copilot/agents
 
 # Local testing in Copilot CLI
-make dogfood-copilot      # installs both skills
+make dogfood-copilot      # installs both skills for local testing in Copilot CLI
 ```
 
 ### adr-db (Rust CLI)
 
-The `src/crates/adr-db/` directory contains a Rust binary for ingesting JSONL data into a local SQLite database. It serves as plumbing between skill JSONL producers and downstream consumers.
+`adr-db` is a Rust CLI that ingests JSONL data into a local SQLite database. It bridges skill JSONL output and downstream consumers.
 
 ```bash
 # Initialize the database
@@ -241,4 +234,4 @@ Contributors who only work on shell scripts do not need Rust or `diesel_cli` ins
 
 ## License
 
-CC-BY-4.0 — see [SKILL.md](SKILL.md) for details.
+CC-BY-4.0
