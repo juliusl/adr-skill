@@ -39,7 +39,7 @@ The author-adr skill's maximum status transition is `Ready`. After a review Acce
 | A-1 | Draft Worksheet | Yes | Capture intent in a draft worksheet before create |
 | A-2 | Create | Yes | Run the create workflow to produce the ADR |
 | A-3 | Review | Yes | Run structured review using the configured review agent |
-| A-4 | Revise | Conditional | Run if review verdict is "Revise"; use configured editor agent |
+| A-4 | Revise | Conditional | Run if review verdict is "Revise"; calling agent applies fixes inline |
 | A-5 | Re-review | Conditional | Run if revisions were substantive; max 3 cycles |
 | A-6 | Manage | No | Status transitions, supersede, link, split — on request |
 
@@ -123,11 +123,10 @@ username = ""        # override for $(whoami) in user-mode filenames
 3. Update cross-references: links from other user-mode ADRs or plans that reference the old filename
 
 ### Agent Dispatch (`[author.dispatch]`)
-Per ADR-0031 and ADR-0064, the author-adr workflow supports configurable agent dispatch at six hook points: writing (A-2), review (A-3), revision (A-4), and option evaluation (Step 4a/4b). Each hook can be set to a specific agent or left at its default.
+Per ADR-0031 and ADR-0064, the author-adr workflow supports configurable agent dispatch at five hook points: writing (A-2), review (A-3), and option evaluation (Step 4a/4b). Each hook can be set to a specific agent or left at its default.
 ```toml
 [author.dispatch]
 review = "general-purpose"   # Agent for structured review (default)
-editor = "interactive"       # Agent for editorial decisions (default: user)
 tech_writer = ""             # Agent for A-2 content writing (default: inline)
 ux_review = ""               # Agent for UX option review (default: skip)
 dx_review = ""               # Agent for DX option review (default: skip)
@@ -136,12 +135,11 @@ tpm = ""                     # Agent for decision quality assessment (default: s
 | Hook | Default | Role | Instructions |
 |------|---------|------|-------------|
 | `review` | `"general-purpose"` | Reviewer | Receives `polish.md` — executes Review Phase (R-1 through R-6) |
-| `editor` | `"interactive"` | Editor | Receives `polish.md` — executes Revision Phase (V-1 through V-6) |
 | `tech_writer` | `""` (inline) | Writer | Dispatched at A-2 step 4 — writes ADR body content (Context through Quality Strategy) |
 | `ux_review` | `""` (skip) | UX Reviewer | Dispatched at Step 4a — evaluates options for user experience quality |
 | `dx_review` | `""` (skip) | DX Reviewer | Dispatched at Step 4a — evaluates options for developer experience quality |
 | `tpm` | `""` (skip) | Decision Arbiter | Dispatched at Step 4b — applies decision quality tests (ASR, START, ADMM) |
-**Contract:** The `review`, `editor`, and `tech_writer` hooks dispatch the same reference instructions regardless of which agent is configured — the custom agent's persona shapes HOW it applies the instructions, not WHAT it checks. The `ux_review`, `dx_review`, and `tpm` hooks dispatch agents that run their own review procedures — each agent defines its own checklist and output format.
+**Contract:** The `review` and `tech_writer` hooks dispatch the same reference instructions regardless of which agent is configured — the custom agent's persona shapes HOW it applies the instructions, not WHAT it checks. The `ux_review`, `dx_review`, and `tpm` hooks dispatch agents that run their own review procedures — each agent defines its own checklist and output format.
 The `"interactive"` value is a reserved keyword meaning "prompt the user directly." Any other value is treated as an agent reference (e.g., a custom `.agent.md` persona). For `tech_writer`, `ux_review`, `dx_review`, and `tpm`, the empty string `""` means the hook is skipped — no dispatch occurs. Values containing only whitespace are treated as empty.
 **Graceful fallback:** If a configured agent reference cannot be resolved at runtime, fall back to the default value for that hook and warn the user.
 **Default behavior preservation:** When no `[author.dispatch]` table exists in `preferences.toml`, behavior is identical to the current workflow (general-purpose review, interactive user prompts, inline content writing, no option evaluation dispatch).
@@ -152,7 +150,7 @@ Before any ADR operation, determine which ADR format to use:
 1. **Read the config file** — resolve the config path (see [Configuration](#configuration)) and read `[author].template` from `preferences.toml`.
    - If set (e.g., `"nygard-agent"`, `"wi-nygard-agent"`, `"nygard"`, or `"madr"`), use it directly.
    - If absent, default to `"nygard-agent"`.
-   - Also read each `[author.dispatch]` key individually (`review`, `editor`, `tech_writer`, `ux_review`, `dx_review`, `tpm`). For any key not present in the config, apply its default: `review = "general-purpose"`, `editor = "interactive"`, `tech_writer = ""`, `ux_review = ""`, `dx_review = ""`, `tpm = ""`. Store for use during create, review, and revise workflows.
+   - Also read each `[author.dispatch]` key individually (`review`, `tech_writer`, `ux_review`, `dx_review`, `tpm`). For any key not present in the config, apply its default: `review = "general-purpose"`, `tech_writer = ""`, `ux_review = ""`, `dx_review = ""`, `tpm = ""`. Store for use during create and review workflows.
 2. **If `docs/adr/` does not exist** — bootstrap the decision log using the default nygard-agent format:
    ```bash make -f <skill-root>/Makefile init DIR=docs/adr ```
 3. **Cache the format** — for the rest of the session, pass `ADR_AGENT_SKILL_FORMAT=nygard-agent` (or the configured format) to all Makefile targets.
@@ -216,19 +214,10 @@ The review process covers:
 4. **Consequence validation** — interactively verify stated consequences with the user
 5. **7-point checklist** — structured quality assessment
 6. **Verdict** — Accept (→ Ready status), Revise, or Rethink
-7. **Accept-with-suggestions** — if the verdict is Accept but includes minor suggestions, apply the dispatch threshold: for ≥3 suggestions or any Medium+ item, dispatch the editor agent for a polish pass (see polish.md §R-6a); for ≤2 Low-severity suggestions, apply inline without dispatch. If no editor agent is configured, present suggestions to the user as optional improvements.
-8. **Revision handoff** — if the verdict is "Revise":
-   - If `editor` is `"interactive"` (or absent): offer to interactively address the review comments. If the user agrees, proceed to [Revising an ADR](#revising-an-adr).
-   - If `editor` is an agent reference: automatically proceed to [Revising an ADR](#revising-an-adr) — the configured editor agent stands in for the user during triage. Do not ask for permission; the delegated editor handles the review→revise loop.
+7. **Accept-with-suggestions** — if the verdict is Accept with minor suggestions, record them in the review cycle marker. Accept means the ADR is ready — suggestions are informational, not blocking.
+8. **Revision handoff** — if the verdict is "Revise", proceed to [Revising an ADR](#revising-an-adr). The calling agent reads the findings and applies revisions inline.
 ### A-4: Revise
-Read [references/polish.md](references/polish.md) for the full quality loop process. Direct the editor agent to the Revision Phase section (steps V-1 through V-6). Use this after a review produces a "Revise" verdict. When `[author.dispatch].editor` is configured with an agent reference (not `"interactive"`), the configured editor agent stands in for the user during triage — see [Agent Dispatch](#agent-dispatch-authordispatch).
-The revision process covers:
-1. **Load review comments** — parse the structured review output into discrete revision items
-2. **Present each comment** — show findings one at a time with context
-3. **Collect user response** — for each comment, the user can address it, reject it, or defer it to another ADR
-4. **Apply revisions** — update the ADR with the user's approved changes
-5. **Produce revision summary** — document what was addressed, deferred, or rejected
-6. **Recommend re-review** — suggest re-review if substantive changes were made
+Read [references/polish.md](references/polish.md) for the revision phase. The calling agent reads the review findings and fixes them inline — no separate editor dispatch. The revision phase is lightweight: fix findings, append a review cycle marker, re-review if substantive changes were made.
 ### A-5: Re-review
 When A-4 revisions are substantive (any H/M findings addressed), loop back to A-3 for re-review. Max 3 review→revise cycles. Read [references/polish.md](references/polish.md) §V-6 for the re-review recommendation criteria.
 ### A-6: Manage

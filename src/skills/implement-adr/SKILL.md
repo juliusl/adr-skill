@@ -48,7 +48,7 @@ If a finding genuinely cannot be addressed in the current scope, it requires exp
 | I-5 | Update ADR Status | Transition source ADRs to Planned |
 | I-6 | Participation Check | Load or prompt for participation mode and auto-commit |
 | I-7 | Execute Plan | Run tasks per participation mode |
-| I-7b | QA Validation | Sub-agent validates completed stage(s) against QA plan |
+| I-7b | QA Validation | Sub-agent validates all completed stages against QA plan |
 | I-8 | Finalize | Update ADR status to Accepted, append implementation summary |
 
 ## Assets
@@ -269,33 +269,19 @@ After the user approves a sentinel task, the skill continues with subsequent tas
 The skill supports an optional behavior: **create a git commit each time a task's acceptance criteria are all satisfied**. Opt-in, disabled by default.
 #### Stage Completion Sequence
 ### I-7b: QA Validation
-When all tasks in a stage are complete, determine whether to run QA now or batch with subsequent stages.
+After all stages are complete, run QA validation across the entire implementation.
 
-#### I-7b.1: QA Batching Decision
-At each stage boundary, evaluate whether to trigger QA immediately or defer:
-
-| Condition | Action |
-|-----------|--------|
-| Stage contains any `[medium]` or `[heavy]` task | QA immediately — validate this stage before proceeding |
-| Stage contains only `[small]` tasks AND next stage also contains only `[small]` tasks | Batch — defer QA and continue to next stage |
-| Stage contains only `[small]` tasks AND next stage contains `[medium]`/`[heavy]` tasks | QA immediately — validate the accumulated batch before the heavier stage begins |
-| Stage is the final stage in the plan | QA immediately — never skip the final QA pass |
-| Deferred stages accumulate to 3+ stages without QA | QA immediately — cap batch size to limit blast radius |
-
-When batching, the QA executor validates all deferred stages together in a single pass. The executor receives the combined diff and the QA checks for all batched stages.
-
-#### I-7b.2: QA Execution
-When QA triggers (immediately or after batching):
-1. **Spawn a separate general-purpose QA executor agent** to review the stage(s) against the QA plan. The agent that executed the tasks must not QA its own work. Read the [QA Planning Protocol](references/qa-planning.md#qa-execution) for the executor prompt.
+#### I-7b.1: QA Execution
+1. **Spawn a separate general-purpose QA executor agent** to review all stages against the QA plan. The agent that executed the tasks must not QA its own work. Read the [QA Planning Protocol](references/qa-planning.md#qa-execution) for the executor prompt.
    - **Pass** — mark QA checks `[x]` in the QA plan, proceed.
    - **Fail** — pause execution, report findings to the main executor, remediate before continuing.
    - If no QA plan exists, skip this step.
-2. **Stage-boundary report** — report what was completed in the stage(s) per the participation mode behavior.
+2. **Completion report** — report what was completed across all stages per the participation mode behavior.
 
-**Enforcement:** QA execution is mandatory regardless of participation mode — including autonomous mode. Skipping QA execution is a workflow violation. If skipped, log the justification inline before proceeding. Generating a QA plan but never executing it defeats its purpose — the QA plan exists to catch issues the executor didn't think of. Batching stages is an acceptable optimization; skipping QA entirely is not.
+**Enforcement:** QA execution is mandatory regardless of participation mode — including autonomous mode. Skipping QA execution is a workflow violation. Generating a QA plan but never executing it defeats its purpose — the QA plan exists to catch issues the executor didn't think of.
 
-This sequence is **mandatory regardless of participation mode**. Even in autonomous mode with auto-commit, the QA executor must run between the last task completing and the stage being marked done.
-> **Note on auto-commit interaction:** When auto-commit is enabled, individual tasks are committed as they complete (see below). The QA executor reviews the cumulative diff across all batched stages. If QA fails and remediation changes are needed, those changes get their own commit.
+This sequence is **mandatory regardless of participation mode**. Even in autonomous mode with auto-commit, the QA executor must run after all stages complete.
+> **Note on auto-commit interaction:** When auto-commit is enabled, individual tasks are committed as they complete (see below). The QA executor reviews the cumulative diff across all stages. If QA fails and remediation changes are needed, those changes get their own commit.
 #### Auto-Commit Mechanics
 **When it triggers:** After all `- [ ]` checkboxes in a task's Test & Acceptance Criteria are marked `- [x]` (per the Task Execution Protocol).
 
