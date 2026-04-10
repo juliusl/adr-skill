@@ -38,9 +38,12 @@ None of these agents have integration points in the authoring workflow. ADR-0031
 Extend Step 4 of the create workflow with two new sub-steps:
 
 - **Step 4a** — dispatch `ux_review` and `dx_review` agents in parallel on the Options section. Each agent runs its standard review procedure and returns findings using its established output format.
-- **Step 4b** — dispatch `tpm` with the ADR content and UX/DX findings. The TPM applies ASR, START, and ADMM tests, detects anti-patterns, and produces a readiness assessment.
+- **Step 4b** — dispatch `tpm` with the ADR content. The TPM applies ASR, START, and ADMM tests, detects anti-patterns, and produces a readiness assessment.
 
-The TPM verdict feeds the checkpoint's Assessment field (`Proceed` / `Pause for validation` / `Skipped`).
+<!-- ADR-0066: Steps 4a and 4b now dispatch in parallel. The TPM no longer
+     receives UX/DX findings as input. Findings are consolidated after both return. -->
+
+The consolidated verdict feeds the checkpoint's Assessment field (`Proceed` / `Pause for validation` / `Skipped`).
 
 New dispatch keys added to `[author.dispatch]`:
 
