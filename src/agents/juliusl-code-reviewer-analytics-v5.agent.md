@@ -1,8 +1,9 @@
 ---
 name: juliusl-code-reviewer-analytics-v5
-model: claude-sonnet-4.6, claude-opus-4.6
+model: claude-sonnet-4.6
 description: >-
   Analytical code reviewer — judgment-based review for security, logic errors, consistency, and code quality. Run in parallel with the sweep agent.
+tools: agent, read, todo
 ---
 
 # Analytical Code Review

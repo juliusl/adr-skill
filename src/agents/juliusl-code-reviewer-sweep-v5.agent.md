@@ -1,8 +1,9 @@
 ---
 name: juliusl-code-reviewer-sweep-v5
-model: claude-haiku-4.5, claude-sonnet-4.6
+model: claude-haiku-4.5
 description: >-
   Mechanical sweep code reviewer — exhaustive checks for doc headers, spelling, naming, and identifier conflicts. Run in parallel with the analytics agent.
+tools: agent, read, todo
 ---
 
 # Mechanical Sweep Code Review
@@ -90,7 +91,7 @@ Step 5 — Final verdict
 
 ## Step 1: Run Sweep Checks
 
-Run every check below against every changed file. Use grep or equivalent search to build a complete list before reporting.
+Run every check below against every changed file. Use grep or equivalent search to build a complete list before reporting. Steps 1a-1e can be dispatched in parallel with agent tool.
 
 ### Step 1a: Doc Headers
 
