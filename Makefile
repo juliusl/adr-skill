@@ -9,7 +9,7 @@ SOLVE_SKILL_DIR     := $(CURDIR)/src/skills/solve-adr
 # Legacy alias so existing references keep working
 SKILL_DIR := $(AUTHOR_SKILL_DIR)
 
-.PHONY: help test build-tools install-agents install-skills validate-setup validate validate-all check-refs
+.PHONY: help test build-tools install-agents install-skills install-user init-project validate-setup validate validate-all check-refs
 
 help: ## Show available targets
 	@echo "ADR Skill Development Makefile"
@@ -67,6 +67,56 @@ install-skills: ## Install all skills to ~/.copilot/skills
 	@rm -rf $(HOME)/.copilot/skills/solve-adr
 	cp -r $(SOLVE_SKILL_DIR) $(HOME)/.copilot/skills/solve-adr
 	@echo "Installed to ~/.copilot/skills/solve-adr"
+
+install-user: install-skills install-agents init-project ## Full user install: skills, agents, project prefs (autonomous)
+	@echo ""
+	@echo "=== Install complete ==="
+	@echo "Skills:      ~/.copilot/skills/{author,implement,prototype,solve}-adr"
+	@echo "Agents:      ~/.copilot/agents/*.agent.md"
+	@echo "Project:     $${PROJECT_DIR:-$$PWD}/.adr/ (user-mode, full dispatch hooks)"
+	@echo ""
+	@echo "All dispatch hooks configured for full automation."
+	@echo "To customize: $${PROJECT_DIR:-$$PWD}/.adr/preferences.toml"
+
+init-project: ## Bootstrap .adr/ in target project (set PROJECT_DIR= or defaults to current dir)
+	@project_dir="$${PROJECT_DIR:-$$PWD}"; \
+	adr_dir="$$project_dir/.adr"; \
+	prefs="$$adr_dir/preferences.toml"; \
+	mkdir -p "$$adr_dir"; \
+	if [ ! -f "$$adr_dir/.gitignore" ]; then \
+		printf '%s\n' 'var/' 'usr/' > "$$adr_dir/.gitignore"; \
+		echo "Created $$adr_dir/.gitignore"; \
+	else \
+		echo "$$adr_dir/.gitignore already exists — skipping"; \
+	fi; \
+	if [ -f "$$prefs" ]; then \
+		echo "$$prefs already exists — skipping"; \
+		echo "To reset, delete the file and re-run."; \
+	else \
+		printf '%s\n' \
+			'[author]' \
+			'scope = "user"' \
+			'' \
+			'[author.dispatch]' \
+			'review = "juliusl-editor-v5"' \
+			'tech_writer = "juliusl-tech-writer-v1"' \
+			'ux_review = "juliusl-ux-reviewer-v1"' \
+			'dx_review = "juliusl-dx-reviewer-v1"' \
+			'tpm = "juliusl-tpm-v1"' \
+			'' \
+			'[implement]' \
+			'participation = "autonomous"' \
+			'auto_commit = true' \
+			'' \
+			'[solve]' \
+			'participation = "autonomous"' \
+			'auto_delegate = true' \
+			'' \
+			'[solve.dispatch]' \
+			'code_review = ["juliusl-code-reviewer-analytics-v5", "juliusl-code-reviewer-sweep-v5"]' \
+			> "$$prefs"; \
+		echo "Created $$prefs (scope = user, full automation)"; \
+	fi
 
 SKILLS_REF_DIR := /tmp/agentskills/skills-ref
 SKILLS_REF := $(SKILLS_REF_DIR)/.venv/bin/skills-ref

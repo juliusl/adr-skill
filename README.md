@@ -66,6 +66,13 @@ git clone https://github.com/juliusl/adr-skills
 make install-skills
 ```
 
+To install skills, agents, and bootstrap a project with full automation (user-mode scope, all dispatch hooks):
+
+```sh
+# From another project:
+make -C /path/to/adr-skills install-user PROJECT_DIR=$(pwd)
+```
+
 > **Tip:** If installation fails, verify `~/.copilot/skills/` exists and is writable. Re-run `make install-skills`. Running sessions must be restarted after installation.
 
 ### When you have a decision ready
