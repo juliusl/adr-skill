@@ -91,6 +91,8 @@ Watch for these fallacies when drafting and use the countermeasures:
 | Step 3a | Draft Worksheet integration |
 | Step 3b | Tech-Writer Dispatch (conditional) — delegate writing to configured agent |
 | Step 4 | Evaluate Readiness — Evaluation Checkpoint gate |
+| Step 4a | UX/DX Option Review (conditional) — dispatch reviewers on Options |
+| Step 4b | TPM Decision Quality Assessment (conditional) — dispatch TPM with findings |
 | Step 5 | Validate Completion — implementability criteria |
 | Step 5a | Quick self-test |
 | Step 6 | Conclusion Checkpoint — verify before requesting review |
@@ -105,13 +107,15 @@ Step 3 — Draft the ADR
   └─ Step 3b — Tech-Writer Dispatch (conditional: tech_writer configured?)
   ↓
 Step 4 — Evaluation Checkpoint (conditional: Proceed / Pause / Skip)
+  ├─ Step 4a — UX/DX Option Review (conditional: ux_review or dx_review configured?)
+  └─ Step 4b — TPM Decision Quality Assessment (conditional: tpm configured?)
   ↓
 Step 5 — Validate Completion (implementability criteria)
   ↓
 Step 6 — Conclusion Checkpoint (conditional: Ready / Needs work / Skip)
 ```
 
-**Conditional steps:** Step 4 and Step 6 are checkpoints with three possible assessments. If the assessment is "Skipped", record the rationale and proceed to the next step. Step 3b is conditional on `tech_writer` being configured.
+**Conditional steps:** Step 4 and Step 6 are checkpoints with three possible assessments. If the assessment is "Skipped", record the rationale and proceed to the next step. Step 3b is conditional on `tech_writer` being configured. Step 4a is conditional on `ux_review` or `dx_review` being configured. Step 4b is conditional on `tpm` being configured.
 
 ## Step 1: Assess Architectural Significance (ASR Test)
 
