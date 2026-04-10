@@ -115,7 +115,7 @@ Step 5 — Validate Completion (implementability criteria)
 Step 6 — Conclusion Checkpoint (conditional: Ready / Needs work / Skip)
 ```
 
-**Conditional steps:** Step 4 and Step 6 are checkpoints with three possible assessments. If the assessment is "Skipped", record the rationale and proceed to the next step. Step 3b is conditional on `tech_writer` being configured. Step 4a is conditional on `ux_review` or `dx_review` being configured. Step 4b is conditional on `tpm` being configured.
+**Conditional steps:** Step 4 and Step 6 are checkpoints with three possible assessments. If the assessment is "Skipped", record the rationale and proceed to the next step. Step 3b is conditional on `tech_writer` being configured. Step 4a is conditional on `ux_review` or `dx_review` being configured. Step 4b is conditional on `tpm` being configured and runs after Step 4a — it consumes Step 4a's findings when available.
 
 ## Step 1: Assess Architectural Significance (ASR Test)
 
@@ -236,6 +236,7 @@ When UX or DX review agents are configured, dispatch them to evaluate the Option
    - If either agent returns a **Redesign** verdict, set the checkpoint Assessment to `Pause for validation` and populate Validation needs with the findings.
    - If either agent returns a **Revise** verdict, present Medium findings as checkpoint considerations — they inform the decision but do not block it.
    - If both return **Accept** or **Accept with suggestions**, proceed normally.
+   - If an agent returns an unrecognized verdict, log the raw output for the user to review, treat as `Accept with suggestions`, and warn that manual review is needed.
 
 4. **Fallback** — if a configured agent cannot be resolved at runtime, warn and skip that agent. If all configured agents fail to resolve, skip Step 4a.
 
@@ -254,10 +255,11 @@ When a TPM agent is configured, dispatch it to assess decision quality at the Ev
 
 2. **Dispatch via `task` tool** — invoke the configured TPM agent.
 
-3. **Incorporate assessment** — after the TPM returns:
-   - If the TPM flags **not-ready** (missing START criteria, detected anti-patterns, or fallacies), set the checkpoint Assessment to `Pause for validation` and populate Validation needs with the TPM's findings.
-   - If the TPM flags **ready with findings**, present findings as checkpoint considerations and proceed with `Proceed`.
-   - If the TPM flags **ready**, proceed normally.
+3. **Incorporate assessment** — after the TPM returns, map its verdict using its established output contract (see the agent's documentation for verdict and finding structure):
+   - If the TPM verdict maps to **not-ready** (missing START criteria, detected anti-patterns, or fallacies), set the checkpoint Assessment to `Pause for validation` and populate Validation needs with the TPM's findings.
+   - If the TPM verdict maps to **ready with findings**, present findings as checkpoint considerations and proceed with `Proceed`.
+   - If the TPM verdict maps to **ready**, proceed normally.
+   - If the verdict format is unrecognized, log the raw output for the user, treat as `ready with findings`, and warn the user to review manually.
 
 4. **Fallback** — if the configured agent cannot be resolved at runtime, fall back to the inline agent's existing checkpoint assessment and warn the user.
 
