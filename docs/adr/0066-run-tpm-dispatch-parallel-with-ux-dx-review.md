@@ -1,7 +1,7 @@
 # 66. Run TPM dispatch parallel with UX/DX review
 
 Date: 2026-04-10
-Status: Planned
+Status: Accepted
 Links:
 - Amends [ADR-0064](0064-add-option-evaluation-dispatch-hooks-for-review-and-decision-arbitration.md)
 
@@ -41,4 +41,4 @@ Changes:
 - [x] Backwards Compatible
 - ~~Integration tests~~
 - [x] Tooling
-- [ ] User documentation
+- [x] User documentation

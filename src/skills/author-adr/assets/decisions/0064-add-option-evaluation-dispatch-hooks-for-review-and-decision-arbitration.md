@@ -119,7 +119,7 @@ The Evaluation Checkpoint evaluates option readiness — UX/DX and TPM assessmen
 **Neutral:**
 
 - All three hooks are optional. Empty or absent keys preserve current behavior — no UX/DX review, no TPM, checkpoint runs as before.
-- UX, DX, and TPM hooks configure independently — any subset works. An author can enable TPM without enabling UX/DX review. When TPM is configured without UX/DX hooks, it operates on ADR content alone — UX/DX findings are an optional enrichment, not a prerequisite.
+- UX, DX, and TPM hooks configure independently — any subset works. An author can enable TPM without enabling UX/DX review. When both are configured, they dispatch in parallel (per ADR-0066). When TPM is configured without UX/DX hooks, it operates on ADR content alone.
 
 ## Quality Strategy
 
