@@ -159,7 +159,7 @@ Don't decide too early (reduces flexibility) or too late (causes costly rework).
 
 1. Identification of design issue & options
 2. Criteria collection & option analysis
-3. Decision making
+3. Decision-making
 4. Decision capturing (ADR documentation)
 5. Decision enforcement
 
@@ -303,7 +303,7 @@ After completing the Quality Strategy section, pause at the **Conclusion Checkpo
    - `Skipped — <rationale>` — the user chooses to skip (record why).
 
 2. **Check the baseline items:**
-   - [ ] Decision justified (Y-statement or equivalent)
+   - [ ] Decision justified (Y-Statement or equivalent)
    - [ ] Consequences include positive, negative, and neutral outcomes
    - [ ] Quality Strategy reviewed — relevant items checked, irrelevant struck through
    - [ ] Links to related ADRs populated
