@@ -1,7 +1,7 @@
 # 73. Add configurable defaults to CLI setup and init
 
 Date: 2026-04-10
-Status: Planned
+Status: Accepted
 Last Updated: 2026-04-10
 Links: ADR-0071, ADR-0072
 
