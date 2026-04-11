@@ -38,7 +38,7 @@ When `auto_delegate = true`, implement accepted ADRs via `/implement-adr` — do
 - Not session management concerns (e.g., "this will be extensive", "let me check session state", "deferring to a future session"). The plan, commits, and QA checkpoints exist to handle long sessions — the process architecture already solves the context problem
 - Skill files (SKILL.md, references/, eval_queries.json) are executable agent instructions, not passive documentation — changes carry the same risk as code changes and require the full `/implement-adr` pipeline
 
-**Enforcement:** When step 4 (Implement) completes and the report is generated, check: did `/implement-adr` actually run for every Ready ADR? If any Ready ADR was not delegated, this is a P-3 violation. Log the violation and invoke `/implement-adr` before proceeding to Conclusion (C-1).
+**Enforcement:** When `auto_delegate = true` and step 4 (Implement) completes, check: did `/implement-adr` actually run for every Ready ADR? If any Ready ADR was not delegated, this is a P-3 violation. Log the violation and invoke `/implement-adr` before proceeding to Conclusion (C-1).
 
 ### P-4: Triage all deferred QA findings before milestone completion
 
@@ -66,7 +66,7 @@ In autonomous mode, apply this heuristic: if the minimum fix is a test or valida
 
 **Resume protocol:** Every solvable thing is resumable. When invoked on a problem that already has ADRs, the agent picks up where it left off — skipping completed steps, implementing remaining ADRs. Resume is not a separate scenario; it's how solve works across sessions.
 
-**Routing:** The agent selects the scenario based on the user's request. If the request doesn't match any scenario, explain what was requested and which scenario would handle it.
+**Routing:** The agent selects the scenario based on the user's request. If the request doesn't match any scenario, explain what was requested, list the available scenarios (S-1 Problem, S-2 Roadmap, S-3 Fast-Path), and ask the user to clarify.
 
 ```
 User request
@@ -177,7 +177,7 @@ Run this before every scenario.
 4. **Load dispatch config** — read `[solve.dispatch]` keys (`code_review`) for optional code review dispatch in C-2. Normalize `code_review` to a list: if it's a string, wrap in a single-element list. Filter out empty or whitespace-only entries. If the resulting list is empty, C-2 will be skipped. Read `[solve] fast_path_sources` for S-3 routing — validate each value against the recognized set (`retro`, `bug-bash`, `amendment`). Log a warning for each unrecognized value: `Warning: fast_path_sources contains unrecognized value "<v>" — ignored`.
 5. **Pre-flight check** — before proceeding to any scenario, verify the environment:
    - `git status --porcelain` — warn if the working tree is dirty (branching in S-1 requires a clean tree)
-   - `make test` — run the test suite to establish a clean baseline. If tests fail, note pre-existing failures so they aren't mistaken for regressions during implementation.
+   - `make test` — run the test suite to establish a clean baseline. If tests fail, note pre-existing failures so they aren't mistaken for regressions during implementation. If `make` is not available or no Makefile exists, log "Pre-flight: `make test` skipped — Makefile not found" and proceed.
    - Pre-flight is advisory — log findings and proceed. Do not block on pre-existing issues.
 
 ### S-1: Problem
@@ -325,7 +325,7 @@ The merge-base is `<merge-base-sha>`. Use `git --no-pager diff <merge-base>..HEA
 <summary of implemented work — ADR titles, what each group delivered>
 
 ## Project conventions
-The project's AGENTS.md is at `<repo-path>/AGENTS.md`. Read it for project-specific review conventions before reviewing.
+<If AGENTS.md exists at `<repo-path>/AGENTS.md`, include: "The project's AGENTS.md is at `<repo-path>/AGENTS.md`. Read it for project-specific review conventions before reviewing." Otherwise, omit this section.>
 
 ## Review instructions
 Focus on: security, logic errors, consistency between definitions and implementations, code quality, breaking changes.
@@ -341,6 +341,8 @@ If a configured agent cannot be resolved at runtime, warn and skip that agent. I
 **C-2f: Gate** — Check all re-review verdicts:
 - **All reviewers accepted** → proceed to C-3.
 - **Any reviewer says "Wait for Reviewer"** → high-priority findings remain. In autonomous mode, address the remaining findings and re-dispatch C-2e (one retry). If still unresolved, pause for user intervention. In guided mode, present findings to the user.
+- **Any reviewer says "Rejected"** → treat as equivalent to "Wait for Reviewer" (high-priority findings remain). Follow the same retry/pause logic.
+- **Unrecognized verdict or no verdict returned** → log a warning ("C-2f: reviewer `<name>` returned unrecognized verdict `<value>` — treating as non-blocking") and do not block C-3. Proceed as if that reviewer accepted.
 
 ### C-3: Report
 
@@ -380,6 +382,25 @@ Stay on the feature branch and present the completion report in the format appro
 **Progress:** N of M milestones complete
 **Current:** Milestone N — [status detail]
 **Next:** Milestone N+1 — [first objective]
+```
+
+**S-3 (Fast-Path) format:**
+
+```markdown
+## Fast-Path: [source type] — [date/session]
+
+**Branch:** `[current branch name]`
+**Source:** [retro / bug-bash / amendment]
+
+| # | Finding | Classification | ADR | Status |
+|---|---------|----------------|-----|--------|
+| 1 | [finding summary] | ADR-worthy | ADR-NNNN | ✅ Accepted |
+| 2 | [finding summary] | Plan-only | — | ✅ Implemented |
+| 3 | [finding summary] | ADR-worthy | ADR-NNNN | ⏳ Proposed |
+
+**ADR-worthy:** N findings → N ADRs created
+**Plan-only:** N findings → N tasks implemented
+**Remaining:** [list or "None"]
 ```
 
 ### C-4: Retrospective

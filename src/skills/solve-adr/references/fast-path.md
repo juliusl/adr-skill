@@ -80,7 +80,7 @@ For each finding on the ADR list:
    > In the context of [X], facing [Y], we chose [Z] over [A] to achieve [B], accepting [C].
 5. Fill the Quality Strategy checklist.
 6. **Skip Options and Evaluation Checkpoint — absent by design.** The decision is already understood; these sections are not applicable to S-3 ADRs.
-7. **Invoke author-adr A-3 onward** via the `skill` tool (review, revise, re-review). When dispatching the reviewer, include this note:
+7. **Invoke author-adr review workflow** via the `skill` tool (review, verdict, revision, re-review until accepted). When dispatching the reviewer, include this note:
    > Options and Evaluation Checkpoint are absent by design — this is an S-3 fast-path ADR. R-1 criterion 1 (≥2 alternatives) does not apply. R-1 criterion 1 checks that at least two alternative options were considered; it is not applicable when the decision is already understood and the goal is traceability, not exploration.
 
 Repeat for all findings on the ADR list. All ADRs must reach Ready status before proceeding to Step 4.

@@ -208,6 +208,11 @@ Once all ADRs are either Ready or blocked, proceed to step 4 with the Ready ones
 
 After all decisions are made (or on resume when decisions already exist), implement them.
 
+**`auto_delegate` gate:** Before delegating to `/implement-adr`, check the `auto_delegate` preference:
+- **`auto_delegate = true`** → proceed to delegation without confirmation.
+- **`auto_delegate = false` and `participation = "guided"`** → present the Ready ADR list and ask the user to confirm before proceeding. If the user declines, skip implementation and proceed to Conclusion with "implementation deferred" status.
+- **`auto_delegate = false` and `participation = "autonomous"`** → pause and present the Ready ADR list to the user. Do not proceed with implementation without explicit user approval. Log: "Step 4 paused — `auto_delegate = false`, awaiting user confirmation to implement."
+
 ### Step 4a: Survey (on resume)
 
 When resuming, invoke `/author-adr` to find the problem's ADRs and their current state:
