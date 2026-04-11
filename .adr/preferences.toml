@@ -10,7 +10,7 @@ review = "juliusl-editor-v5"
 tech_writer = "juliusl-tech-writer-v1"
 ux_review = "juliusl-ux-reviewer-v1"
 dx_review = "juliusl-dx-reviewer-v1"
-tpm = "juliusl-tpm-v1"
+tpm = "juliusl-tpm-v2"
 
 [implement]
 participation = "autonomous"

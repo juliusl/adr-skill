@@ -14,24 +14,24 @@ Use this as the prompt for the configured review agent (per ADR-0031, `[author.d
 
 | ID | Policy |
 |----|--------|
-| P-1 | Status cap — author-adr caps at Ready after review Accept verdict |
-| P-2 | Dispatch compliance — use configured agents per `[author.dispatch]` |
-| P-3 | Semantic boundary — never modify content above the `---` separator during revision |
-| P-4 | Preserve existing addendum entries — do not modify or remove prior round Q&A entries |
+| RP-1 | Status cap — author-adr caps at Ready after review Accept verdict |
+| RP-2 | Dispatch compliance — use configured agents per `[author.dispatch]` |
+| RP-3 | Semantic boundary — never modify content above the `---` separator during revision |
+| RP-4 | Preserve existing addendum entries — do not modify or remove prior round Q&A entries |
 
-### P-1: Status Cap at Ready
+### RP-1: Status Cap at Ready
 
 After a review Accept verdict, transition the ADR from `Proposed` to `Ready`. The author-adr skill never sets `Planned` or `Accepted` — those statuses belong to implement-adr.
 
-### P-2: Dispatch Compliance
+### RP-2: Dispatch Compliance
 
 When `[author.dispatch]` is configured, use the configured agent for the review phase. Do not substitute `general-purpose` or skip dispatch.
 
-### P-3: Semantic Boundary
+### RP-3: Semantic Boundary
 
 The `---` separator above `## Comments` divides the immutable decision record (above) from the mutable revision worksheet (below). When appending Q&A entries during revision, never modify content above the separator.
 
-### P-4: Preserve Existing Addendum Entries
+### RP-4: Preserve Existing Addendum Entries
 
 In multi-round revisions, existing Q&A entries from prior rounds must not be modified or removed. New entries are appended below existing ones.
 
@@ -218,8 +218,8 @@ When a review returns a **Revise** verdict, the calling agent reads the findings
 
 1. **Only modify sections with findings** — don't rewrite uninvolved content.
 2. **Preserve author voice** — use the user's wording verbatim when provided.
-3. **Respect the semantic boundary (P-3)** — don't modify content above the `---` separator during revision.
-4. **Preserve existing addendum entries (P-4)** — don't modify or remove prior round entries.
+3. **Respect the semantic boundary (RP-3)** — don't modify content above the `---` separator during revision.
+4. **Preserve existing addendum entries (RP-4)** — don't modify or remove prior round entries.
 
 ### Procedure
 
@@ -231,7 +231,7 @@ When a review returns a **Revise** verdict, the calling agent reads the findings
    <!-- Review cycle [N] — [YYYY-MM-DD] — Verdict: Revise. X addressed, Y rejected. -->
    ```
 
-4. If substantive changes were made (any H or M items addressed), loop back to the Review Phase for re-review. Max 3 cycles.
+4. If substantive changes were made (any H or M items addressed), loop back to the Review Phase for re-review. Max 3 cycles. After 3 cycles, transition the ADR to `Ready` status regardless of outstanding findings. Log: "Max review cycles reached — transitioning to Ready with outstanding findings noted in the review cycle marker."
 
 The revision output is the modified ADR file itself. The review cycle marker serves as the audit trail.
 

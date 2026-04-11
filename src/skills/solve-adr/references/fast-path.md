@@ -45,6 +45,8 @@ Receive the finding list and identify the source. Record the source type (retro 
 
 If findings arrive as unstructured prose, parse them into discrete items before classifying.
 
+**Branch protocol:** S-3 operates on the current branch. It does not create a `solve/` branch — if one was created by the calling workflow, S-3 uses it. If no branch exists, S-3 works on whatever branch is checked out.
+
 ---
 
 ### Step 1: Classify
@@ -78,7 +80,7 @@ For each finding on the ADR list:
    > In the context of [X], facing [Y], we chose [Z] over [A] to achieve [B], accepting [C].
 5. Fill the Quality Strategy checklist.
 6. **Skip Options and Evaluation Checkpoint — absent by design.** The decision is already understood; these sections are not applicable to S-3 ADRs.
-7. **Invoke author-adr A-3 onward** via the `skill` tool (review, revise, re-review). When dispatching the reviewer, include this note:
+7. **Invoke author-adr review workflow** via the `skill` tool (review, verdict, revision, re-review until accepted). When dispatching the reviewer, include this note:
    > Options and Evaluation Checkpoint are absent by design — this is an S-3 fast-path ADR. R-1 criterion 1 (≥2 alternatives) does not apply. R-1 criterion 1 checks that at least two alternative options were considered; it is not applicable when the decision is already understood and the goal is traceability, not exploration.
 
 Repeat for all findings on the ADR list. All ADRs must reach Ready status before proceeding to Step 4.

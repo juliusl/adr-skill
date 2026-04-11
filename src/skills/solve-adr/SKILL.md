@@ -22,7 +22,7 @@ Orchestrate problem-solving end-to-end by delegating to companion skills: `/auth
 
 ### P-1: Every architectural decision gets an ADR
 
-Create an ADR via `/author-adr` for every architectural decision encountered during problem solving. `/author-adr` is capable of authoring more than one ADR at a time — this skill only needs to provide the problem context and any pre-emptive options and let `/author-adr` take over. Use `/author-adr` review workflow for quality assurance on each decision. Never make a decision silently — if a choice affects architecture, it gets an ADR.
+Create an ADR via `/author-adr` for every architectural decision encountered during problem solving. `/author-adr` is capable of authoring more than one ADR at a time — this skill only needs to provide the problem context and any preemptive options and let `/author-adr` take over. Use `/author-adr` review workflow for quality assurance on each decision. Never make a decision silently — if a choice affects architecture, it gets an ADR.
 
 The solve-adr skill's primary output is a set of reviewed, accepted decisions — not code. The decisions are the audit trail.
 
@@ -38,7 +38,7 @@ When `auto_delegate = true`, implement accepted ADRs via `/implement-adr` — do
 - Not session management concerns (e.g., "this will be extensive", "let me check session state", "deferring to a future session"). The plan, commits, and QA checkpoints exist to handle long sessions — the process architecture already solves the context problem
 - Skill files (SKILL.md, references/, eval_queries.json) are executable agent instructions, not passive documentation — changes carry the same risk as code changes and require the full `/implement-adr` pipeline
 
-**Enforcement:** When step 4 (Implement) completes and the report is generated, check: did `/implement-adr` actually run for every Ready ADR? If any Ready ADR was not delegated, this is a P-3 violation. Log the violation and invoke `/implement-adr` before proceeding to step 5.
+**Enforcement:** When `auto_delegate = true` and step 4 (Implement) completes, check: did `/implement-adr` actually run for every Ready ADR? If any Ready ADR was not delegated, this is a P-3 violation. Log the violation and invoke `/implement-adr` before proceeding to Conclusion (C-1).
 
 ### P-4: Triage all deferred QA findings before milestone completion
 
@@ -66,7 +66,7 @@ In autonomous mode, apply this heuristic: if the minimum fix is a test or valida
 
 **Resume protocol:** Every solvable thing is resumable. When invoked on a problem that already has ADRs, the agent picks up where it left off — skipping completed steps, implementing remaining ADRs. Resume is not a separate scenario; it's how solve works across sessions.
 
-**Routing:** The agent selects the scenario based on the user's request. If the request doesn't match any scenario, explain what was requested and which scenario would handle it.
+**Routing:** The agent selects the scenario based on the user's request. If the request doesn't match any scenario, explain what was requested, list the available scenarios (S-1 Problem, S-2 Roadmap, S-3 Fast-Path), and ask the user to clarify.
 
 ```
 User request
@@ -136,13 +136,11 @@ fast_path_sources = ["retro", "bug-bash", "amendment"]  # finding sources that t
 ```toml
 [solve.retro]
 enabled = true                # whether C-4 runs at all
-skip_when_no_findings = false # skip C-4 when retrospective produces no actionable findings
 ```
 
 | Key | Default | Description |
 |-----|---------|-------------|
 | `[solve.retro] enabled` | `true` | Set to `false` to disable C-4 entirely for this project. |
-| `[solve.retro] skip_when_no_findings` | `false` | When `true`, C-4 skips writing a retro record if the retrospective produces no actionable findings. |
 
 **Path resolution:**
 1. If `$XDG_CONFIG_HOME` is set, use `$XDG_CONFIG_HOME/adr-skills/preferences.toml`.
@@ -176,10 +174,10 @@ Run this before every scenario.
    > - `auto_delegate = false` — ask before invoking /implement-adr
    >
    > Save these defaults?
-4. **Load dispatch config** — read `[author.dispatch]` keys (`review`, `editor`) for downstream `/author-adr` calls. Read `[solve.dispatch]` keys (`code_review`) for optional code review dispatch in C-2. Normalize `code_review` to a list: if it's a string, wrap in a single-element list. Filter out empty or whitespace-only entries. If the resulting list is empty, C-2 will be skipped. Read `[solve] fast_path_sources` for S-3 routing — validate each value against the recognized set (`retro`, `bug-bash`, `amendment`). Log a warning for each unrecognized value: `Warning: fast_path_sources contains unrecognized value "<v>" — ignored`.
+4. **Load dispatch config** — read `[solve.dispatch]` keys (`code_review`) for optional code review dispatch in C-2. Normalize `code_review` to a list: if it's a string, wrap in a single-element list. Filter out empty or whitespace-only entries. If the resulting list is empty, C-2 will be skipped. Read `[solve] fast_path_sources` for S-3 routing — validate each value against the recognized set (`retro`, `bug-bash`, `amendment`). Log a warning for each unrecognized value: `Warning: fast_path_sources contains unrecognized value "<v>" — ignored`.
 5. **Pre-flight check** — before proceeding to any scenario, verify the environment:
    - `git status --porcelain` — warn if the working tree is dirty (branching in S-1 requires a clean tree)
-   - `make test` — run the test suite to establish a clean baseline. If tests fail, note pre-existing failures so they aren't mistaken for regressions during implementation.
+   - `make test` — run the test suite to establish a clean baseline. If tests fail, note pre-existing failures so they aren't mistaken for regressions during implementation. If `make` is not available or no Makefile exists, log "Pre-flight: `make test` skipped — Makefile not found" and proceed.
    - Pre-flight is advisory — log findings and proceed. Do not block on pre-existing issues.
 
 ### S-1: Problem
@@ -201,10 +199,10 @@ Read [references/problem.md](references/problem.md) for the full workflow detail
    ↓
 4. Implement — delegate all Ready ADRs to /implement-adr in a single batch
    ↓
-C. Conclusion — code review, QA triage, report (defined in SKILL.md)
+C. Conclusion — QA triage, code review, report, retrospective (defined in SKILL.md)
 ```
 
-**On resume:** The agent evaluates the problem's current state and enters the lifecycle at the right point. No ADRs → step 1. ADRs exist but unreviewed → step 2. All ADRs reviewed but unimplemented → step 4. Some Accepted, others remain → step 4 for remaining. All Accepted, implementation complete → Conclusion. On resume, check for an existing `solve/<slug>` branch — if found and unmerged, checkout it and continue.
+**On resume:** The agent evaluates the problem's current state and enters the lifecycle at the right point. No ADRs → step 1. ADRs exist but unreviewed → step 2. ADRs exist but some paused at Evaluation Checkpoint → step 3 (triage). All ADRs reviewed but unimplemented → step 4. Some Accepted, others remain → step 4 for remaining. All Accepted, implementation complete → Conclusion. On resume, check for an existing `solve/<slug>` branch — if found and unmerged, checkout it and continue.
 
 ### Branch Management
 
@@ -215,7 +213,7 @@ solve-adr creates a feature branch to isolate its output from the user's working
 **Branch lifecycle:**
 1. **Create** — after Step 1 (intake), derive a slug from the problem statement (lowercase, hyphenated, max 50 chars). Create `solve/<slug>` from current HEAD: `git checkout -b solve/<slug>`.
 2. **Switch** — all subsequent work (authoring, triage, implementation) happens on this branch.
-3. **Complete** — after Conclusion (C-3), stay on the branch. The user reviews via PR and merges.
+3. **Complete** — after Conclusion (C-4), stay on the branch. The user reviews via PR and merges.
 4. **Resume** — on resume, if the branch exists and is unmerged, checkout it and continue. If the branch was already merged or deleted, the previous solve is complete — create a new branch with a `-2` suffix if the same slug is reused.
 
 **Branch naming:** `solve/<problem-slug>`. Example: `solve/caching-strategy-for-events`.
@@ -251,7 +249,7 @@ Read [references/roadmap.md](references/roadmap.md) for the full workflow detail
    ↓
 5. Update — record milestone completion status → more milestones? → loop to 3
    ↓
-C. Conclusion — code review, QA triage, report (defined in SKILL.md)
+C. Conclusion — QA triage, code review, report, retrospective (defined in SKILL.md)
 ```
 
 **On resume:** The agent reads the roadmap file and checks milestone status markers. No markers → step 1. Some milestones complete → step 3 (select next). A milestone in-progress with ADRs → step 4 (solve, resume). All complete → Conclusion.
@@ -327,7 +325,7 @@ The merge-base is `<merge-base-sha>`. Use `git --no-pager diff <merge-base>..HEA
 <summary of implemented work — ADR titles, what each group delivered>
 
 ## Project conventions
-The project's AGENTS.md is at `<repo-path>/AGENTS.md`. Read it for project-specific review conventions before reviewing.
+<If AGENTS.md exists at `<repo-path>/AGENTS.md`, include: "The project's AGENTS.md is at `<repo-path>/AGENTS.md`. Read it for project-specific review conventions before reviewing." Otherwise, omit this section.>
 
 ## Review instructions
 Focus on: security, logic errors, consistency between definitions and implementations, code quality, breaking changes.
@@ -343,6 +341,8 @@ If a configured agent cannot be resolved at runtime, warn and skip that agent. I
 **C-2f: Gate** — Check all re-review verdicts:
 - **All reviewers accepted** → proceed to C-3.
 - **Any reviewer says "Wait for Reviewer"** → high-priority findings remain. In autonomous mode, address the remaining findings and re-dispatch C-2e (one retry). If still unresolved, pause for user intervention. In guided mode, present findings to the user.
+- **Any reviewer says "Rejected"** → treat as equivalent to "Wait for Reviewer" (high-priority findings remain). Follow the same retry/pause logic.
+- **Unrecognized verdict or no verdict returned** → log a warning ("C-2f: reviewer `<name>` returned unrecognized verdict `<value>` — treating as non-blocking") and do not block C-3. Proceed as if that reviewer accepted.
 
 ### C-3: Report
 
@@ -384,9 +384,28 @@ Stay on the feature branch and present the completion report in the format appro
 **Next:** Milestone N+1 — [first objective]
 ```
 
+**S-3 (Fast-Path) format:**
+
+```markdown
+## Fast-Path: [source type] — [date/session]
+
+**Branch:** `[current branch name]`
+**Source:** [retro / bug-bash / amendment]
+
+| # | Finding | Classification | ADR | Status |
+|---|---------|----------------|-----|--------|
+| 1 | [finding summary] | ADR-worthy | ADR-NNNN | ✅ Accepted |
+| 2 | [finding summary] | Plan-only | — | ✅ Implemented |
+| 3 | [finding summary] | ADR-worthy | ADR-NNNN | ⏳ Proposed |
+
+**ADR-worthy:** N findings → N ADRs created
+**Plan-only:** N findings → N tasks implemented
+**Remaining:** [list or "None"]
+```
+
 ### C-4: Retrospective
 
-After C-3, run a structured retrospective on the completed solve run. C-4 is optional — skip when `[solve.retro] enabled = false` in `.adr/preferences.toml`. Skip also when `skip_when_no_findings = true` and the retrospective produces no actionable findings.
+After C-3, run a structured retrospective on the completed solve run. C-4 is optional — skip when `[solve.retro] enabled = false` in `.adr/preferences.toml`.
 
 **Entry condition:** C-3 has completed. C-4 does not affect C-3 artifacts.
 
@@ -408,7 +427,7 @@ After C-3, run a structured retrospective on the completed solve run. C-4 is opt
 
 **Retro record slug:** Derive the slug from the current UTC timestamp (`YYYYMMDD-HHMMSS`), not from user-supplied text. Example: `.adr/var/retro-20260410-143022.md`. If a file at the derived path already exists, append a counter suffix (`-2`, `-3`, etc.) rather than overwriting.
 
-**Zero-findings case:** When `skip_when_no_findings = false` and the retrospective produces no actionable findings, note "No findings to retrospect" and skip the 4 questions. Writing a retro record with empty answers serves no purpose regardless of the key value.
+**Zero-findings case:** If the retrospective produces no actionable findings, note "No findings to retrospect" and skip the 4 questions. Do not write a retro record with empty answers.
 
 **Write retro record:** Save findings to `.adr/var/retro-<slug>.md`. Include: run summary, findings, preference changes applied. Create `.adr/var/` if it doesn't exist.
 

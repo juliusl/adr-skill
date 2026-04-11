@@ -117,7 +117,7 @@ A roadmap follows this structure:
    ↓
 5. Update — record milestone completion status → more milestones? → loop to 3
    ↓
-C. Conclusion — code review, QA triage, report (defined in SKILL.md)
+C. Conclusion — QA triage, code review, report, retrospective (defined in SKILL.md)
 ```
 
 **On resume:** The agent reads the roadmap file and checks milestone status markers:
@@ -192,7 +192,7 @@ Determine which milestone to work on next.
 1. If a milestone is in-progress → resume it (step 4, resume path)
 2. If no milestone is in-progress → select the first pending milestone
 3. If the user requests a specific milestone → select that one (validate it's not already complete)
-4. If all milestones are complete → skip to Conclusion (C-1 → C-2 → C-3 in SKILL.md)
+4. If all milestones are complete → skip to Conclusion (C-1 → C-2 → C-3 → C-4 in SKILL.md)
 
 **Milestone dependencies** are implicit in ordering — Milestone N should complete before Milestone N+1. The user can override this by requesting a specific milestone.
 
@@ -235,7 +235,7 @@ The milestone becomes S-1's problem input:
 3. **Decisions to enumerate** — each milestone objective becomes a candidate decision. Some objectives may merge into a single ADR; others may expand into multiple.
 4. **Additional context** — include relevant supplementary sections
 
-**Invoke S-1** — pass the constructed intake to the Problem lifecycle. S-1 runs its full lifecycle (Branch → Author → Triage → Implement). Conclusion runs after all milestones complete (per Step 5a).
+**Invoke S-1** — pass the constructed intake to the Problem lifecycle. Include in the delegation prompt: "Run S-1 in subroutine mode — skip conclusion, return control after implementation." S-1 runs through Implement (Branch → Author → Triage → Implement) then returns control to S-2. Conclusion runs once after all milestones complete (per Step 5a).
 
 ### Step 4b: Branch naming
 
@@ -296,7 +296,7 @@ After S-1 completes (or partially completes) a milestone, update the roadmap fil
 
 After updating, check if more milestones remain:
 - If yes → return to step 3 (select next milestone)
-- If no → proceed to Conclusion (C-1 → C-2 → C-3) defined in SKILL.md
+- If no → proceed to Conclusion (C-1 → C-2 → C-3 → C-4) defined in SKILL.md
 
 In practice, each milestone is a substantial block of work. The agent typically completes one milestone per session and resumes in the next.
 
@@ -313,7 +313,7 @@ S-2 Roadmap is an orchestration layer over S-1 Problem. It does not duplicate S-
 | Branching | `solve/<project>/milestone-<N>` | `solve/<problem-slug>` |
 | ADR authoring | Delegates to S-1 → author-adr | Invokes author-adr directly |
 | Implementation | Delegates to S-1 → implement-adr | Invokes implement-adr directly |
-| Conclusion | Shared — C-1, C-2, C-3 in SKILL.md | Shared — C-1, C-2, C-3 in SKILL.md |
+| Conclusion | Shared — C-1, C-2, C-3, C-4 in SKILL.md | Shared — C-1, C-2, C-3, C-4 in SKILL.md |
 | Progress tracking | Milestone status markers in file | ADR status in decision log |
 | Resume granularity | Milestone level + S-1 ADR level | ADR level |
 

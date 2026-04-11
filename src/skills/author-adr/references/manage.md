@@ -93,6 +93,8 @@ make -f <skill-root>/Makefile status NUM=3 STATUS=Deprecated
 
 ### M-2b: Superseding Workflow
 
+**P-2 override:** When the user explicitly requests a supersede operation, the `SUPERSEDE` parameter's automatic cross-ADR status update is authorized. This is the one case where cross-ADR modification occurs without a separate confirmation — the user's supersede request is the explicit instruction P-2 requires.
+
 1. Create the new ADR with the `SUPERSEDE` parameter:
 
    ```bash
