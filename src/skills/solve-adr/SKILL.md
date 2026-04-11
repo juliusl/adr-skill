@@ -22,7 +22,7 @@ Orchestrate problem-solving end-to-end by delegating to companion skills: `/auth
 
 ### P-1: Every architectural decision gets an ADR
 
-Create an ADR via `/author-adr` for every architectural decision encountered during problem solving. `/author-adr` is capable of authoring more than one ADR at a time — this skill only needs to provide the problem context and any pre-emptive options and let `/author-adr` take over. Use `/author-adr` review workflow for quality assurance on each decision. Never make a decision silently — if a choice affects architecture, it gets an ADR.
+Create an ADR via `/author-adr` for every architectural decision encountered during problem solving. `/author-adr` is capable of authoring more than one ADR at a time — this skill only needs to provide the problem context and any preemptive options and let `/author-adr` take over. Use `/author-adr` review workflow for quality assurance on each decision. Never make a decision silently — if a choice affects architecture, it gets an ADR.
 
 The solve-adr skill's primary output is a set of reviewed, accepted decisions — not code. The decisions are the audit trail.
 

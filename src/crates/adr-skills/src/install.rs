@@ -1,3 +1,5 @@
+//! Install logic — writes embedded skill and agent files to the target directory.
+
 use crate::embed::SkillAssets;
 use crate::embed::AgentAssets;
 use std::fs;
@@ -81,7 +83,7 @@ fn count_embedded_skills_or_agents(label: &str) -> usize {
     match label {
         "skill" => SkillAssets::iter().count(),
         "agent" => AgentAssets::iter().count(),
-        _ => 0,
+        _ => unreachable!("unknown asset label: {label}"),
     }
 }
 
@@ -94,10 +96,12 @@ pub fn install_skills(prefix: &Option<PathBuf>, dry_run: bool, force: bool) {
         return;
     }
 
-    // Remove old skills
+    // Remove old skills — fatal if this fails
     if skills_dir.exists() {
         fs::remove_dir_all(&skills_dir).unwrap_or_else(|e| {
-            eprintln!("Warning: could not remove {}: {e}", skills_dir.display());
+            eprintln!("Error: could not remove {}: {e}", skills_dir.display());
+            eprintln!("No files were changed.");
+            std::process::exit(1);
         });
     }
 
@@ -132,10 +136,12 @@ pub fn install_agents(prefix: &Option<PathBuf>, dry_run: bool, force: bool) {
         return;
     }
 
-    // Remove old agents to prevent stale files
+    // Remove old agents — fatal if this fails
     if agents_dir.exists() {
         fs::remove_dir_all(&agents_dir).unwrap_or_else(|e| {
-            eprintln!("Warning: could not remove {}: {e}", agents_dir.display());
+            eprintln!("Error: could not remove {}: {e}", agents_dir.display());
+            eprintln!("No files were changed.");
+            std::process::exit(1);
         });
     }
 

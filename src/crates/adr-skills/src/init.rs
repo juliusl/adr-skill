@@ -1,18 +1,48 @@
+//! Project initialization — bootstraps `.adr/` directory with `.gitignore` and `preferences.toml`.
+
 use std::fs;
 use std::path::Path;
 
 /// Configuration for project initialization, populated from CLI flags.
 pub struct InitConfig {
+    /// Participation mode (guided or autonomous).
     pub participation: String,
-    pub auto_commit: String,
-    pub auto_delegate: String,
+    /// Enable auto-commit on task completion.
+    pub auto_commit: bool,
+    /// Enable auto-delegate to implement-adr.
+    pub auto_delegate: bool,
+    /// Author scope (project or user).
     pub scope: String,
+    /// TPM agent name.
     pub tpm: String,
+    /// Review agent name.
     pub review: String,
+    /// Tech writer agent name.
     pub tech_writer: String,
+    /// UX review agent name.
     pub ux_review: String,
+    /// DX review agent name.
     pub dx_review: String,
-    pub code_review: String, // comma-separated
+    /// Code review agents (comma-separated).
+    pub code_review: String,
+}
+
+impl InitConfig {
+    /// Build an InitConfig from the shared CLI args struct.
+    pub fn from_args(args: &crate::InitArgs) -> Self {
+        Self {
+            participation: args.participation.to_string(),
+            auto_commit: args.auto_commit,
+            auto_delegate: args.auto_delegate,
+            scope: args.scope.clone(),
+            tpm: args.tpm.clone(),
+            review: args.review.clone(),
+            tech_writer: args.tech_writer.clone(),
+            ux_review: args.ux_review.clone(),
+            dx_review: args.dx_review.clone(),
+            code_review: args.code_review.clone(),
+        }
+    }
 }
 
 fn validate_toml_value(value: &str, field: &str) {
@@ -20,8 +50,8 @@ fn validate_toml_value(value: &str, field: &str) {
         eprintln!("Error: --{field} must not contain newlines");
         std::process::exit(1);
     }
-    if value.contains('"') && value.contains('\\') {
-        eprintln!("Error: --{field} contains characters that could break TOML formatting");
+    if value.contains('"') {
+        eprintln!("Error: --{field} must not contain double-quote characters");
         std::process::exit(1);
     }
 }
@@ -41,10 +71,7 @@ fn format_code_review_array(raw: &str) -> String {
 
 /// Bootstrap `.adr/` directory with `.gitignore` and `preferences.toml`.
 pub fn init_project(path: &Path, config: &InitConfig) {
-    // Validate all string values before writing TOML
     validate_toml_value(&config.participation, "participation");
-    validate_toml_value(&config.auto_commit, "auto-commit");
-    validate_toml_value(&config.auto_delegate, "auto-delegate");
     validate_toml_value(&config.scope, "scope");
     validate_toml_value(&config.tpm, "tpm");
     validate_toml_value(&config.review, "review");
@@ -120,8 +147,8 @@ code_review = {code_review}
 pub fn default_config() -> InitConfig {
     InitConfig {
         participation: "autonomous".to_string(),
-        auto_commit: "true".to_string(),
-        auto_delegate: "true".to_string(),
+        auto_commit: true,
+        auto_delegate: true,
         scope: "user".to_string(),
         tpm: "juliusl-tpm-v2".to_string(),
         review: "juliusl-editor-v5".to_string(),
@@ -178,8 +205,8 @@ mod tests {
         let tmp = TempDir::new().unwrap();
         let config = InitConfig {
             participation: "guided".to_string(),
-            auto_commit: "false".to_string(),
-            auto_delegate: "false".to_string(),
+            auto_commit: false,
+            auto_delegate: false,
             scope: "project".to_string(),
             tpm: "custom-tpm".to_string(),
             review: "custom-reviewer".to_string(),

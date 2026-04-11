@@ -1,3 +1,5 @@
+//! Embedded assets — skill and agent files compiled into the binary via `rust_embed`.
+
 use rust_embed::Embed;
 
 /// Embedded skill definitions from `src/skills/`.

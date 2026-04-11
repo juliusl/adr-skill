@@ -6,7 +6,7 @@ fn main() {
         .parent()
         .expect("expected src/crates dir")
         .parent()
-        .expect("expected repo root (src/)");
+        .expect("expected repo root");
 
     let skills_dir = workspace_root.join("src/skills");
     let agents_dir = workspace_root.join("src/agents");
@@ -41,11 +41,18 @@ fn main() {
     let output = std::process::Command::new("git")
         .args(["rev-parse", "--short", "HEAD"])
         .output();
-    if let Ok(output) = output {
-        let sha = String::from_utf8_lossy(&output.stdout).trim().to_string();
-        println!("cargo::rustc-env=GIT_COMMIT_SHA={sha}");
-    } else {
-        println!("cargo::rustc-env=GIT_COMMIT_SHA=unknown");
+    match output {
+        Ok(out) if out.status.success() => {
+            let sha = String::from_utf8_lossy(&out.stdout).trim().to_string();
+            if !sha.is_empty() {
+                println!("cargo::rustc-env=GIT_COMMIT_SHA={sha}");
+            } else {
+                println!("cargo::rustc-env=GIT_COMMIT_SHA=unknown");
+            }
+        }
+        _ => {
+            println!("cargo::rustc-env=GIT_COMMIT_SHA=unknown");
+        }
     }
 }
 

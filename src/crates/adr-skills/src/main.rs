@@ -35,6 +35,41 @@ impl std::fmt::Display for Participation {
     }
 }
 
+/// Shared flags for Init and Setup commands.
+#[derive(clap::Args, Clone)]
+struct InitArgs {
+    /// Participation mode
+    #[arg(long, default_value = "autonomous")]
+    participation: Participation,
+    /// Enable auto-commit on task completion
+    #[arg(long, default_value_t = true)]
+    auto_commit: bool,
+    /// Enable auto-delegate to implement-adr
+    #[arg(long, default_value_t = true)]
+    auto_delegate: bool,
+    /// Author scope (project or user)
+    #[arg(long, default_value = "user")]
+    scope: String,
+    /// TPM agent name
+    #[arg(long, default_value = "juliusl-tpm-v2")]
+    tpm: String,
+    /// Review agent name
+    #[arg(long, default_value = "juliusl-editor-v5")]
+    review: String,
+    /// Tech writer agent name
+    #[arg(long, default_value = "juliusl-tech-writer-v1")]
+    tech_writer: String,
+    /// UX review agent name
+    #[arg(long, default_value = "juliusl-ux-reviewer-v1")]
+    ux_review: String,
+    /// DX review agent name
+    #[arg(long, default_value = "juliusl-dx-reviewer-v1")]
+    dx_review: String,
+    /// Code review agents (comma-separated)
+    #[arg(long, default_value = "juliusl-code-reviewer-analytics-v5,juliusl-code-reviewer-sweep-v5")]
+    code_review: String,
+}
+
 #[derive(Subcommand)]
 enum Commands {
     /// Install skills and/or agents
@@ -50,69 +85,13 @@ enum Commands {
     },
     /// Bootstrap .adr/ directory in the current project
     Init {
-        /// Participation mode
-        #[arg(long, default_value = "autonomous")]
-        participation: Participation,
-        /// Enable auto-commit on task completion
-        #[arg(long, default_value = "true")]
-        auto_commit: String,
-        /// Enable auto-delegate to implement-adr
-        #[arg(long, default_value = "true")]
-        auto_delegate: String,
-        /// Author scope (project or user)
-        #[arg(long, default_value = "user")]
-        scope: String,
-        /// TPM agent name
-        #[arg(long, default_value = "juliusl-tpm-v2")]
-        tpm: String,
-        /// Review agent name
-        #[arg(long, default_value = "juliusl-editor-v5")]
-        review: String,
-        /// Tech writer agent name
-        #[arg(long, default_value = "juliusl-tech-writer-v1")]
-        tech_writer: String,
-        /// UX review agent name
-        #[arg(long, default_value = "juliusl-ux-reviewer-v1")]
-        ux_review: String,
-        /// DX review agent name
-        #[arg(long, default_value = "juliusl-dx-reviewer-v1")]
-        dx_review: String,
-        /// Code review agents (comma-separated)
-        #[arg(long, default_value = "juliusl-code-reviewer-analytics-v5,juliusl-code-reviewer-sweep-v5")]
-        code_review: String,
+        #[command(flatten)]
+        args: InitArgs,
     },
     /// Full setup: install skills, agents, and bootstrap project directory
     Setup {
-        /// Participation mode
-        #[arg(long, default_value = "autonomous")]
-        participation: Participation,
-        /// Enable auto-commit on task completion
-        #[arg(long, default_value = "true")]
-        auto_commit: String,
-        /// Enable auto-delegate to implement-adr
-        #[arg(long, default_value = "true")]
-        auto_delegate: String,
-        /// Author scope (project or user)
-        #[arg(long, default_value = "user")]
-        scope: String,
-        /// TPM agent name
-        #[arg(long, default_value = "juliusl-tpm-v2")]
-        tpm: String,
-        /// Review agent name
-        #[arg(long, default_value = "juliusl-editor-v5")]
-        review: String,
-        /// Tech writer agent name
-        #[arg(long, default_value = "juliusl-tech-writer-v1")]
-        tech_writer: String,
-        /// UX review agent name
-        #[arg(long, default_value = "juliusl-ux-reviewer-v1")]
-        ux_review: String,
-        /// DX review agent name
-        #[arg(long, default_value = "juliusl-dx-reviewer-v1")]
-        dx_review: String,
-        /// Code review agents (comma-separated)
-        #[arg(long, default_value = "juliusl-code-reviewer-analytics-v5,juliusl-code-reviewer-sweep-v5")]
-        code_review: String,
+        #[command(flatten)]
+        args: InitArgs,
     },
 }
 
@@ -135,29 +114,15 @@ fn main() {
             InstallTarget::Agents => install::install_agents(&cli.prefix, dry_run, force),
             InstallTarget::All => install::install_all(&cli.prefix, dry_run, force),
         },
-        Commands::Init {
-            participation, auto_commit, auto_delegate, scope,
-            tpm, review, tech_writer, ux_review, dx_review, code_review,
-        } => {
+        Commands::Init { args } => {
             let path = std::env::current_dir().expect("Could not determine current directory");
-            let config = init::InitConfig {
-                participation: participation.to_string(),
-                auto_commit, auto_delegate, scope,
-                tpm, review, tech_writer, ux_review, dx_review, code_review,
-            };
+            let config = init::InitConfig::from_args(&args);
             init::init_project(&path, &config);
         }
-        Commands::Setup {
-            participation, auto_commit, auto_delegate, scope,
-            tpm, review, tech_writer, ux_review, dx_review, code_review,
-        } => {
+        Commands::Setup { args } => {
             install::install_all(&cli.prefix, false, false);
             let path = std::env::current_dir().expect("Could not determine current directory");
-            let config = init::InitConfig {
-                participation: participation.to_string(),
-                auto_commit, auto_delegate, scope,
-                tpm, review, tech_writer, ux_review, dx_review, code_review,
-            };
+            let config = init::InitConfig::from_args(&args);
             init::init_project(&path, &config);
             println!("\n=== Setup complete ===");
         }
