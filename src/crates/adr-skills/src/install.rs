@@ -1,7 +1,7 @@
 use crate::embed::SkillAssets;
 use crate::embed::AgentAssets;
 use std::fs;
-use std::path::{Path, PathBuf};
+use std::path::{Component, Path, PathBuf};
 
 fn resolve_base(prefix: &Option<PathBuf>) -> PathBuf {
     if let Some(p) = prefix {
@@ -13,6 +13,10 @@ fn resolve_base(prefix: &Option<PathBuf>) -> PathBuf {
             eprintln!("Error: --prefix cannot be the filesystem root");
             std::process::exit(1);
         }
+        if p.components().any(|c| c == Component::ParentDir) {
+            eprintln!("Error: --prefix must not contain '..' components");
+            std::process::exit(1);
+        }
         p.clone()
     } else {
         dirs::home_dir()
@@ -21,6 +25,7 @@ fn resolve_base(prefix: &Option<PathBuf>) -> PathBuf {
     }
 }
 
+/// Install all skill definitions to `<base>/skills/`.
 pub fn install_skills(prefix: &Option<PathBuf>) {
     let base = resolve_base(prefix);
     let skills_dir = base.join("skills");
@@ -53,9 +58,17 @@ pub fn install_skills(prefix: &Option<PathBuf>) {
     println!("Installed {count} skill files to {}", skills_dir.display());
 }
 
+/// Install all agent definitions to `<base>/agents/`.
 pub fn install_agents(prefix: &Option<PathBuf>) {
     let base = resolve_base(prefix);
     let agents_dir = base.join("agents");
+
+    // Remove old agents to prevent stale files
+    if agents_dir.exists() {
+        fs::remove_dir_all(&agents_dir).unwrap_or_else(|e| {
+            eprintln!("Warning: could not remove {}: {e}", agents_dir.display());
+        });
+    }
 
     fs::create_dir_all(&agents_dir).unwrap_or_else(|e| {
         eprintln!("Error: could not create {}: {e}", agents_dir.display());
@@ -76,6 +89,7 @@ pub fn install_agents(prefix: &Option<PathBuf>) {
     println!("Installed {count} agent files to {}", agents_dir.display());
 }
 
+/// Install both skills and agents.
 pub fn install_all(prefix: &Option<PathBuf>) {
     install_skills(prefix);
     install_agents(prefix);

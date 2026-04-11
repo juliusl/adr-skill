@@ -1,6 +1,7 @@
 use std::fs;
 use std::path::Path;
 
+/// Bootstrap `.adr/` directory with `.gitignore` and `preferences.toml`.
 pub fn init_project(path: &Path) {
     let adr_dir = path.join(".adr");
     fs::create_dir_all(&adr_dir).unwrap_or_else(|e| {

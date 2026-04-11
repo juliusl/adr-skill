@@ -2,11 +2,11 @@ fn main() {
     let manifest_dir = std::env::var("CARGO_MANIFEST_DIR").unwrap();
     let workspace_root = std::path::Path::new(&manifest_dir)
         .parent()
-        .unwrap()
+        .expect("expected adr-skills crate dir")
         .parent()
-        .unwrap()
+        .expect("expected src/crates dir")
         .parent()
-        .unwrap();
+        .expect("expected repo root (src/)");
 
     let skills_dir = workspace_root.join("src/skills");
     let agents_dir = workspace_root.join("src/agents");
@@ -28,8 +28,10 @@ fn main() {
         panic!("src/agents/ is missing or empty — RustEmbed requires agent files at compile time");
     }
 
-    // Re-run on any file change inside embedded directories
+    // Re-run on any file change inside embedded directories.
+    // Directory entries catch additions/deletions; file entries catch modifications.
     for dir in [&skills_dir, &agents_dir] {
+        println!("cargo::rerun-if-changed={}", dir.display());
         for entry in walkdir(dir) {
             println!("cargo::rerun-if-changed={}", entry.display());
         }
