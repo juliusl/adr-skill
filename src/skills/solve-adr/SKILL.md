@@ -201,7 +201,7 @@ Read [references/problem.md](references/problem.md) for the full workflow detail
    ↓
 4. Implement — delegate all Ready ADRs to /implement-adr in a single batch
    ↓
-C. Conclusion — code review, QA triage, report (defined in SKILL.md)
+C. Conclusion — code review, QA triage, report, retrospective (defined in SKILL.md)
 ```
 
 **On resume:** The agent evaluates the problem's current state and enters the lifecycle at the right point. No ADRs → step 1. ADRs exist but unreviewed → step 2. All ADRs reviewed but unimplemented → step 4. Some Accepted, others remain → step 4 for remaining. All Accepted, implementation complete → Conclusion. On resume, check for an existing `solve/<slug>` branch — if found and unmerged, checkout it and continue.
@@ -215,7 +215,7 @@ solve-adr creates a feature branch to isolate its output from the user's working
 **Branch lifecycle:**
 1. **Create** — after Step 1 (intake), derive a slug from the problem statement (lowercase, hyphenated, max 50 chars). Create `solve/<slug>` from current HEAD: `git checkout -b solve/<slug>`.
 2. **Switch** — all subsequent work (authoring, triage, implementation) happens on this branch.
-3. **Complete** — after Conclusion (C-3), stay on the branch. The user reviews via PR and merges.
+3. **Complete** — after Conclusion (C-4), stay on the branch. The user reviews via PR and merges.
 4. **Resume** — on resume, if the branch exists and is unmerged, checkout it and continue. If the branch was already merged or deleted, the previous solve is complete — create a new branch with a `-2` suffix if the same slug is reused.
 
 **Branch naming:** `solve/<problem-slug>`. Example: `solve/caching-strategy-for-events`.
@@ -251,7 +251,7 @@ Read [references/roadmap.md](references/roadmap.md) for the full workflow detail
    ↓
 5. Update — record milestone completion status → more milestones? → loop to 3
    ↓
-C. Conclusion — code review, QA triage, report (defined in SKILL.md)
+C. Conclusion — code review, QA triage, report, retrospective (defined in SKILL.md)
 ```
 
 **On resume:** The agent reads the roadmap file and checks milestone status markers. No markers → step 1. Some milestones complete → step 3 (select next). A milestone in-progress with ADRs → step 4 (solve, resume). All complete → Conclusion.

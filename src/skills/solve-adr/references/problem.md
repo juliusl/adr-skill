@@ -46,7 +46,7 @@ Every decision gets an ADR — even mid-execution discoveries.
    ↓
 4. Implement — group accepted ADRs, load /implement-adr and run its procedure
    ↓
-C. Conclusion — code review, QA triage, report (defined in SKILL.md)
+C. Conclusion — code review, QA triage, report, retrospective (defined in SKILL.md)
 ```
 
 **On resume:** The agent evaluates the problem's current state and enters the lifecycle at the right point:
@@ -238,4 +238,4 @@ Delegate all remaining Ready ADRs to `/implement-adr` in a single invocation. Do
 
 **Session boundaries:** When nearing limits, stop at the current task boundary. Report progress — the user resumes in a new session.
 
-After implementation completes, proceed to the Conclusion sequence (C-1 → C-2 → C-3) defined in SKILL.md.
+After implementation completes, proceed to the Conclusion sequence (C-1 → C-2 → C-3 → C-4) defined in SKILL.md.
