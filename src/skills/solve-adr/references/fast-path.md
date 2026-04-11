@@ -45,6 +45,8 @@ Receive the finding list and identify the source. Record the source type (retro 
 
 If findings arrive as unstructured prose, parse them into discrete items before classifying.
 
+**Branch protocol:** S-3 operates on the current branch. It does not create a `solve/` branch — if one was created by the calling workflow, S-3 uses it. If no branch exists, S-3 works on whatever branch is checked out.
+
 ---
 
 ### Step 1: Classify

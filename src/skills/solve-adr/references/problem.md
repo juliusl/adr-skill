@@ -46,7 +46,7 @@ Every decision gets an ADR — even mid-execution discoveries.
    ↓
 4. Implement — group accepted ADRs, load /implement-adr and run its procedure
    ↓
-C. Conclusion — code review, QA triage, report, retrospective (defined in SKILL.md)
+C. Conclusion — QA triage, code review, report, retrospective (defined in SKILL.md)
 ```
 
 **On resume:** The agent evaluates the problem's current state and enters the lifecycle at the right point:
@@ -202,7 +202,7 @@ Keep a running list of all ADRs and their post-triage status:
 [ADR ref]: [title] — Paused, prototype needed for [validation need]
 ```
 
-Once all ADRs are either Proposed (ready) or blocked, proceed to step 4 with the ready ones.
+Once all ADRs are either Ready or blocked, proceed to step 4 with the Ready ones.
 
 ## Step 4: Implement
 
@@ -238,4 +238,8 @@ Delegate all remaining Ready ADRs to `/implement-adr` in a single invocation. Do
 
 **Session boundaries:** When nearing limits, stop at the current task boundary. Report progress — the user resumes in a new session.
 
-After implementation completes, proceed to the Conclusion sequence (C-1 → C-2 → C-3 → C-4) defined in SKILL.md.
+After implementation completes:
+- **Standalone mode (default):** Proceed to the Conclusion sequence (C-1 → C-2 → C-3 → C-4) defined in SKILL.md.
+- **Sub-routine mode:** Return control to the caller. Do not run conclusion — the caller owns conclusion execution.
+
+S-1 runs in sub-routine mode when the delegation prompt includes: "Run S-1 in sub-routine mode — skip conclusion, return control after implementation."

@@ -38,7 +38,7 @@ When `auto_delegate = true`, implement accepted ADRs via `/implement-adr` — do
 - Not session management concerns (e.g., "this will be extensive", "let me check session state", "deferring to a future session"). The plan, commits, and QA checkpoints exist to handle long sessions — the process architecture already solves the context problem
 - Skill files (SKILL.md, references/, eval_queries.json) are executable agent instructions, not passive documentation — changes carry the same risk as code changes and require the full `/implement-adr` pipeline
 
-**Enforcement:** When step 4 (Implement) completes and the report is generated, check: did `/implement-adr` actually run for every Ready ADR? If any Ready ADR was not delegated, this is a P-3 violation. Log the violation and invoke `/implement-adr` before proceeding to step 5.
+**Enforcement:** When step 4 (Implement) completes and the report is generated, check: did `/implement-adr` actually run for every Ready ADR? If any Ready ADR was not delegated, this is a P-3 violation. Log the violation and invoke `/implement-adr` before proceeding to Conclusion (C-1).
 
 ### P-4: Triage all deferred QA findings before milestone completion
 
@@ -201,10 +201,10 @@ Read [references/problem.md](references/problem.md) for the full workflow detail
    ↓
 4. Implement — delegate all Ready ADRs to /implement-adr in a single batch
    ↓
-C. Conclusion — code review, QA triage, report, retrospective (defined in SKILL.md)
+C. Conclusion — QA triage, code review, report, retrospective (defined in SKILL.md)
 ```
 
-**On resume:** The agent evaluates the problem's current state and enters the lifecycle at the right point. No ADRs → step 1. ADRs exist but unreviewed → step 2. All ADRs reviewed but unimplemented → step 4. Some Accepted, others remain → step 4 for remaining. All Accepted, implementation complete → Conclusion. On resume, check for an existing `solve/<slug>` branch — if found and unmerged, checkout it and continue.
+**On resume:** The agent evaluates the problem's current state and enters the lifecycle at the right point. No ADRs → step 1. ADRs exist but unreviewed → step 2. ADRs exist but some paused at Evaluation Checkpoint → step 3 (triage). All ADRs reviewed but unimplemented → step 4. Some Accepted, others remain → step 4 for remaining. All Accepted, implementation complete → Conclusion. On resume, check for an existing `solve/<slug>` branch — if found and unmerged, checkout it and continue.
 
 ### Branch Management
 
@@ -251,7 +251,7 @@ Read [references/roadmap.md](references/roadmap.md) for the full workflow detail
    ↓
 5. Update — record milestone completion status → more milestones? → loop to 3
    ↓
-C. Conclusion — code review, QA triage, report, retrospective (defined in SKILL.md)
+C. Conclusion — QA triage, code review, report, retrospective (defined in SKILL.md)
 ```
 
 **On resume:** The agent reads the roadmap file and checks milestone status markers. No markers → step 1. Some milestones complete → step 3 (select next). A milestone in-progress with ADRs → step 4 (solve, resume). All complete → Conclusion.
