@@ -214,13 +214,17 @@ Read [references/create.md](references/create.md) for the full creation workflow
    - **If `tech_writer` is configured** (non-empty value in `[author.dispatch]`): dispatch the tech-writer agent via the `task` tool with the ADR file path (with draft worksheet from A-1), the problem context, the template structure selected in step 3, and writing style instructions. The tech-writer writes Context, Options, Decision, Consequences, and Quality Strategy sections. Quality Strategy is a documentation task — the inline agent validates the selections during checkpoint review. After the tech-writer returns, the inline agent verifies all required sections are populated and content aligns with the draft worksheet. If the tech-writer returns partial or malformed output, the inline agent completes the remaining sections and warns the user. If the configured agent cannot be resolved at runtime, fall back to inline writing and warn the user.
    - **If `tech_writer` is absent or empty** (default): the inline agent writes content directly, preserving current behavior.
    See [references/create.md](references/create.md) Step 3b for the full dispatch procedure.
-5. **Create via Makefile** — always use the Makefile target:
+5. **Evaluate readiness (Evaluation Checkpoint)** — after the ADR body is populated, pause at the Evaluation Checkpoint. Assess whether options are sufficiently analyzed for a decision. See [references/create.md](references/create.md) Step 4 for the full checkpoint procedure.
+   - **If `ux_review` or `dx_review` is configured:** dispatch the configured reviewer agents to evaluate Options (Step 4a).
+   - **If `tpm` is configured:** dispatch the TPM agent for decision quality assessment (Step 4b).
+   - Steps 4a and 4b dispatch in parallel; findings are consolidated after both return.
+6. **Create via Makefile** — always use the Makefile target:
 ```bash
 make -f <skill-root>/Makefile new TITLE="Use PostgreSQL"
 ```
    Only fall back to calling scripts directly if the Makefile is unavailable. See [Escape Hatch](#escape-hatch-direct-script-usage) for direct usage.
-6. **Validate completion** — check the implementability criteria: Criteria, Documentation, Experimentation Tolerance, Scope Clarity, Actionable Consequences, Dependency Visibility.
-7. **Recommend review** — after creating the ADR, recommend reviewing it:
+7. **Validate completion** — check the implementability criteria: Criteria, Documentation, Experimentation Tolerance, Scope Clarity, Actionable Consequences, Dependency Visibility.
+8. **Recommend review** — after creating the ADR, recommend reviewing it:
    > Would you like to review this ADR? It will be checked for completeness, reasoning fallacies, and anti-patterns.
    On confirmation, proceed to [A-3: Review](#a-3-review).
 **Problem-solving workflows:** For problem-first workflows (exploring options before committing to a solution), use `/solve-adr` instead. It orchestrates across `/author-adr`, `/prototype-adr`, and `/implement-adr`.
