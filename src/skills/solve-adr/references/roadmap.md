@@ -235,7 +235,7 @@ The milestone becomes S-1's problem input:
 3. **Decisions to enumerate** — each milestone objective becomes a candidate decision. Some objectives may merge into a single ADR; others may expand into multiple.
 4. **Additional context** — include relevant supplementary sections
 
-**Invoke S-1** — pass the constructed intake to the Problem lifecycle. Include in the delegation prompt: "Run S-1 in sub-routine mode — skip conclusion, return control after implementation." S-1 runs its full lifecycle (Branch → Author → Triage → Implement) but skips conclusion. Conclusion runs once after all milestones complete (per Step 5a).
+**Invoke S-1** — pass the constructed intake to the Problem lifecycle. Include in the delegation prompt: "Run S-1 in subroutine mode — skip conclusion, return control after implementation." S-1 runs through Implement (Branch → Author → Triage → Implement) then returns control to S-2. Conclusion runs once after all milestones complete (per Step 5a).
 
 ### Step 4b: Branch naming
 

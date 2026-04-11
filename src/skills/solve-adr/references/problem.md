@@ -242,4 +242,4 @@ After implementation completes:
 - **Standalone mode (default):** Proceed to the Conclusion sequence (C-1 → C-2 → C-3 → C-4) defined in SKILL.md.
 - **Sub-routine mode:** Return control to the caller. Do not run conclusion — the caller owns conclusion execution.
 
-S-1 runs in sub-routine mode when the delegation prompt includes: "Run S-1 in sub-routine mode — skip conclusion, return control after implementation."
+S-1 runs in subroutine mode when the delegation prompt includes: "Run S-1 in subroutine mode — skip conclusion, return control after implementation."

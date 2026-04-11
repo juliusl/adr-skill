@@ -8,9 +8,9 @@ Links:
 
 ## Context
 
-From UX review of solve-adr (2026-04-11, finding F-06): problem.md unconditionally instructs S-1 to run the full conclusion sequence (C-1 → C-2 → C-3 → C-4) after implementation completes. When S-2 (Roadmap) delegates a milestone to S-1, S-1 runs conclusion after every milestone instead of once at the end. No signal tells S-1 whether it is running standalone or as a sub-routine of S-2. This produces duplicate QA triage, duplicate code reviews, and duplicate reports per milestone — all of which should run once after all milestones complete.
+From UX review of solve-adr (2026-04-11, finding F-06): problem.md unconditionally instructs S-1 to run the full conclusion sequence (C-1 → C-2 → C-3 → C-4) after implementation completes. When S-2 (Roadmap) delegates a milestone to S-1, S-1 runs conclusion after every milestone instead of once at the end. No signal tells S-1 whether it is running standalone or as a subroutine of S-2. This produces duplicate QA triage, duplicate code reviews, and duplicate reports per milestone — all of which should run once after all milestones complete.
 
-[Source: UX review amendment — solve-adr Redesign verdict, F-06: "Missing standalone vs. sub-routine disambiguation"]
+[Source: UX review amendment — solve-adr Redesign verdict, F-06: "Missing standalone vs. subroutine disambiguation"]
 
 ## Options
 
@@ -23,14 +23,14 @@ From UX review of solve-adr (2026-04-11, finding F-06): problem.md unconditional
 
 ## Decision
 
-In the context of S-2 delegating milestones to S-1 as sub-routines, facing the problem that S-1 runs conclusion after every milestone instead of once at the end, we chose to add an operating mode parameter to S-1 that suppresses conclusion when called as a sub-routine, over leaving S-1 unaware of its calling context, to achieve correct conclusion execution (once per solve, not once per milestone), accepting the added complexity of a mode parameter in S-1's entry contract.
+In the context of S-2 delegating milestones to S-1 as subroutines, facing the problem that S-1 runs conclusion after every milestone instead of once at the end, we chose to add an operating mode parameter to S-1 that suppresses conclusion when called as a subroutine, over leaving S-1 unaware of its calling context, to achieve correct conclusion execution (once per solve, not once per milestone), accepting the added complexity of a mode parameter in S-1's entry contract.
 
 **Mechanism:** problem.md Step 4b's conclusion routing instruction becomes conditional:
 
 - **Standalone mode (default):** After implementation completes, proceed to the Conclusion sequence (C-1 → C-2 → C-3 → C-4).
 - **Sub-routine mode:** After implementation completes, return control to the caller (S-2). Do not run conclusion — the caller owns conclusion.
 
-S-2's roadmap.md Step 4a must signal sub-routine mode when delegating to S-1. The signal is conveyed in the delegation prompt: "Run S-1 in sub-routine mode — skip conclusion, return control after implementation."
+S-2's roadmap.md Step 4a must signal subroutine mode when delegating to S-1. The signal is conveyed in the delegation prompt: "Run S-1 in subroutine mode — skip conclusion, return control after implementation."
 
 ## Consequences
 
@@ -43,7 +43,7 @@ S-2's roadmap.md Step 4a must signal sub-routine mode when delegating to S-1. Th
 
 **Neutral**
 - Standalone S-1 invocations are unaffected — the default is standalone mode.
-- S-3 (Fast-Path) is unaffected — it runs conclusion unconditionally and is never called as a sub-routine.
+- S-3 (Fast-Path) is unaffected — it runs conclusion unconditionally and is never called as a subroutine.
 
 ## Quality Strategy
 
