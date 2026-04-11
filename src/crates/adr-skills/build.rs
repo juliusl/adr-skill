@@ -1,3 +1,5 @@
+//! Build script — validates embedded asset directories and captures git commit SHA.
+
 fn main() {
     let manifest_dir = std::env::var("CARGO_MANIFEST_DIR").unwrap();
     let workspace_root = std::path::Path::new(&manifest_dir)

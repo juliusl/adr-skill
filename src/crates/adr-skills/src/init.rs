@@ -54,6 +54,10 @@ fn validate_toml_value(value: &str, field: &str) {
         eprintln!("Error: --{field} must not contain double-quote characters");
         std::process::exit(1);
     }
+    if value.contains('\\') {
+        eprintln!("Error: --{field} must not contain backslash characters");
+        std::process::exit(1);
+    }
 }
 
 fn format_code_review_array(raw: &str) -> String {
@@ -65,7 +69,7 @@ fn format_code_review_array(raw: &str) -> String {
     if items.is_empty() {
         return "[]".to_string();
     }
-    let quoted: Vec<String> = items.iter().map(|s| format!("\"{s}\"")).collect();
+    let quoted: Vec<String> = items.into_iter().map(|s| format!("\"{s}\"")).collect();
     format!("[{}]", quoted.join(", "))
 }
 

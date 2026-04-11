@@ -1,3 +1,5 @@
+//! CLI entry point for the adr-skills installer.
+
 mod embed;
 mod init;
 mod install;
