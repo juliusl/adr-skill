@@ -136,13 +136,11 @@ fast_path_sources = ["retro", "bug-bash", "amendment"]  # finding sources that t
 ```toml
 [solve.retro]
 enabled = true                # whether C-4 runs at all
-skip_when_no_findings = false # skip C-4 when retrospective produces no actionable findings
 ```
 
 | Key | Default | Description |
 |-----|---------|-------------|
 | `[solve.retro] enabled` | `true` | Set to `false` to disable C-4 entirely for this project. |
-| `[solve.retro] skip_when_no_findings` | `false` | When `true`, C-4 skips writing a retro record if the retrospective produces no actionable findings. |
 
 **Path resolution:**
 1. If `$XDG_CONFIG_HOME` is set, use `$XDG_CONFIG_HOME/adr-skills/preferences.toml`.
@@ -386,7 +384,7 @@ Stay on the feature branch and present the completion report in the format appro
 
 ### C-4: Retrospective
 
-After C-3, run a structured retrospective on the completed solve run. C-4 is optional — skip when `[solve.retro] enabled = false` in `.adr/preferences.toml`. Skip also when `skip_when_no_findings = true` and the retrospective produces no actionable findings.
+After C-3, run a structured retrospective on the completed solve run. C-4 is optional — skip when `[solve.retro] enabled = false` in `.adr/preferences.toml`.
 
 **Entry condition:** C-3 has completed. C-4 does not affect C-3 artifacts.
 
@@ -408,7 +406,7 @@ After C-3, run a structured retrospective on the completed solve run. C-4 is opt
 
 **Retro record slug:** Derive the slug from the current UTC timestamp (`YYYYMMDD-HHMMSS`), not from user-supplied text. Example: `.adr/var/retro-20260410-143022.md`. If a file at the derived path already exists, append a counter suffix (`-2`, `-3`, etc.) rather than overwriting.
 
-**Zero-findings case:** When `skip_when_no_findings = false` and the retrospective produces no actionable findings, note "No findings to retrospect" and skip the 4 questions. Writing a retro record with empty answers serves no purpose regardless of the key value.
+**Zero-findings case:** If the retrospective produces no actionable findings, note "No findings to retrospect" and skip the 4 questions. Do not write a retro record with empty answers.
 
 **Write retro record:** Save findings to `.adr/var/retro-<slug>.md`. Include: run summary, findings, preference changes applied. Create `.adr/var/` if it doesn't exist.
 
