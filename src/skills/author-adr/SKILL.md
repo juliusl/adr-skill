@@ -171,6 +171,19 @@ Before any ADR operation, determine which ADR format to use:
 make -f <skill-root>/Makefile init DIR=docs/adr
 ```
 3. **Cache the format** — for the rest of the session, pass `ADR_AGENT_SKILL_FORMAT=nygard-agent` (or the configured format) to all Makefile targets.
+4. **Route by intent** — based on the user's request, proceed to the appropriate step:
+   - Create an ADR → A-1 (Draft Worksheet) → A-2 (Create)
+   - Draft only → A-1 (Draft Worksheet), stop after worksheet
+   - Problem to solve → redirect to `/solve-adr`
+   - Review an ADR → A-3 (Review)
+   - Revise an ADR → A-4 (Revise)
+   - Update, supersede, link, split → A-6 (Manage)
+   - Set up tooling → see [Tooling](#tooling)
+   - Which template? → see [Choosing a Template](#choosing-a-template)
+   - Explain concepts → see [Core Concepts](#core-concepts)
+   - Unrecognized intent → explain what was requested, list the available operations (create, review, revise, manage, tooling, templates), and ask the user to clarify.
+
+**A-0 is complete when** the format is cached, all dispatch hook values are loaded, and the next step has been identified by intent routing.
 ### A-1: Draft Worksheet
 Per ADR-0032, a draft worksheet captures the author's original intent and workflow calibration before the create workflow runs. The user may decline to fill specific fields, but the worksheet structure must be present in the ADR before proceeding to A-2.
 **Activation triggers:** Any create request triggers A-1 first. Direct triggers: "draft an ADR," "start a draft," "I have an idea for a decision."
@@ -210,7 +223,7 @@ Read [references/create.md](references/create.md) for the full creation workflow
 1. **Assess significance** — score the decision against the 7 ASR criteria. If it's not architecturally significant, suggest informal documentation.
 2. **Check readiness** — verify the START criteria: Stakeholders, Time/MRM, Alternatives, Requirements, Template.
 3. **Pick a template** — default to Nygard Agent. Use MADR if the user needs structured tradeoff analysis. See [Choosing a Template](#choosing-a-template).
-4. **Draft the ADR** — populate the ADR body from the template in [assets/templates/](assets/templates/).
+4. **Draft the ADR** — populate the ADR body in the file created during A-1. The *inline agent* is the agent currently executing this skill, as opposed to agents dispatched via `[author.dispatch]` hooks.
    - **If `tech_writer` is configured** (non-empty value in `[author.dispatch]`): dispatch the tech-writer agent via the `task` tool with the ADR file path (with draft worksheet from A-1), the problem context, the template structure selected in step 3, and writing style instructions. The tech-writer writes Context, Options, Decision, Consequences, and Quality Strategy sections. Quality Strategy is a documentation task — the inline agent validates the selections during checkpoint review. After the tech-writer returns, the inline agent verifies all required sections are populated and content aligns with the draft worksheet. If the tech-writer returns partial or malformed output, the inline agent completes the remaining sections and warns the user. If the configured agent cannot be resolved at runtime, fall back to inline writing and warn the user.
    - **If `tech_writer` is absent or empty** (default): the inline agent writes content directly, preserving current behavior.
    See [references/create.md](references/create.md) Step 3b for the full dispatch procedure.
@@ -218,9 +231,9 @@ Read [references/create.md](references/create.md) for the full creation workflow
    - **If `ux_review` or `dx_review` is configured:** dispatch the configured reviewer agents to evaluate Options (Step 4a).
    - **If `tpm` is configured:** dispatch the TPM agent for decision quality assessment (Step 4b).
    - Steps 4a and 4b dispatch in parallel; findings are consolidated after both return.
-6. **Create via Makefile** — always use the Makefile target:
+6. **Rename the ADR** — update the title from the placeholder "tbd" set during A-1:
 ```bash
-make -f <skill-root>/Makefile new TITLE="Use PostgreSQL"
+make -f <skill-root>/Makefile rename NUM=<adr-number> TITLE="Use PostgreSQL"
 ```
    Only fall back to calling scripts directly if the Makefile is unavailable. See [Escape Hatch](#escape-hatch-direct-script-usage) for direct usage.
 7. **Validate completion** — check the implementability criteria: Criteria, Documentation, Experimentation Tolerance, Scope Clarity, Actionable Consequences, Dependency Visibility.
@@ -241,8 +254,9 @@ The review process covers:
 8. **Revision handoff** — if the verdict is "Revise", proceed to [A-4: Revise](#a-4-revise). The calling agent reads the findings and applies revisions inline.
 ### A-4: Revise
 Read [references/polish.md](references/polish.md) for the revision phase. The calling agent reads the review findings and fixes them inline — no separate editor dispatch. The revision phase is lightweight: fix findings, append a review cycle marker, re-review if substantive changes were made.
+**A-4 is complete when** all review findings have been addressed or explicitly rejected and a review cycle marker has been appended to `## Comments`.
 ### A-5: Re-review
-When A-4 revisions are substantive (any H/M findings addressed), loop back to A-3 for re-review. Max 3 review→revise cycles. Read [references/polish.md](references/polish.md) for re-review criteria.
+When A-4 revisions are substantive (any H/M findings addressed), loop back to A-3 for re-review. Max 3 review→revise cycles. After 3 cycles, transition the ADR to `Ready` status regardless of outstanding findings and log: "A-5: max review cycles reached — transitioning to Ready with outstanding findings noted in the review cycle marker." Read [references/polish.md](references/polish.md) for re-review criteria.
 ### A-6: Manage
 Read [references/manage.md](references/manage.md) for the full management reference including status transitions, superseding, linking, and splitting.
 **Guardrail (P-2):** See P-2 (Cross-ADR Modification Guardrail).
