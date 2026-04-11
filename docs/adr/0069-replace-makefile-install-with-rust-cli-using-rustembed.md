@@ -1,7 +1,7 @@
 # 69. Replace Makefile Install with Rust CLI Using RustEmbed
 
 Date: 2026-04-10
-Status: Planned
+Status: Accepted
 Last Updated: 2026-04-11
 Links:
 - Related to [ADR-0026](0026-add-rust-cli-for-data-plumbing.md) (established Rust binary and Cargo workspace)

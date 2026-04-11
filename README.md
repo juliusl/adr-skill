@@ -58,6 +58,36 @@ Install the skill (see [Installation](#installation) below), then use any of the
 
 ### Installation
 
+**Option A: Binary (recommended)**
+
+Build the `adr-skills` binary and use it to install everything:
+
+```sh
+# Build from source (requires Rust toolchain)
+cd adr-skills
+make build-adr-skills
+
+# Full setup: install skills, agents, and bootstrap .adr/ in your project
+src/crates/target/release/adr-skills setup
+
+# Or install components individually:
+src/crates/target/release/adr-skills install skills    # ~/.copilot/skills/
+src/crates/target/release/adr-skills install agents    # ~/.copilot/agents/
+src/crates/target/release/adr-skills init              # .adr/ in current dir
+```
+
+| Subcommand | Replaces | Description |
+|---|---|---|
+| `adr-skills install skills` | `make install-skills` | Install skill definitions |
+| `adr-skills install agents` | `make install-agents` | Install agent definitions |
+| `adr-skills install all` | `make install-skills` + `make install-agents` | Install both |
+| `adr-skills init` | `make init-project` | Bootstrap `.adr/` directory |
+| `adr-skills setup` | `make install-user` | Full setup (install all + init) |
+
+Use `--prefix` to override the default install base path (`~/.copilot`).
+
+**Option B: Makefile (dev convenience)**
+
 ```sh
 # Clone the repo
 git clone https://github.com/juliusl/adr-skills
@@ -150,11 +180,15 @@ Skills read preferences from `~/.config/adr-skills/preferences.toml` (user-scope
 │   ├── agents/                       # Agent definition files
 │   ├── crates/                       # Cargo workspace — Rust tooling
 │   │   ├── Cargo.toml                # Workspace root
-│   │   └── adr-db/                   # Plumbing CLI: JSONL → SQLite persistence
+│   │   ├── adr-db/                   # Plumbing CLI: JSONL → SQLite persistence
+│   │   │   ├── Cargo.toml
+│   │   │   ├── diesel.toml           # Diesel schema output config
+│   │   │   ├── migrations/           # Diesel SQL migrations
+│   │   │   └── src/                  # Rust source (main, init, ingest, view, models, schema)
+│   │   └── adr-skills/               # Install CLI: embeds skills/agents via RustEmbed
 │   │       ├── Cargo.toml
-│   │       ├── diesel.toml           # Diesel schema output config
-│   │       ├── migrations/           # Diesel SQL migrations
-│   │       └── src/                  # Rust source (main, init, ingest, view, models, schema)
+│   │       ├── build.rs              # Compile-time guard + git SHA embedding
+│   │       └── src/                  # Rust source (main, embed, install, init)
 │   └── skills/
 │       ├── author-adr/                   # Skill: create, review, manage ADRs
 │       │   ├── SKILL.md                  # Skill entry point
