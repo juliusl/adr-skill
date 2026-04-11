@@ -1,7 +1,7 @@
 # 72. Decouple CLI help text from repo Makefile
 
 Date: 2026-04-10
-Status: Ready
+Status: Planned
 Last Updated: 2026-04-10
 Links: ADR-0071
 

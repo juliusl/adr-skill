@@ -1,7 +1,7 @@
 # 71. Add version-aware install to adr-skills CLI
 
 Date: 2026-04-10
-Status: Ready
+Status: Planned
 Last Updated: 2026-04-10
 Links:
 
