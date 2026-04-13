@@ -3,6 +3,7 @@
 mod embed;
 mod init;
 mod install;
+mod new_problem;
 
 use clap::{Parser, Subcommand, ValueEnum};
 use std::path::PathBuf;
@@ -95,6 +96,11 @@ enum Commands {
         #[command(flatten)]
         args: InitArgs,
     },
+    /// Create a new ADR artifact
+    New {
+        #[command(subcommand)]
+        target: NewTarget,
+    },
 }
 
 #[derive(Subcommand)]
@@ -105,6 +111,15 @@ enum InstallTarget {
     Agents,
     /// Install both skills and agents
     All,
+}
+
+#[derive(Subcommand)]
+enum NewTarget {
+    /// Create a new problem file (opens TUI for structured input)
+    Problem {
+        /// Problem title
+        title: Vec<String>,
+    },
 }
 
 fn main() {
@@ -128,5 +143,28 @@ fn main() {
             init::init_project(&path, &config);
             println!("\n=== Setup complete ===");
         }
+        Commands::New { target } => match target {
+            NewTarget::Problem { title } => {
+                let title = title.join(" ");
+                if title.is_empty() {
+                    eprintln!("Error: problem title is required");
+                    eprintln!("Usage: adr-skills new problem <title...>");
+                    std::process::exit(1);
+                }
+                match new_problem::run_new_problem(title) {
+                    Ok(Some(path)) => {
+                        println!("Saved: {}", path.display());
+                        println!("\nNext: invoke solve-adr to explore this problem");
+                    }
+                    Ok(None) => {
+                        println!("Cancelled.");
+                    }
+                    Err(e) => {
+                        eprintln!("Error: {e}");
+                        std::process::exit(1);
+                    }
+                }
+            }
+        },
     }
 }

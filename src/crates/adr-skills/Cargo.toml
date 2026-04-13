@@ -8,6 +8,9 @@ description = "CLI for installing ADR skills and agents"
 clap = { version = "4", features = ["derive"] }
 rust-embed = "8"
 dirs = "6"
+ratatui = "0.29"
+crossterm = "0.28"
+tempfile = "3"
 
 [dev-dependencies]
 tempfile = "3"
